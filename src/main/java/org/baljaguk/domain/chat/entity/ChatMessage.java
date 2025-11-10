@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.baljaguk.global.BaseEntity;
+import org.baljaguk.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor

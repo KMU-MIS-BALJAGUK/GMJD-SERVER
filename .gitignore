@@ -38,5 +38,6 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### yml 추가 예정 ###
-.yml
+### yml ###
+application-dev.yml
+application-test.yml

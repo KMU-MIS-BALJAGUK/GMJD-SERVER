@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,9 +18,13 @@ public class QChatMessage extends EntityPathBase<ChatMessage> {
 
     private static final long serialVersionUID = 194304475L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QChatMessage chatMessage = new QChatMessage("chatMessage");
 
-    public final org.baljaguk.global.QBaseEntity _super = new org.baljaguk.global.QBaseEntity(this);
+    public final org.baljaguk.global.entity.QBaseEntity _super = new org.baljaguk.global.entity.QBaseEntity(this);
+
+    public final QChatRoom chatRoom;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -32,15 +37,24 @@ public class QChatMessage extends EntityPathBase<ChatMessage> {
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QChatMessage(String variable) {
-        super(ChatMessage.class, forVariable(variable));
+        this(ChatMessage.class, forVariable(variable), INITS);
     }
 
     public QChatMessage(Path<? extends ChatMessage> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QChatMessage(PathMetadata metadata) {
-        super(ChatMessage.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QChatMessage(PathMetadata metadata, PathInits inits) {
+        this(ChatMessage.class, metadata, inits);
+    }
+
+    public QChatMessage(Class<? extends ChatMessage> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.chatRoom = inits.isInitialized("chatRoom") ? new QChatRoom(forProperty("chatRoom"), inits.get("chatRoom")) : null;
     }
 
 }

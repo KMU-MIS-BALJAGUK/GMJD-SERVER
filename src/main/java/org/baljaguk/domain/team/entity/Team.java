@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.user.entity.User;
-import org.baljaguk.global.BaseEntity;
+import org.baljaguk.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor

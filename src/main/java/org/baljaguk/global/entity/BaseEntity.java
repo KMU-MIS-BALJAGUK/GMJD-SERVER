@@ -1,4 +1,4 @@
-package org.baljaguk.global;
+package org.baljaguk.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

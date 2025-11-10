@@ -41,3 +41,6 @@ bin/
 ### yml ###
 application-dev.yml
 application-test.yml
+
+### q domain ###
+src/main/generated

@@ -11,3 +11,4 @@ public class GmjdApplication {
     }
 
 }
+,n knjol[,lp]pl][;.]

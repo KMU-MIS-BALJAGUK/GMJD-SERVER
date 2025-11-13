@@ -4,7 +4,7 @@ spring:
 
   config:
     activate:
-      on-profile: local
+      on-profile: local  # 로컬
 
   datasource:
     url: ${LOCAL_DB_URL}

@@ -25,4 +25,5 @@ public class RecommendationLog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_user_id", nullable = false)
     private User toUser;
+
 }

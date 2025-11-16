@@ -10,4 +10,5 @@ public class GeneralException extends RuntimeException {  // 예외클래스 상
         super(errorCode.getMsg());
         this.errorCode = errorCode;
     }
+
 }

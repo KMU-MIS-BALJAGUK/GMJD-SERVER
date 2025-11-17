@@ -60,3 +60,9 @@ jwt:
 
 
 
+
+app:
+  cookie:
+    domain: ""
+    same-site: Lax
+    secure: false

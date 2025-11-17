@@ -1,5 +1,6 @@
 package org.baljaguk.global.api;
 
+import org.baljaguk.global.api.handler.LoginException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.concurrent.RejectedExecutionException;
+
+import static org.hibernate.query.sqm.tree.SqmNode.log;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -77,6 +80,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatus()).body(ApiResponse.fail(errorCode.getCode(), errorCode.getMsg()));
     }
 
+    // 기타 모든 예외 (예상치 못한 예외)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleUnhandledException(Exception e) {
 
@@ -109,5 +113,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(errorCode.getStatus())
                 .body(ApiResponse.fail(errorCode.getCode(), errorCode.getMsg()));
+    }
+
+    @ExceptionHandler(LoginException.class)
+    public ApiResponse<?> handleLoginException(LoginException e) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ApiResponse.fail(errorCode.getCode(), errorCode.getMsg());
     }
 }

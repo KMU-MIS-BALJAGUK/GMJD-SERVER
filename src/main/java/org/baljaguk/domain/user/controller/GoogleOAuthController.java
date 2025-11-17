@@ -1,14 +1,20 @@
 package org.baljaguk.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.baljaguk.domain.user.dto.response.JwtLoginResponse;
+import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.domain.user.service.GoogleAuthService;
 import org.baljaguk.global.api.ApiResponse;
 import org.baljaguk.global.security.properies.GoogleOAuthProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,9 +53,14 @@ public class GoogleOAuthController {
         return googleAuthService.loginOrRegisterWithResponse(code);
     }
 
+    @Operation(summary = "로그아웃 API")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> logout() {
-        // 리프레시 토큰 무효화 로직이 필요하다면 여기에 구현
-        return ResponseEntity.ok(ApiResponse.ok("로그아웃이 정상적으로 처리되었습니다."));
+    public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                      HttpServletRequest request,
+                                                      HttpServletResponse response) {
+
+        googleAuthService.logout(userDetails,request,response);
+
+        return ResponseEntity.ok(ApiResponse.ok("로그아웃이 정상적으로 처리되었습니다"));
     }
 }

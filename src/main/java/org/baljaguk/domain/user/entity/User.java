@@ -2,6 +2,8 @@ package org.baljaguk.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,11 +47,22 @@ public class User {
     @Column(name = "skill") //
     private List<String> skills;
 
+    /**
+     * 소셜 로그인 사용자 생성 (최초 회원가입 시)
+     * - email / name / profileImageUrl은 소셜에서 내려오는 값
+     * - introduction, level 등은 기본값 세팅
+     */
     public static User createSocialUser(String email, String name, String profileImageUrl) {
         return User.builder()
                 .email(email)
                 .name(name)
                 .profileImageUrl(profileImageUrl)
+                .level("BEGINNER")              // 기본 레벨
+                .introduction("")               // 소개글 기본값
+                .birthdate(null)                // 선택값
+                .university(null)
+                .major(null)
+                .skills(new ArrayList<>())      // 빈 스킬 리스트
                 .build();
     }
 }

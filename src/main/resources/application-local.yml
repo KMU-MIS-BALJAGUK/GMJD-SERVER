@@ -47,6 +47,8 @@ spring:
 jwt:
   secret-key: ${JWT_SECRET_KEY}
   expire-length: 3600000 # 1시간
+  refresh-expire-length: 1209600000 # 14일
+  header: Authorization
 
 #docker 이미지로 실행
   rabbitmq:

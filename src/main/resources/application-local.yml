@@ -66,12 +66,3 @@ app:
     domain: ""
     same-site: Lax
     secure: false
-
-springdoc:
-  swagger-ui:
-    url: /v3/api-docs
-    config-url: /v3/api-docs/swagger-config
-    display-request-duration: true
-  default-produces-media-type: application/json
-  default-consumes-media-type: application/json
-  server-url: https://dev.gmjd.site

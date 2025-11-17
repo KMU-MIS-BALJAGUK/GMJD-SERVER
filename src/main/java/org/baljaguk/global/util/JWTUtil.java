@@ -72,7 +72,7 @@ public class JWTUtil {
     // 토큰의 식별자를 파싱하는 메서드
     public String getJti(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(jwtProperties.getSecretKey())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -81,7 +81,7 @@ public class JWTUtil {
 
     public long getRemainingExpiration(String token) {
         Date expiration = Jwts.parserBuilder()
-                .setSigningKey(jwtProperties.getSecretKey())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()

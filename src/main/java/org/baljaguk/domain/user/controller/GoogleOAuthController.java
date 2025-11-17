@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.domain.user.service.GoogleAuthService;
 import org.baljaguk.global.api.ApiResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class GoogleOAuthController {
@@ -59,7 +61,7 @@ public class GoogleOAuthController {
                                                       HttpServletRequest request,
                                                       HttpServletResponse response) {
 
-        googleAuthService.logout(userDetails,request,response);
+        googleAuthService.logout(userDetails, request, response);
 
         return ResponseEntity.ok(ApiResponse.ok("로그아웃이 정상적으로 처리되었습니다"));
     }

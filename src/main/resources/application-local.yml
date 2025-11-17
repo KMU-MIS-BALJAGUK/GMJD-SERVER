@@ -49,3 +49,9 @@ jwt:
   expire-length: 3600000 # 1시간
   refresh-expire-length: 1209600000 # 14일
   header: Authorization
+
+app:
+  cookie:
+    domain: ""
+    same-site: Lax
+    secure: false

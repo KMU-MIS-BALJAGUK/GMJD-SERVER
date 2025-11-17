@@ -68,4 +68,25 @@ public class JWTUtil {
 
         return Long.parseLong(claims.getSubject());
     }
+
+    // 토큰의 식별자를 파싱하는 메서드
+    public String getJti(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getId();
+    }
+
+    public long getRemainingExpiration(String token) {
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+
+        return (expiration.getTime() - System.currentTimeMillis()) / 1000;
+    }
 }

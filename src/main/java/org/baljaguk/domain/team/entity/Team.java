@@ -1,17 +1,14 @@
 package org.baljaguk.domain.team.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.global.entity.BaseEntity;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 @Table(name = "teams")

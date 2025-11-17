@@ -39,7 +39,6 @@ public class GoogleAuthService {
         User user;
         user = userRepository.findByEmail(profile.email())
                 .orElseGet(() -> {
-                    log.info("👤 [Google Login] No existing user, creating new user with email={}", profile.email());
                     return userRepository.save(
                             User.createSocialUser(
                                     profile.email(),

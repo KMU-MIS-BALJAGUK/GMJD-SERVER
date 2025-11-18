@@ -56,12 +56,10 @@ public class GoogleAuthService {
 
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
-            log.info("✅ 기존 유저 로그인 - userId: {}, email: {}", user.getId(), user.getEmail());
         } else {
             user = userRepository.save(
                     User.createSocialUser(profile.email(), profile.name(), profile.picture())
             );
-            log.info("🆕 신규 유저 회원가입 완료 - userId: {}, email: {}", user.getId(), user.getEmail());
         }
 
         // 3. JWT 토큰 생성

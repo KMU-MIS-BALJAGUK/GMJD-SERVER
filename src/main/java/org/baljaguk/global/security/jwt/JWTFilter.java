@@ -57,7 +57,6 @@ public class JWTFilter extends OncePerRequestFilter {
         //  2. 유효한 토큰인지 검증
         if (!jwtUtil.isTokenValid(token)) {
             log.warn("Invalid JWT Token");
-            filterChain.doFilter(request, response);
             throw new GeneralException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
 

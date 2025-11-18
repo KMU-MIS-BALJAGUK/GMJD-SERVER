@@ -71,7 +71,7 @@ public class GoogleAuthService {
         // 3. JWT 토큰 생성
         String serverAccessToken = jwtUtil.generateAccessToken(user.getId());
         String serverRefreshToken = jwtUtil.generateRefreshToken(user.getId());
-        log.info("🔑 JWT 발급 완료 - accessToken: {}, refreshToken: {}", serverAccessToken, serverRefreshToken);
+        log.info("🔑 JWT 발급 완료 - userId: {}", user.getId());
 
         return JwtLoginResponse.of(user, serverAccessToken, serverRefreshToken);
     }

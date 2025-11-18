@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -45,27 +47,31 @@ public class GoogleAuthService {
     @Transactional
     public JwtLoginResponse loginOrRegister(String code) {
 
+        log.info("🔐 소셜 로그인 요청 수신 - code: {}", code);
+
         // 1. Google 유저정보 가져오기
         GoogleAccountProfileResponse profile = googleClient.getGoogleAccountProfile(code);
+        log.info("📧 구글 계정 정보 가져옴 - email: {}, name: {}, picture: {}",
+                profile.email(), profile.name(), profile.picture());
 
         // 2. DB에 유저 존재 여부 확인
         User user;
-        user = userRepository.findByEmail(profile.email())
-                .orElseGet(() -> {
-                    return userRepository.save(
-                            User.createSocialUser(
-                                    profile.email(),
-                                    profile.name(),
-                                    profile.picture()
-                            )
-                    );
-                });
+        Optional<User> optionalUser = userRepository.findByEmail(profile.email());
+
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+            log.info("✅ 기존 유저 로그인 - userId: {}, email: {}", user.getId(), user.getEmail());
+        } else {
+            user = userRepository.save(
+                    User.createSocialUser(profile.email(), profile.name(), profile.picture())
+            );
+            log.info("🆕 신규 유저 회원가입 완료 - userId: {}, email: {}", user.getId(), user.getEmail());
+        }
 
         // 3. JWT 토큰 생성
-        String serverAccessToken;
-        String serverRefreshToken;
-        serverAccessToken = jwtUtil.generateAccessToken(user.getId());
-        serverRefreshToken = jwtUtil.generateRefreshToken(user.getId());
+        String serverAccessToken = jwtUtil.generateAccessToken(user.getId());
+        String serverRefreshToken = jwtUtil.generateRefreshToken(user.getId());
+        log.info("🔑 JWT 발급 완료 - accessToken: {}, refreshToken: {}", serverAccessToken, serverRefreshToken);
 
         return JwtLoginResponse.of(user, serverAccessToken, serverRefreshToken);
     }

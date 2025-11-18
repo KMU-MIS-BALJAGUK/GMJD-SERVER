@@ -1,6 +1,7 @@
 package org.baljaguk.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
@@ -26,7 +27,7 @@ public class UserController {
                     "값들을 받아 유저 레코드에 반영합니다.")
     public ResponseEntity<ApiResponse<Void>> localSignUp(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UserUpdateRequest request
+            @Valid @RequestBody UserUpdateRequest request
     ) {
         userService.updateUserProfile(userDetails.getUser().getId(), request);
         return ResponseEntity.ok(ApiResponse.ok(null));

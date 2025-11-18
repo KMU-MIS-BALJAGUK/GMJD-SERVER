@@ -79,7 +79,7 @@ public class User {
         if (request.skills() != null && !request.skills().isEmpty()) {
             this.skills = String.join(",", request.skills());
         } else {
-            this.skills = "";
+            this.skills = null;
         }
 
         this.education = request.education();

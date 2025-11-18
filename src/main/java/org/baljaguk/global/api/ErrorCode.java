@@ -36,6 +36,8 @@ public enum ErrorCode {
     // 유저 관련
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 40402, "존재하지 않는 사용자입니다."),
 
+    // 카테고리 관련
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 40403, "카테고리를 찾을 수 없습니다."),
 
     /**
      * 405 METHOD_NOT_ALLOWED

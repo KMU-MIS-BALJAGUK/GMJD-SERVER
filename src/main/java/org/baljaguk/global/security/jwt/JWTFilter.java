@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
+import org.baljaguk.global.api.ErrorCode;
+import org.baljaguk.global.api.GeneralException;
 import org.baljaguk.global.config.JWTConfig;
 import org.baljaguk.global.util.JWTUtil;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -56,7 +58,7 @@ public class JWTFilter extends OncePerRequestFilter {
         if (!jwtUtil.isTokenValid(token)) {
             log.warn("Invalid JWT Token");
             filterChain.doFilter(request, response);
-            return;
+            throw new GeneralException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
 
         //  3. 유저 정보 세팅

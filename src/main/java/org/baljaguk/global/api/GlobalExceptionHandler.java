@@ -16,8 +16,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.concurrent.RejectedExecutionException;
 
-import static org.hibernate.query.sqm.tree.SqmNode.log;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

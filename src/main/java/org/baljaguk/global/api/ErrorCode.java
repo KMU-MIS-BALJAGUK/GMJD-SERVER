@@ -33,6 +33,9 @@ public enum ErrorCode {
     // 구글 엑세스 토큰 관련
     NOT_FOUND_GOOGLE_ACCESS_TOKEN_RESPONSE(HttpStatus.BAD_REQUEST, 40401, "구글 액세스 토큰 응답을 찾을 수 없습니다."),
 
+    // 유저 관련
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, 40402, "존재하지 않는 사용자입니다."),
+
 
     /**
      * 405 METHOD_NOT_ALLOWED

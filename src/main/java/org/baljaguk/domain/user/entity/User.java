@@ -48,7 +48,7 @@ public class User {
     @Column(name = "major", nullable = true)
     private String major;
 
-    @Column(name = "level", nullable = true)
+    @Column(name = "level", nullable = false)
     private Integer level;
 
     @Column(name = "skill", nullable = true)

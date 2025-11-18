@@ -47,12 +47,8 @@ public class GoogleAuthService {
     @Transactional
     public JwtLoginResponse loginOrRegister(String code) {
 
-        log.info("🔐 소셜 로그인 요청 수신 - code: {}", code);
-
         // 1. Google 유저정보 가져오기
         GoogleAccountProfileResponse profile = googleClient.getGoogleAccountProfile(code);
-        log.info("📧 구글 계정 정보 가져옴 - email: {}, name: {}, picture: {}",
-                profile.email(), profile.name(), profile.picture());
 
         // 2. DB에 유저 존재 여부 확인
         User user;

@@ -89,9 +89,9 @@ public class SecurityConfig {
 
 
         // 인가 경로 설정
-//        http.authorizeHttpRequests((auth)->auth
-//                .requestMatchers("/login", "/signup").permitAll()
-//                .anyRequest().authenticated());
+        http.authorizeHttpRequests((auth)->auth
+                .requestMatchers("/api/v1/auth/google/**", "/api/v1/users/local-signup").permitAll()
+                .anyRequest().authenticated());
 
         http
                 .sessionManagement((session) -> session

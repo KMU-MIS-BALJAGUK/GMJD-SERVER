@@ -2,9 +2,8 @@ package org.baljaguk.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.baljaguk.domain.user.entity.enums.Education;
+import org.baljaguk.domain.user.entity.enums.RecognizedDegree;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,34 +17,43 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "profile_image_url")
+    @Column(name = "profile_image_url", nullable = false)
     private String profileImageUrl;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = true)
     private String name;
 
-    @Column(name = "introduction")
+    @Column(name = "introduction", nullable = false)
     private String introduction;
 
-    @Column(name = "level")
-    private String level;
+    @Column(name = "education", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Education education;  // 학력
 
-    @Column(name = "birthdate")
+    @Column(name = "recognized_degree", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RecognizedDegree recognizedDegree;
+
+    @Column(name = "interests", nullable = false)
+    private String interests;  // 관심분야는 콤마로 나누어 저장 및 응답합니다.
+
+    @Column(name = "level", nullable = true)
+    private Integer level;
+
+    @Column(name = "birthdate", nullable = false)
     private String birthdate;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "university")
-    private String university;
+    @Column(name = "university_name", nullable = false)
+    private String universityName;
 
-    @Column(name = "major")
+    @Column(name = "major", nullable = false)
     private String major;
 
-    @ElementCollection // List<String>을 저장하기 위한 표준 JPA 어노테이션
-    @CollectionTable(name = "user_skills", joinColumns = @JoinColumn(name = "user_id")) // 스킬을 저장할 별도 테이블
-    @Column(name = "skill") //
-    private List<String> skills;
+    @Column(name = "skill", nullable = false)
+    private String skills;  // 스킬셋은 콤마로 나누어 저장 및 응답합니다.
 
     /**
      * 소셜 로그인 사용자 생성 (최초 회원가입 시)
@@ -57,12 +65,27 @@ public class User {
                 .email(email)
                 .name(name)
                 .profileImageUrl(profileImageUrl)
-                .level("BEGINNER")              // 기본 레벨
-                .introduction("")               // 소개글 기본값
-                .birthdate(null)                // 선택값
-                .university(null)
-                .major(null)
-                .skills(new ArrayList<>())      // 빈 스킬 리스트
+                .level(1)                              // 기본 레벨
+                .introduction("")                      // 기본 소개
+                .birthdate("")                         // 기본 생년월일 공란
+                .universityName("")                    // 기본 대학교명 공란
+                .major("")                             // 기본 전공명 공란
+                .skills("")                            // 스킬셋 공란
+                .interests("")                         // 관심분야 공란
+                .education(null)                       // 학력은 이후 선택
+                .recognizedDegree(null)                // 인정학력도 이후 선택
                 .build();
+    }
+
+    // 자체 회원가입 업데이트
+    public void updateUserProfile(String introduction, String universityName, String major, String skills,
+                                  String interests, Education education, RecognizedDegree recognizedDegree) {
+        this.introduction = introduction;
+        this.universityName = universityName;
+        this.major = major;
+        this.skills = skills;
+        this.interests = interests;
+        this.education = education;
+        this.recognizedDegree = recognizedDegree;
     }
 }

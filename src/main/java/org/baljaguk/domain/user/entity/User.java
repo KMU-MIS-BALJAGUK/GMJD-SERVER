@@ -2,12 +2,10 @@ package org.baljaguk.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.baljaguk.domain.category.entity.UserCategory;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
 import org.baljaguk.domain.user.entity.enums.Education;
 import org.baljaguk.domain.user.entity.enums.RecognizedDegree;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -84,5 +82,23 @@ public class User {
 
         this.education = request.education();
         this.recognizedDegree = request.recognizedDegree();
+    }
+
+
+    // 스킬셋 수정 메서드
+    public void updateSkills(java.util.List<String> newSkills) {
+        if (newSkills == null || newSkills.isEmpty()) {
+            this.skills = null;
+        } else {
+            this.skills = newSkills.stream()
+                    .collect(java.util.stream.Collectors.joining(","));
+        }
+    }
+
+    public void updateEducation(String universityName, String major, Education education, RecognizedDegree recognizedDegree) {
+        this.universityName = universityName;
+        this.major = major;
+        this.education = education;
+        this.recognizedDegree = recognizedDegree;
     }
 }

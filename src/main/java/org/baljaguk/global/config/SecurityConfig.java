@@ -90,7 +90,13 @@ public class SecurityConfig {
 
         // 인가 경로 설정
         http.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/api/v1/auth/google/**").permitAll()
+                .requestMatchers("/oauth/google/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        "/access").permitAll()
                 .anyRequest().authenticated());
 
         http

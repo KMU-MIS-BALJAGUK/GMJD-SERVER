@@ -5,7 +5,10 @@ import org.baljaguk.domain.category.entity.Category;
 import org.baljaguk.domain.category.entity.UserCategory;
 import org.baljaguk.domain.category.repository.CategoryRepository;
 import org.baljaguk.domain.category.repository.UserCategoryRepository;
+import org.baljaguk.domain.user.dto.request.EducationUpdateRequest;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
+import org.baljaguk.domain.user.dto.request.SkillUpdateRequest; //추가됨
+import org.baljaguk.domain.user.dto.request.CategoryUpdateRequest; // 추가됨
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
@@ -45,6 +48,48 @@ public class UserServiceImpl implements UserService {
                     .toList();
 
             userCategoryRepository.saveAll(userCategories);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateMySkills(Long userId, SkillUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+        user.updateSkills(request.skills());
+    }
+
+    @Override
+    @Transactional
+    public void updateEducation(Long userId, EducationUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+        user.updateEducation(
+                request.universityName(),
+                request.major(),
+                request.education(),
+                request.recognizedDegree()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void updateInterests(Long userId, CategoryUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+        userCategoryRepository.deleteAllByUser(user);
+
+        if (request.categoryIds() != null && !request.categoryIds().isEmpty()) {
+            List<Category> categories = categoryRepository.findAllById(request.categoryIds());
+
+            List<UserCategory> newUserCategories = categories.stream()
+                    .map(category -> UserCategory.of(user, category))
+                    .toList();
+
+            userCategoryRepository.saveAll(newUserCategories);
         }
     }
 }

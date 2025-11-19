@@ -2,6 +2,10 @@ package org.baljaguk.domain.team.repository;
 
 import org.baljaguk.domain.team.entity.TeamStatus;
 
+import java.util.List;
+import java.util.Map;
+
 public interface TeamRepositoryCustom {
-    long countByContestIdAndStatus(Long contestId, TeamStatus status);
+
+    Map<Long, Long> countByContestIdsGrouped(List<Long> contestIds, TeamStatus status);
 }

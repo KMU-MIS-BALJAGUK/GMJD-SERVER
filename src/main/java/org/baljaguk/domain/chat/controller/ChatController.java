@@ -27,7 +27,6 @@ public class ChatController {
     /**
      * @param roomId  채팅방 ID(url)
      * @param message 클라이언트가 보낸 JSON 페이로드 (ChatMessageRequest)
-     * @param userDetails customUserDetail 타입의 user 객체
      * @return        @SendTo 경로로 브로드캐스팅될 JSON 페이로드 (ChatMessageDto)
      */
     @MessageMapping("/chat.room.{roomId}") // websocket 매핑

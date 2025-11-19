@@ -24,7 +24,7 @@ public class ContestController {
     }
 
     @GetMapping("/api/contests/search")
-    public List<ContestSearchResponse> search(@RequestParam String keyword) {
-        return contestService.search(keyword);
+    public ResponseEntity<ApiResponse<List<ContestSearchResponse>>> search(@RequestParam String keyword) {
+        return ResponseEntity.ok(ApiResponse.ok(contestService.search(keyword)));
     }
 }

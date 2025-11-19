@@ -58,6 +58,7 @@ public class SecurityConfig {
                          * */
                         configuration.setAllowedOrigins(Arrays.asList(
                                 "http://localhost:8080",
+                                "http://localhost:3000",
                                 "https://dev.gmjd.site",
                                 "https://www.gmjd.site"
                         ));
@@ -89,15 +90,18 @@ public class SecurityConfig {
 
 
         // 인가 경로 설정
-        http.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/oauth/google/**",
+        http.authorizeHttpRequests((auth) -> auth
+                .requestMatchers(
+                        "/api/v1/auth/google/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/swagger-resources/**",
                         "/webjars/**",
-                        "/access").permitAll()
-                .anyRequest().authenticated());
+                        "/access"
+                ).permitAll()
+                .anyRequest().authenticated()
+        );
 
         http
                 .sessionManagement((session) -> session

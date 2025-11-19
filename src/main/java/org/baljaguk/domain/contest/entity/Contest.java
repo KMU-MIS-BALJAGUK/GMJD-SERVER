@@ -38,6 +38,21 @@ public class Contest {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL)
-    private List<ContestCategory> contestCategories = new ArrayList<>();
+    @Column(name = "categories", nullable = false)
+    private String categories; // 공모분야
+
+    @Column(name = "benefits", nullable = true)
+    private String benefits; // 활동 혜택
+
+    @Column(name = "award_scale", nullable = true)
+    private String awardScale; // 시상규모
+
+    @Column(name = "company_type", nullable = true)
+    private String companyType; // 기업형태
+
+    @Column(name = "target_participants", nullable = true)
+    private String targetParticipants; // 참여대상
+
+    @Column(name = "additional_benefits", nullable = true)
+    private String additionalBenefits; // 추가혜택
 }

@@ -39,6 +39,9 @@ public enum ErrorCode {
     // 카테고리 관련
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 40403, "카테고리를 찾을 수 없습니다."),
 
+    // 공모전 관련
+    NOT_FOUND_CONTEST(HttpStatus.NOT_FOUND, 40404, "공모전을 찾을 수 없습니다."),
+
     /**
      * 405 METHOD_NOT_ALLOWED
      */

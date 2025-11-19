@@ -54,6 +54,9 @@ public class User {
     @Column(name = "skill", nullable = true)
     private String skills;  // 스킬셋은 콤마로 나누어 저장 및 응답합니다.
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<UserCategory> categories = new ArrayList<>();
+
     /**
      * 소셜 로그인 사용자 생성 (최초 회원가입 시)
      * - email / name / profileImageUrl은 소셜에서 내려오는 값

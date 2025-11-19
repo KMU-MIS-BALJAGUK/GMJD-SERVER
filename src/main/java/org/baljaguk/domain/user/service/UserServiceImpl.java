@@ -6,6 +6,7 @@ import org.baljaguk.domain.category.entity.UserCategory;
 import org.baljaguk.domain.category.repository.CategoryRepository;
 import org.baljaguk.domain.category.repository.UserCategoryRepository;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
+import org.baljaguk.domain.user.dto.response.ProfileResponse;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
@@ -46,5 +47,14 @@ public class UserServiceImpl implements UserService {
 
             userCategoryRepository.saveAll(userCategories);
         }
+    }
+
+    @Override
+    public ProfileResponse getMyProfile(Long userId) {
+
+        User user = userRepository.findUserWithCategories(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+        return ProfileResponse.of(user);
     }
 }

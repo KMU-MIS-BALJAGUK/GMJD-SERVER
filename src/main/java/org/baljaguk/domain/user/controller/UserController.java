@@ -6,14 +6,12 @@ import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
+import org.baljaguk.domain.user.dto.response.ProfileResponse;
 import org.baljaguk.domain.user.service.UserService;
 import org.baljaguk.global.api.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -31,5 +29,14 @@ public class UserController {
     ) {
         userService.updateUserProfile(userDetails.getUser().getId(), request);
         return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @GetMapping("/my-profile")
+    @Operation(summary = "유저 마이프로필 조회",
+            description = "마이프로필 조회합니다.")
+    public ResponseEntity<ApiResponse<ProfileResponse>> getMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        ProfileResponse result = userService.getMyProfile(userDetails.getUser().getId());
+
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

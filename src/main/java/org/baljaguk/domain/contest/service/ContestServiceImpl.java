@@ -1,8 +1,9 @@
 package org.baljaguk.domain.contest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.category.repository.CategoryRepository;
 import org.baljaguk.domain.contest.dto.response.ContestDetailResponse;
-import org.baljaguk.domain.contest.dto.response.ContestSearchResponse;
+import org.baljaguk.domain.contest.dto.response.ContestListResponse;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.entity.TeamStatus;
@@ -12,6 +13,7 @@ import org.baljaguk.global.api.GeneralException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -20,6 +22,7 @@ import java.util.List;
 public class ContestServiceImpl implements ContestService {
     private final ContestRepository contestRepository;
     private final TeamRepository teamRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public ContestDetailResponse getContestDetail(Long contestId) {
@@ -30,19 +33,84 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public List<ContestSearchResponse> search(String keyword) {
-        List<org.baljaguk.domain.contest.entity.Contest> contests =
-                contestRepository.searchByKeyword(keyword);
+    public ContestListResponse search(String keyword) {
 
-        return contests.stream()
+        List<Contest> contests = contestRepository.searchByKeyword(keyword);
+
+        List<ContestListResponse.ContestSummaryResponse> summaryResponses =
+                contests.stream()
+                        .map(contest -> {
+                            long openTeams = teamRepository.countByContestIdAndStatus(
+                                    contest.getId(),
+                                    TeamStatus.OPEN
+                            );
+
+                            return ContestListResponse.ContestSummaryResponse.of(
+                                    contest,
+                                    openTeams
+                            );
+                        })
+                        .toList();
+
+        return ContestListResponse.from(summaryResponses);
+    }
+
+    @Override
+    public ContestListResponse getContestsWithFilterAndSort(Long categoryId, String sortType) {
+
+        // 1. 전체 contest 조회
+        List<Contest> contests = contestRepository.findAll();
+
+        // 2. categoryId 필터링
+        if (categoryId != null) {
+            String categoryName = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CATEGORY))
+                    .getName();  // "네이밍/슬로건" 이런 값
+
+            contests = contests.stream()
+                    .filter(contest -> {
+                        List<String> categoryList = List.of(contest.getCategories().split(","));
+                        return categoryList.contains(categoryName);
+                    })
+                    .toList();
+        }
+
+        // 3. 정렬
+        contests = switch (sortType) {
+            // 최신순
+            case "latest" -> contests.stream()
+                    .sorted(Comparator.comparing(Contest::getStartDate).reversed())
+                    .toList();
+
+            // 인기순
+            case "popular" -> contests.stream()
+                    .sorted(Comparator.comparing(Contest::getViews).reversed())
+                    .toList();
+
+            // 마감임박순
+            case "deadline" -> contests.stream()
+                    .sorted(Comparator.comparing(Contest::getEndDate))
+                    .toList();
+
+            // 디폴트는 최신순
+            default -> contests.stream()
+                    .sorted(Comparator.comparing(Contest::getStartDate).reversed())
+                    .toList();
+        };
+
+        // 4. DTO 변환
+        List<ContestListResponse.ContestSummaryResponse> responses = contests.stream()
                 .map(contest -> {
                     long openTeams = teamRepository.countByContestIdAndStatus(
                             contest.getId(),
                             TeamStatus.OPEN
                     );
-                    return ContestSearchResponse.of(contest, openTeams);
+                    return ContestListResponse.ContestSummaryResponse.of(contest, openTeams);
                 })
                 .toList();
+
+        // 5. 최종 Response 감싸서 반환
+        return ContestListResponse.from(responses);
     }
 }
 

@@ -14,4 +14,6 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
            OR LOWER(c.companyType) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
     List<Contest> searchByKeyword(String keyword);
+
+    List<Contest> findAll();
 }

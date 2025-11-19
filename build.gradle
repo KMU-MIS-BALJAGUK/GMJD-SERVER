@@ -70,6 +70,8 @@ dependencies {
 
     //websocket starter
     implementation "org.springframework.boot:spring-boot-starter-websocket"
+    implementation 'io.projectreactor.netty:reactor-netty-core'
+    implementation 'io.projectreactor.netty:reactor-netty-http'
 
     //Oauth client
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"

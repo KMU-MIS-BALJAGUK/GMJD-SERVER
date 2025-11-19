@@ -21,6 +21,8 @@ dependencies {
     // spring boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     // Lombok
@@ -38,6 +40,17 @@ dependencies {
 
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //websocket starter
+    implementation "org.springframework.boot:spring-boot-starter-websocket"
+
+    //Oauth client
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 def querydslDir = "src/main/generated/querydsl"

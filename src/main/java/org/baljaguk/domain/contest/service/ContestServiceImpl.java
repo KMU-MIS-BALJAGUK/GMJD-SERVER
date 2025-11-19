@@ -3,6 +3,7 @@ package org.baljaguk.domain.contest.service;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.category.entity.Category;
 import org.baljaguk.domain.category.repository.CategoryRepository;
+import org.baljaguk.domain.contest.dto.request.SearchRequest;
 import org.baljaguk.domain.contest.dto.response.ContestDetailResponse;
 import org.baljaguk.domain.contest.dto.response.ContestListResponse;
 import org.baljaguk.domain.contest.entity.Contest;
@@ -34,9 +35,10 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestListResponse search(String keyword) {
+    public ContestListResponse search(SearchRequest keyword) {
+        String normalizedKeyWord = keyword.normalizedKeyword();
 
-        List<Contest> contests = contestRepository.searchByKeyword(keyword);
+        List<Contest> contests = contestRepository.searchByKeyword(normalizedKeyWord);
 
         List<ContestListResponse.ContestSummaryResponse> summaryResponses =
                 contests.stream()

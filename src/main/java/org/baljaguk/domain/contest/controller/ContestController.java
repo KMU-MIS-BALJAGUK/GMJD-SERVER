@@ -1,7 +1,9 @@
 package org.baljaguk.domain.contest.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.contest.dto.request.SearchRequest;
 import org.baljaguk.domain.contest.dto.response.ContestDetailResponse;
 import org.baljaguk.domain.contest.dto.response.ContestListResponse;
 import org.baljaguk.domain.contest.service.ContestService;
@@ -26,10 +28,10 @@ public class ContestController {
         return ResponseEntity.ok(ApiResponse.ok(detailResponse));
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     @Operation(summary = "검색어로 공모전 조회",
             description = "공모전 제목, 공모전 주최기업명, 기업형태 중 검색어가 포함된 공모전을 조회합니다.")
-    public ResponseEntity<ApiResponse<ContestListResponse>> search(@RequestParam String keyword) {
+    public ResponseEntity<ApiResponse<ContestListResponse>> search(@Valid @RequestBody SearchRequest keyword) {
         return ResponseEntity.ok(ApiResponse.ok(contestService.search(keyword)));
     }
 

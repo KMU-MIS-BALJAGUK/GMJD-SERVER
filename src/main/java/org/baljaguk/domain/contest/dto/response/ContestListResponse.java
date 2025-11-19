@@ -15,6 +15,7 @@ public record ContestListResponse(
     }
 
     public static record ContestSummaryResponse(
+            Long id,
             String imageUrl,
             long remainingDays,
             long openTeamCount,
@@ -29,6 +30,7 @@ public record ContestListResponse(
             );
 
             return new ContestSummaryResponse(
+                    contest.getId(),
                     contest.getImageUrl(),
                     remainingDays,
                     openTeamCount,

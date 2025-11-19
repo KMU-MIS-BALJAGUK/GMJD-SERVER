@@ -1,6 +1,7 @@
 package org.baljaguk.domain.contest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.category.entity.Category;
 import org.baljaguk.domain.category.repository.CategoryRepository;
 import org.baljaguk.domain.contest.dto.response.ContestDetailResponse;
 import org.baljaguk.domain.contest.dto.response.ContestListResponse;
@@ -56,21 +57,26 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestListResponse getContestsWithFilterAndSort(Long categoryId, String sortType) {
+    public ContestListResponse getContestsWithFilterAndSort(List<Long> categoryIdList, String sortType) {
 
         // 1. 전체 contest 조회
         List<Contest> contests = contestRepository.findAll();
 
-        // 2. categoryId 필터링
-        if (categoryId != null) {
-            String categoryName = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CATEGORY))
-                    .getName();  // "네이밍/슬로건" 이런 값
+        // 2. categoryId 리스트 필터링 처리
+        if (categoryIdList != null && !categoryIdList.isEmpty()) {
 
+            // categoryId -> categoryName 리스트로 변환
+            List<String> categoryNames = categoryRepository.findAllById(categoryIdList)
+                    .stream()
+                    .map(Category::getName)
+                    .toList();
+
+            // 필터링: Contest.categories 에 categoryNames 중 하나라도 포함되면 통과
             contests = contests.stream()
                     .filter(contest -> {
-                        List<String> categoryList = List.of(contest.getCategories().split(","));
-                        return categoryList.contains(categoryName);
+                        List<String> contestCategoryList = List.of(contest.getCategories().split(","));
+                        return contestCategoryList.stream()
+                                .anyMatch(categoryNames::contains);
                     })
                     .toList();
         }

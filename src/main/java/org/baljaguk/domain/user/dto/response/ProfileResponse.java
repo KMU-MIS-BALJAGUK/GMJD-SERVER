@@ -23,6 +23,7 @@ public record ProfileResponse(
 
         List<String> categoryList = user.getCategories()
                 .stream()
+                .filter(uc -> uc.getCategory() != null)
                 .map(uc -> uc.getCategory().getName())
                 .toList();
 

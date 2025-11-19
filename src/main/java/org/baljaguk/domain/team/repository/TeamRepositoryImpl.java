@@ -22,6 +22,10 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
     @Override
     public Map<Long, Long> countByContestIdsGrouped(List<Long> contestIds, TeamStatus status) {
 
+        if (contestIds == null || contestIds.isEmpty()) {
+                return Map.of();
+        }
+
         List<Tuple> results = queryFactory
                 .select(team.contest.id, team.count())
                 .from(team)

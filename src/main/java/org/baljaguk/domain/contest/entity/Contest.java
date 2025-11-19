@@ -2,11 +2,8 @@ package org.baljaguk.domain.contest.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.baljaguk.domain.category.entity.ContestCategory;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,6 +35,6 @@ public class Contest {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL)
-    private List<ContestCategory> contestCategories = new ArrayList<>();
+    @Column(name = "categories", nullable = false)
+    private String categories;
 }

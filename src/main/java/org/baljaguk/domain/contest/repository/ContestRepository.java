@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ContestRepository extends JpaRepository<Contest, Long> {
+public interface ContestRepository extends JpaRepository<Contest, Long>, ContestRepositoryCustom {
     @Query("""
         SELECT c FROM Contest c
         WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%'))

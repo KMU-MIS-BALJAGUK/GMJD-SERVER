@@ -28,6 +28,7 @@ public class Team extends BaseEntity {
     private Integer maxMember;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private TeamStatus status;
 
     @Column(name = "memo", nullable = true)

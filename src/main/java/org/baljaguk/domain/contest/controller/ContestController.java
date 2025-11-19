@@ -2,13 +2,11 @@ package org.baljaguk.domain.contest.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.contest.dto.response.ContestDetailResponse;
-import org.baljaguk.domain.contest.dto.response.ContestSearchResponse;
+import org.baljaguk.domain.contest.dto.response.ContestListResponse;
 import org.baljaguk.domain.contest.service.ContestService;
 import org.baljaguk.global.api.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/contests")
@@ -23,8 +21,18 @@ public class ContestController {
         return ResponseEntity.ok(ApiResponse.ok(detailResponse));
     }
 
-    @GetMapping("/api/contests/search")
-    public ResponseEntity<ApiResponse<List<ContestSearchResponse>>> search(@RequestParam String keyword) {
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<ContestListResponse>> search(@RequestParam String keyword) {
         return ResponseEntity.ok(ApiResponse.ok(contestService.search(keyword)));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<ContestListResponse>> getContestsWithFilterAndSort(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(defaultValue = "latest") String sortType
+    ) {
+        ContestListResponse result = contestService.getContestsWithFilterAndSort(categoryId, sortType);
+
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

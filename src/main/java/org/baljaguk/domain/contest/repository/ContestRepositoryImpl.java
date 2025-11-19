@@ -21,10 +21,12 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
 
         BooleanBuilder builder = new BooleanBuilder();
 
+        // 공모전 이름, 기업이름, 기업형태, 카테고리로 키워드 포함 여부 조회
         if (keyword != null && !keyword.isBlank()) {
             builder.or(c.name.containsIgnoreCase(keyword))
                     .or(c.organizationName.containsIgnoreCase(keyword))
-                    .or(c.companyType.containsIgnoreCase(keyword));
+                    .or(c.companyType.containsIgnoreCase(keyword))
+                    .or(c.categories.containsIgnoreCase(keyword));
         }
 
         return queryFactory

@@ -6,4 +6,9 @@ import java.util.List;
 
 public interface ContestRepositoryCustom {
     List<Contest> searchByKeyword(String keyword);
+
+    List<Contest> findContestsWithFilterAndSort(
+            List<String> categoryNames,
+            String sortType
+    );
 }

@@ -1,6 +1,7 @@
 package org.baljaguk.domain.contest.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.contest.entity.Contest;
@@ -21,12 +22,18 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        // 공모전 이름, 기업이름, 기업형태, 카테고리로 키워드 포함 여부 조회
         if (keyword != null && !keyword.isBlank()) {
-            builder.or(c.name.containsIgnoreCase(keyword))
-                    .or(c.organizationName.containsIgnoreCase(keyword))
-                    .or(c.companyType.containsIgnoreCase(keyword))
-                    .or(c.categories.containsIgnoreCase(keyword));
+
+            // QueryDSL stringTemplate 로 공백 제거한 컬럼 생성
+            var trimmedName = Expressions.stringTemplate("REPLACE({0}, ' ', '')", c.name);
+            var trimmedOrgName = Expressions.stringTemplate("REPLACE({0}, ' ', '')", c.organizationName);
+            var trimmedCompanyType = Expressions.stringTemplate("REPLACE({0}, ' ', '')", c.companyType);
+            var trimmedCategories = Expressions.stringTemplate("REPLACE({0}, ' ', '')", c.categories);
+
+            builder.or(trimmedName.lower().contains(keyword.toLowerCase()))
+                    .or(trimmedOrgName.lower().contains(keyword.toLowerCase()))
+                    .or(trimmedCompanyType.lower().contains(keyword.toLowerCase()))
+                    .or(trimmedCategories.lower().contains(keyword.toLowerCase()));
         }
 
         return queryFactory

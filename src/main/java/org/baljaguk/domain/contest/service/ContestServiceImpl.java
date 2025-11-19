@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -35,23 +36,32 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestListResponse search(SearchRequest keyword) {
-        String normalizedKeyWord = keyword.normalizedKeyword();
+    public ContestListResponse search(SearchRequest keywordRequest) {
 
-        List<Contest> contests = contestRepository.searchByKeyword(normalizedKeyWord);
+        String keyword = keywordRequest.normalizedKeyword();
 
+        // 1. 검색 결과 조회
+        List<Contest> contests = contestRepository.searchByKeyword(keyword);
+
+        if (contests.isEmpty()) {
+            return ContestListResponse.from(List.of());
+        }
+
+        // 2. contestId 리스트 추출
+        List<Long> contestIds = contests.stream()
+                .map(Contest::getId)
+                .toList();
+
+        // 3. 한 번의 쿼리로 팀 개수 조회 (N+1 제거)
+        Map<Long, Long> teamCountMap =
+                teamRepository.countByContestIdsGrouped(contestIds, TeamStatus.OPEN);
+
+        // 4. DTO 변환
         List<ContestListResponse.ContestSummaryResponse> summaryResponses =
                 contests.stream()
                         .map(contest -> {
-                            long openTeams = teamRepository.countByContestIdAndStatus(
-                                    contest.getId(),
-                                    TeamStatus.OPEN
-                            );
-
-                            return ContestListResponse.ContestSummaryResponse.of(
-                                    contest,
-                                    openTeams
-                            );
+                            long openTeams = teamCountMap.getOrDefault(contest.getId(), 0L);
+                            return ContestListResponse.ContestSummaryResponse.of(contest, openTeams);
                         })
                         .toList();
 
@@ -61,63 +71,42 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public ContestListResponse getContestsWithFilterAndSort(List<Long> categoryIdList, String sortType) {
 
-        // 1. 전체 contest 조회
-        List<Contest> contests = contestRepository.findAll();
+        // 1. categoryId → categoryName List로 변환
+        List<String> categoryNames = null;
 
-        // 2. categoryId 리스트 필터링 처리
         if (categoryIdList != null && !categoryIdList.isEmpty()) {
-
-            // categoryId -> categoryName 리스트로 변환
-            List<String> categoryNames = categoryRepository.findAllById(categoryIdList)
+            categoryNames = categoryRepository.findAllById(categoryIdList)
                     .stream()
                     .map(Category::getName)
                     .toList();
-
-            // 필터링: Contest.categories 에 categoryNames 중 하나라도 포함되면 통과
-            contests = contests.stream()
-                    .filter(contest -> {
-                        List<String> contestCategoryList = List.of(contest.getCategories().split(","));
-                        return contestCategoryList.stream()
-                                .anyMatch(categoryNames::contains);
-                    })
-                    .toList();
         }
 
-        // 3. 정렬
-        contests = switch (sortType) {
-            // 최신순
-            case "latest" -> contests.stream()
-                    .sorted(Comparator.comparing(Contest::getStartDate).reversed())
-                    .toList();
+        // 2. QueryDSL로 필터링 + 정렬까지 DB에서 처리
+        List<Contest> contests =
+                contestRepository.findContestsWithFilterAndSort(categoryNames, sortType);
 
-            // 인기순
-            case "popular" -> contests.stream()
-                    .sorted(Comparator.comparing(Contest::getViews).reversed())
-                    .toList();
+        if (contests.isEmpty()) {
+            return ContestListResponse.from(List.of());
+        }
 
-            // 마감임박순
-            case "deadline" -> contests.stream()
-                    .sorted(Comparator.comparing(Contest::getEndDate))
-                    .toList();
-
-            // 디폴트는 최신순
-            default -> contests.stream()
-                    .sorted(Comparator.comparing(Contest::getStartDate).reversed())
-                    .toList();
-        };
-
-        // 4. DTO 변환
-        List<ContestListResponse.ContestSummaryResponse> responses = contests.stream()
-                .map(contest -> {
-                    long openTeams = teamRepository.countByContestIdAndStatus(
-                            contest.getId(),
-                            TeamStatus.OPEN
-                    );
-                    return ContestListResponse.ContestSummaryResponse.of(contest, openTeams);
-                })
+        // 3. contestId 리스트 추출
+        List<Long> contestIds = contests.stream()
+                .map(Contest::getId)
                 .toList();
 
-        // 5. 최종 Response 감싸서 반환
+        // 4. 팀 카운트 일괄 조회 (N+1 제거)
+        Map<Long, Long> teamCountMap =
+                teamRepository.countByContestIdsGrouped(contestIds, TeamStatus.OPEN);
+
+        // 5. DTO 변환
+        List<ContestListResponse.ContestSummaryResponse> responses =
+                contests.stream()
+                        .map(contest -> {
+                            long openTeams = teamCountMap.getOrDefault(contest.getId(), 0L);
+                            return ContestListResponse.ContestSummaryResponse.of(contest, openTeams);
+                        })
+                        .toList();
+
         return ContestListResponse.from(responses);
     }
 }

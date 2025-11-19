@@ -1,6 +1,6 @@
 spring:
   application:
-    name: assignment
+    name: gmjd
 
   config:
     activate:
@@ -31,6 +31,10 @@ spring:
     port: ${LOCAL_MQ_PORT}
     username: ${LOCAL_MQ_PORT}
     password: ${LOCAL_MQ_PW}
+
+
+
+
 
   security:
     oauth2:
@@ -67,6 +71,17 @@ jwt:
   expire-length: 600000 # 10분
   refresh-expire-length: 3600000 # 1시간
   header: Authorization
+
+#docker 이미지로 실행
+  rabbitmq:
+    host: ${LOCAL_MQ_HOST}
+    port: ${LOCAL_MQ_PORT}
+    username: ${LOCAL_MQ_PORT}
+    password: ${LOCAL_MQ_PW}
+
+
+
+
 
 app:
   cookie:

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.baljaguk.global.entity.BaseEntity;
 
+import java.time.LocalDateTime;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,4 +24,13 @@ public class ChatMessage extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoom chatRoom;
+
+    @Column(name="user_id", nullable = false)
+    private Long userId;
+
+    @Column(name="created_at",nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name="updated_at", nullable = true)
+    private LocalDateTime updatedAt;
 }

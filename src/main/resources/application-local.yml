@@ -25,6 +25,17 @@ spring:
     resources:
       add-mappings: false
 
+#docker 이미지로 실행
+  rabbitmq:
+    host: ${LOCAL_MQ_HOST}
+    port: ${LOCAL_MQ_PORT}
+    username: ${LOCAL_MQ_PORT}
+    password: ${LOCAL_MQ_PW}
+
+
+
+
+
   security:
     oauth2:
       client:

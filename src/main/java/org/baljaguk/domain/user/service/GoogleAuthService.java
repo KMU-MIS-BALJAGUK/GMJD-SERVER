@@ -39,9 +39,10 @@ public class GoogleAuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistTokenRepository blacklistTokenRepository;
 
-    public ResponseEntity<ApiResponse<Void>> loginOrRegisterWithResponse(String code) {
-            JwtLoginResponse jwtLoginResponse = loginOrRegister(code);
-            return tokenResponseBuilder.buildLoginResponse(jwtLoginResponse);
+    public ResponseEntity<ApiResponse<Void>> loginOrRegisterWithResponse(String code,
+                                                                         HttpServletResponse response) {
+        JwtLoginResponse jwtLoginResponse = loginOrRegister(code);
+        return tokenResponseBuilder.buildLoginResponse(jwtLoginResponse, response);
     }
 
     @Transactional

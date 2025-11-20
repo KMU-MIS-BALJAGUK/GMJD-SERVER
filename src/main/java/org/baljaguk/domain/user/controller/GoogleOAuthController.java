@@ -47,12 +47,15 @@ public class GoogleOAuthController {
                 .build();
     }
 
-    @GetMapping("/oauth/google/callback")
     @Operation(summary = "구글 인증서버 토큰 검증 API",
             description = "리다이렉트에서 AccessCode를 가지고 서버로 돌아오기 위한 엔드포인트입니다\n" +
                     "해당 코드를 이용해서 사용자 정보를 파싱하고 액세스 토큰는 헤더에, 리프레시 토큰은 쿠키에 담아 반환합니다")
-    public ResponseEntity<ApiResponse<Void>> handleGoogleCallback(@RequestParam("code") String code) {
-        return googleAuthService.loginOrRegisterWithResponse(code);
+    @GetMapping("/oauth/google/callback")
+    public ResponseEntity<ApiResponse<Void>> callback(
+            @RequestParam String code,
+            HttpServletResponse response
+    ) {
+        return googleAuthService.loginOrRegisterWithResponse(code, response);
     }
 
     @Operation(summary = "로그아웃 API")

@@ -8,6 +8,7 @@ import org.baljaguk.domain.team.dto.response.TeamCreateResponse;
 import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
 import org.baljaguk.domain.team.service.TeamService;
 import org.baljaguk.global.common.ApiResponse;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,7 @@ public class TeamController {
     @GetMapping("/teams/{teamId}/apply-status")
     public ApiResponse<TeamApplyStatusResponse> getApplyStatus(
             @PathVariable Long teamId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal Long userId
     ) {
         TeamApplyStatusResponse response = teamService.getApplyStatus(teamId, userId);
         return ApiResponse.success(response);
@@ -31,7 +32,7 @@ public class TeamController {
     @GetMapping("/teams/{teamId}")
     public ApiResponse<TeamDetailResponse> getTeamDetail(
             @PathVariable Long teamId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal Long userId
     ) {
         TeamDetailResponse response = teamService.getTeamDetail(teamId, userId);
         return ApiResponse.success(response);
@@ -41,8 +42,8 @@ public class TeamController {
     @PostMapping("/contests/{contestId}/teams")
     public ApiResponse<TeamCreateResponse> createTeam(
             @PathVariable Long contestId,
-            @RequestParam Long userId,
-            @RequestBody TeamCreateRequest request
+            @RequestBody TeamCreateRequest request,
+            @AuthenticationPrincipal Long userId
     ) {
         TeamCreateResponse response = teamService.createTeam(contestId, userId, request);
         return ApiResponse.success(response);
@@ -52,21 +53,10 @@ public class TeamController {
     @PatchMapping("/teams/{teamId}")
     public ApiResponse<Void> updateTeam(
             @PathVariable Long teamId,
-            @RequestParam Long userId,
-            @RequestBody TeamUpdateRequest request
+            @RequestBody TeamUpdateRequest request,
+            @AuthenticationPrincipal Long userId
     ) {
         teamService.updateTeam(teamId, userId, request);
-        return ApiResponse.success(null);
-    }
-
-    // 팀원 내보내기
-    @PostMapping("/teams/{teamId}/kick")
-    public ApiResponse<Void> kickMember(
-            @PathVariable Long teamId,
-            @RequestParam Long userId,
-            @RequestParam Long targetUserId
-    ) {
-        teamService.kickMember(teamId, userId, targetUserId);
         return ApiResponse.success(null);
     }
 }

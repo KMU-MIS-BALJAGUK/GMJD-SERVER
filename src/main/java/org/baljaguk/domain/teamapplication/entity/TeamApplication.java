@@ -1,8 +1,7 @@
 package org.baljaguk.domain.teamapplication.entity;
 
 import java.time.LocalDateTime;
-import jakarta.persistence.*; // (Spring Boot 3.x 이상 기준)
-// import javax.persistence.*; // (Spring Boot 2.x 기준)
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,31 +12,47 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "team_application") // DB 스키마의 테이블 이름
+@Table(name = "team_application")
 public class TeamApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 스키마의 id (PK)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
-    private Team team; // 스키마의 team_id (FK)
+    private Team team;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 스키마의 user_id (FK)
+    private User user;
 
-    @Column(length = 255) // 스키마의 comment
+    @Column(length = 255)
     private String comment;
 
-    @Column(name = "selected_skills") // 스키마의 selected_skills
-    private String selectedSkills; // (JSON/Tag를 String으로 처리)
+    @Column(name = "selected_skills")
+    private String selectedSkills;
 
-    @Column(length = 50, nullable = false) // 스키마의 status
-    private String status; // (e.g. "대기중", "수락", "거절")
+    @Column(length = 50, nullable = false)
+    private String status;
 
     @CreationTimestamp
     @Column(name = "applied_at", nullable = false, updatable = false)
-    private LocalDateTime appliedAt; // 스키마의 applied_at
+    private LocalDateTime appliedAt;
+
+
+    public static TeamApplication create(
+            Team team,
+            User user,
+            String comment,
+            String selectedSkills
+    ) {
+        TeamApplication application = new TeamApplication();
+        application.team = team;
+        application.user = user;
+        application.comment = comment;
+        application.selectedSkills = selectedSkills;
+        application.status = "대기중";
+        return application;
+    }
 }

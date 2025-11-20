@@ -98,7 +98,8 @@ public class SecurityConfig {
                         "/swagger-ui.html",
                         "/swagger-resources/**",
                         "/webjars/**",
-                        "/access"
+                        "/access",
+                        "/favicon.ico"
                 ).permitAll()
                 .anyRequest().authenticated()
         );

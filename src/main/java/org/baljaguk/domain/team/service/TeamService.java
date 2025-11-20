@@ -1,20 +1,4 @@
 package org.baljaguk.domain.team.service;
 
-import org.baljaguk.domain.team.dto.request.TeamCreateRequest;
-import org.baljaguk.domain.team.dto.request.TeamUpdateRequest;
-import org.baljaguk.domain.team.dto.response.TeamApplyStatusResponse;
-import org.baljaguk.domain.team.dto.response.TeamCreateResponse;
-import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
-
 public interface TeamService {
-
-    TeamApplyStatusResponse getApplyStatus(Long teamId, Long userId);
-
-    TeamDetailResponse getTeamDetail(Long teamId, Long userId);
-
-    TeamCreateResponse createTeam(Long contestId, Long leaderId, TeamCreateRequest request);
-
-    void updateTeam(Long teamId, Long leaderId, TeamUpdateRequest request);
-
-    void kickMember(Long teamId, Long leaderId, Long targetUserId);
 }

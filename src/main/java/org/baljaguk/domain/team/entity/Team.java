@@ -45,43 +45,5 @@ public class Team {
     @Column(nullable = false, length = 20)
     private TeamStatus status;
 
-    @Builder
-    public Team(Contest contest,
-                User teamLeader,
-                String title,
-                String introduction,
-                Integer maxMember,
-                TeamStatus status) {
-
-        this.contest = contest;
-        this.teamLeader = teamLeader;
-        this.title = title;
-        this.introduction = introduction;
-        this.maxMember = maxMember;
-        this.status = status;
-    }
-
-
-
-    public void updateTitle(String title) {
-        this.title = title;
-    }
-
-    public void updateIntroduction(String introduction) {
-        this.introduction = introduction;
-    }
-
-    public void updateMaxMember(Integer maxMember) {
-        this.maxMember = maxMember;
-    }
-
-    public void updateStatus(TeamStatus status) {
-        this.status = status;
-    }
-
-
-    public boolean isRecruiting() {
-
-        return this.status == TeamStatus.OPEN;
-    }
+    private
 }

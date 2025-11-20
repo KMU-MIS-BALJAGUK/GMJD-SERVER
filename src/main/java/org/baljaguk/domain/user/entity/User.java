@@ -2,10 +2,12 @@ package org.baljaguk.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.baljaguk.domain.category.entity.UserCategory;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
 import org.baljaguk.domain.user.entity.enums.Education;
 import org.baljaguk.domain.user.entity.enums.RecognizedDegree;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity

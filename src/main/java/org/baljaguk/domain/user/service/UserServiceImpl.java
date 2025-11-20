@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
             userCategoryRepository.saveAll(newUserCategories);
         }
     }
-}
+
     public ProfileResponse getMyProfile(Long userId) {
 
         User user = userRepository.findUserWithCategories(userId)

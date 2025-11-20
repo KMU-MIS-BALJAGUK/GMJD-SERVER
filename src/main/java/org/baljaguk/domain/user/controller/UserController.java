@@ -75,7 +75,6 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.ok("관심 분야가 수정되었습니다."));
     }
-}
 
     @GetMapping("/my-profile")
     @Operation(summary = "유저 마이프로필 조회",

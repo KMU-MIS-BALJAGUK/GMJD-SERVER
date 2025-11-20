@@ -60,7 +60,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.ok("학력 정보가 수정되었습니다."));
     }
 
-    @PatchMapping("/interests")
+    @PatchMapping("/categories")
     @Operation(summary = "관심 분야(Category) 수정 API",
             description = "로그인한 사용자의 관심 분야를 수정합니다.\n" +
                     "카테고리 ID 리스트(예: `[1, 3, 5]`)를 보내면 기존 관심사는 삭제되고 새로 저장됩니다.\n" +

@@ -1,7 +1,7 @@
 package org.baljaguk.domain.user.dto.request;
 
-import java.util.List;
+import java.util.Set;
 
 public record CategoryUpdateRequest(
-        List<Long> categoryIds
+        Set<Long> categoryIds
 ) {}

@@ -109,6 +109,8 @@ public class SecurityConfig {
 
         http.logout(AbstractHttpConfigurer::disable);
 
+        http.addFilterBefore(new CorsLoggingFilter(), UsernamePasswordAuthenticationFilter.class);
+
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

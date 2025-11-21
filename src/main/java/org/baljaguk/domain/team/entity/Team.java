@@ -4,44 +4,44 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.user.entity.User;
-import org.baljaguk.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Builder
-@Table(name = "teams")
-public class Team extends BaseEntity {
+@Table(name = "team")
+public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false)
+    // 팀 제목
+    @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(name = "introduction", nullable = false)
+    // 팀 소개 / 메모
+    @Column(columnDefinition = "TEXT")
     private String introduction;
 
-    @Column(name = "max_member", nullable = false)
+    // 최대 인원
+    @Column(nullable = false)
     private Integer maxMember;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private TeamStatus status;
 
-    @Column(name = "memo", nullable = true)
+    @Column(nullable = true)
     private String memo;
 
-    @Column(name = "question", nullable = false)
-    private String question;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_leader_id", nullable = false)
-    private User teamLeader;
-
+    // 어떤 공모전의 팀인지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contest_id", nullable = false)
     private Contest contest;
+
+    // 팀장
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_leader_id", nullable = false)
+    private User teamLeader;
 }

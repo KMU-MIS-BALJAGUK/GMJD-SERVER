@@ -1,0 +1,31 @@
+package org.baljaguk.global.config;
+
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Getter
+@Component
+@RequiredArgsConstructor
+public class CookieConfig {
+
+    @PostConstruct
+    public void logConfig() {
+        System.out.println("=== CookieConfig Loaded ===");
+        System.out.println("domain = [" + domain + "]");
+        System.out.println("sameSite = [" + sameSite + "]");
+        System.out.println("secure = " + secure);
+    }
+
+    @Value("${app.cookie.domain:}")
+    private String domain;
+
+    @Value("${app.cookie.secure}")
+    private boolean secure;
+
+    @Value("${app.cookie.same-site}")
+    private String sameSite;
+
+}

@@ -1,16 +1,16 @@
 package org.baljaguk.domain.contest.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.baljaguk.domain.category.entity.ContestCategory;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 @Table(name = "contests")
@@ -26,9 +26,6 @@ public class Contest {
     @Column(name = "site_url", nullable = false)
     private String siteUrl;
 
-    @Column(name = "category", nullable = false)
-    private String category;
-
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
@@ -40,4 +37,25 @@ public class Contest {
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
+
+    @Column(name = "categories", nullable = false)
+    private String categories; // 공모분야
+
+    @Column(name = "benefits", nullable = false)
+    private String benefits; // 활동 혜택
+
+    @Column(name = "award_scale", nullable = false)
+    private String awardScale; // 시상규모
+
+    @Column(name = "company_type", nullable = false)
+    private String companyType; // 기업형태
+
+    @Column(name = "target_participants", nullable = false)
+    private String targetParticipants; // 참여대상
+
+    @Column(name = "additional_benefits", nullable = false)
+    private String additionalBenefits; // 추가혜택
+
+    @Column(name = "views", nullable = false)
+    private Long views; // 조회수
 }

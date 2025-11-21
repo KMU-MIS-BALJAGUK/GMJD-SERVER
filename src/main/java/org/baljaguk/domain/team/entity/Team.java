@@ -1,15 +1,14 @@
 package org.baljaguk.domain.team.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.user.entity.User;
 
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Table(name = "team")
 public class Team {
 
@@ -29,9 +28,8 @@ public class Team {
     @Column(nullable = false)
     private Integer maxMember;
 
-    // 팀 모집 상태
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
     private TeamStatus status;
 
     @Column(nullable = true)

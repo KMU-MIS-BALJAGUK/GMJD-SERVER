@@ -19,10 +19,28 @@ public enum ErrorCode {
 
 
     /**
+     * 401 UNAUTHORIZED
+     */
+    // 인증관련
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 40100, "유효하지 않은 엑세스 토큰입니다."),
+
+
+    /**
      * 404 NOT_FOUND
      */
     NOT_FOUND_URL(HttpStatus.NOT_FOUND, 40400, "지원하지 않는 URL입니다."),
 
+    // 구글 엑세스 토큰 관련
+    NOT_FOUND_GOOGLE_ACCESS_TOKEN_RESPONSE(HttpStatus.BAD_REQUEST, 40401, "구글 액세스 토큰 응답을 찾을 수 없습니다."),
+
+    // 유저 관련
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, 40402, "존재하지 않는 사용자입니다."),
+
+    // 카테고리 관련
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 40403, "카테고리를 찾을 수 없습니다."),
+
+    // 공모전 관련
+    NOT_FOUND_CONTEST(HttpStatus.NOT_FOUND, 40404, "공모전을 찾을 수 없습니다."),
 
     /**
      * 405 METHOD_NOT_ALLOWED

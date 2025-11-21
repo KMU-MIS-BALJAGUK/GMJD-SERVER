@@ -2,36 +2,39 @@ package org.baljaguk.domain.team.dto.response;
 
 import java.util.List;
 
-public record MyTeamListResponse(
-        List<MyTeamInfoResponse> teams
+public record MyRecruitListResponse(
+        List<MyRecruitInfoResponse> recruitList
 ) {
-    public static MyTeamListResponse of(List<MyTeamInfoResponse> teams) {
-        return new MyTeamListResponse(teams);
+    public static MyRecruitListResponse of(List<MyRecruitInfoResponse> recruitList) {
+        return new MyRecruitListResponse(recruitList);
     }
 
-    public static record MyTeamInfoResponse(
+    public record MyRecruitInfoResponse(
             Long teamId,
             String contestImageUrl,
             String contestName,
             String contestOrganizationName,
             Long memberCount,
-            String type
+            Long requestedCount,    // TeamApply 중 REQUESTED 상태 개수
+            String status           // team.status.displayName
     ) {
-        public static MyTeamInfoResponse of(
+        public static MyRecruitInfoResponse of(
                 Long teamId,
                 String contestImageUrl,
                 String contestName,
                 String contestOrganizationName,
                 Long memberCount,
-                String type
+                Long requestedCount,
+                String status
         ) {
-            return new MyTeamInfoResponse(
+            return new MyRecruitInfoResponse(
                     teamId,
                     contestImageUrl,
                     contestName,
                     contestOrganizationName,
                     memberCount,
-                    type
+                    requestedCount,
+                    status
             );
         }
     }

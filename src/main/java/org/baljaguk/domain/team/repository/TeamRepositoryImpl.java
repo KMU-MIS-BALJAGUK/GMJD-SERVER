@@ -3,11 +3,10 @@ package org.baljaguk.domain.team.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.baljaguk.domain.team.entity.QTeam;
-import org.baljaguk.domain.team.entity.QTeamMember;
-import org.baljaguk.domain.team.entity.Team;
-import org.baljaguk.domain.team.entity.TeamStatus;
+import org.baljaguk.domain.team.dto.response.MyRecruitListResponse;
+import org.baljaguk.domain.team.entity.*;
 import org.springframework.stereotype.Repository;
+import org.baljaguk.domain.team.entity.RegisterStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -62,4 +61,6 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
                 )
                 .fetch();
     }
+
+
 }

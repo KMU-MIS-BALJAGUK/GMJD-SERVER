@@ -316,6 +316,7 @@ public class TeamServiceImpl implements TeamService {
                     Long memberCount = teamMemberRepository.countByTeam(team);
 
                     return MyApplyListResponse.MyApplyInfoResponse.of(
+                            team.getId(),
                             contest.getImageUrl(),
                             contest.getName(),
                             team.getTitle(),

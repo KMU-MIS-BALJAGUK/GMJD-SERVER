@@ -14,6 +14,7 @@ public record MyRecruitListResponse(
             String contestImageUrl,
             String contestName,
             String contestOrganizationName,
+            Integer maxMember,
             Long memberCount,
             Long requestedCount,    // TeamApply 중 REQUESTED 상태 개수
             String status           // team.status.displayName
@@ -23,6 +24,7 @@ public record MyRecruitListResponse(
                 String contestImageUrl,
                 String contestName,
                 String contestOrganizationName,
+                Integer maxMember,
                 Long memberCount,
                 Long requestedCount,
                 String status
@@ -32,6 +34,7 @@ public record MyRecruitListResponse(
                     contestImageUrl,
                     contestName,
                     contestOrganizationName,
+                    maxMember,
                     memberCount,
                     requestedCount,
                     status

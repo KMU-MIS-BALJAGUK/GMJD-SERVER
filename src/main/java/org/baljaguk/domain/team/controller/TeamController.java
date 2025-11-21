@@ -81,4 +81,13 @@ public class TeamController {
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
+    @GetMapping("/my-applies")
+    public ResponseEntity<ApiResponse<MyApplyListResponse>> getMyApplyList(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        MyApplyListResponse response = teamService.getMyApplyList(userDetails.getUserId());
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
 }

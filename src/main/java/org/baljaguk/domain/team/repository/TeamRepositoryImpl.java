@@ -3,6 +3,7 @@ package org.baljaguk.domain.team.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.contest.entity.QContest;
 import org.baljaguk.domain.team.dto.response.MyRecruitListResponse;
 import org.baljaguk.domain.team.entity.*;
 import org.springframework.stereotype.Repository;
@@ -48,19 +49,20 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
 
     @Override
     public List<Team> findClosedTeamsByUserId(Long userId) {
+
         QTeam team = QTeam.team;
         QTeamMember teamMember = QTeamMember.teamMember;
+        QContest contest = QContest.contest;
 
         return queryFactory
                 .select(team)
                 .from(teamMember)
                 .join(teamMember.team, team)
+                .join(team.contest, contest).fetchJoin() // ⭐ Contest fetch join
                 .where(
                         teamMember.member.id.eq(userId),
                         team.status.eq(TeamStatus.CLOSED)
                 )
                 .fetch();
     }
-
-
 }

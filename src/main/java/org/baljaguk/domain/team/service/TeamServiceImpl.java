@@ -6,14 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
+import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.AIQuestionJsonResponse;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
 import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
-import org.baljaguk.domain.team.entity.Question;
-import org.baljaguk.domain.team.entity.Team;
-import org.baljaguk.domain.team.entity.TeamStatus;
+import org.baljaguk.domain.team.entity.*;
 import org.baljaguk.domain.team.repository.QuestionRepository;
+import org.baljaguk.domain.team.repository.TeamApplyRepository;
 import org.baljaguk.domain.team.repository.TeamMemberRepository;
 import org.baljaguk.domain.team.repository.TeamRepository;
 import org.baljaguk.domain.user.entity.User;
@@ -39,6 +39,7 @@ public class TeamServiceImpl implements TeamService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TeamApplyRepository teamApplyRepository;
 
     private final GptClient gptClient;
 
@@ -80,6 +81,17 @@ public class TeamServiceImpl implements TeamService {
         // 2. 공모전 조회
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CONTEST));
+
+        // 동일 유저가 동일 공모전에 OPEN 상태의 팀이 이미 존재하는지 확인
+        boolean existsOpenTeam = teamRepository.existsByContestAndTeamLeaderAndStatus(
+                contest,
+                user,
+                TeamStatus.OPEN
+        );
+
+        if (existsOpenTeam) {
+            throw new GeneralException(ErrorCode.CONTEST_ALREADY_HAS_OPEN_TEAM);
+        }
 
         // 3. 팀 엔티티 생성
         Team team = Team.create(
@@ -162,5 +174,61 @@ public class TeamServiceImpl implements TeamService {
                 team.getIntroduction(),
                 questionList
         );
+    }
+
+    @Override
+    @Transactional
+    public void applyTeam(Long userId, Long teamId, TeamApplyRequest request) {
+
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+
+        // 팀 조회
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        // 본인이 팀 리더일 때 신청 금지
+        if (team.getTeamLeader().getId().equals(userId)) {
+            throw new GeneralException(ErrorCode.CANNOT_APPLY_OWN_TEAM);
+        }
+
+        // 이미 해당 팀에 신청했는지 확인 (팀 단위 중복 신청 방지)
+        boolean exists = teamApplyRepository.existsByUserAndTeam(user, team);
+        if (exists) {
+            throw new GeneralException(ErrorCode.ALREADY_APPLIED_TEAM);
+        }
+
+        // 동일 공모전에 이미 신청중인 상태인지 확인 (동일 공모전 단위 중복 신청 방지)
+        boolean hasRequestedApply = teamApplyRepository.existsByUserAndTeamContestAndStatus(
+                user,
+                team.getContest(),
+                RegisterStatus.REQUESTED
+        );
+
+        if (hasRequestedApply) {
+            throw new GeneralException(ErrorCode.ALREADY_REQUESTED_IN_CONTEST);
+        }
+
+        // 동일 공모전에 이미 팀원으로 소속되어 있는지 확인
+        boolean isAlreadyMember = teamMemberRepository.existsByMemberAndTeamContest(
+                user,
+                team.getContest()
+        );
+
+        if (isAlreadyMember) {
+            throw new GeneralException(ErrorCode.ALREADY_JOINED_IN_CONTEST);
+        }
+
+        // TeamApply 생성
+        TeamApply apply = TeamApply.create(
+                user,
+                team,
+                request.answer(),
+                request.skills()
+        );
+
+        // save
+        teamApplyRepository.save(apply);
     }
 }

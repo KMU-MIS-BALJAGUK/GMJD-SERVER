@@ -2,6 +2,7 @@ package org.baljaguk.domain.team.service;
 
 import jakarta.validation.Valid;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
+import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
 import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
@@ -14,4 +15,6 @@ public interface TeamService {
     ContestTeamListResponse getTeamList(Long contestId);
 
     TeamDetailResponse getTeamDetail(Long teamId);
+
+    void applyTeam(Long userId, Long teamId, TeamApplyRequest request);
 }

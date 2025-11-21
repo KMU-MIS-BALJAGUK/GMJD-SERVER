@@ -12,11 +12,18 @@ public enum ErrorCode {
     REQUEST_HEADER_EMPTY(HttpStatus.BAD_REQUEST, 40000, "요청 헤더가 누락되었습니다."),
 
     // 입력값 검증 예외
-    NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, 40008, "유효하지 않은 입력값입니다."),
+    NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, 40001, "유효하지 않은 입력값입니다."),
 
     // 클라이언트가 JSON body를 잘못 보냈을 때
-    REQUEST_BODY_NOT_READABLE(HttpStatus.BAD_REQUEST, 40016, "요청 데이터 타입이 일치하지 않습니다."),
+    REQUEST_BODY_NOT_READABLE(HttpStatus.BAD_REQUEST, 40002, "요청 데이터 타입이 일치하지 않습니다."),
 
+    // 신청관련
+    CANNOT_APPLY_OWN_TEAM(HttpStatus.BAD_REQUEST, 40003, "본인이 만든 팀에는 신청할 수 없습니다."),
+    ALREADY_REQUESTED_IN_CONTEST(HttpStatus.BAD_REQUEST, 40004, "해당 공모전에 대한 팀 신청은 동시에 1개만 가능합니다."),
+    ALREADY_JOINED_IN_CONTEST(HttpStatus.BAD_REQUEST, 40005, "이미 해당 공모전의 팀에 소속되어 있습니다."),
+
+    // 팀 관련
+    CONTEST_ALREADY_HAS_OPEN_TEAM(HttpStatus.BAD_REQUEST, 40006, "해당 공모전에 이미 모집 중인 팀이 존재합니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -49,6 +56,13 @@ public enum ErrorCode {
      * 405 METHOD_NOT_ALLOWED
      */
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, 40500, "잘못된 HTTP method 요청입니다."),
+
+
+    /**
+     * 409 Conflict
+     */
+    ALREADY_APPLIED_TEAM(HttpStatus.CONFLICT, 40900, "이미 신청한 팀입니다."),
+
 
     /**
      * 429 Too_Many_Requests

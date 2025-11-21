@@ -3,6 +3,7 @@ package org.baljaguk.domain.team.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
+import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
 import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
@@ -52,5 +53,15 @@ public class TeamController {
     ) {
         TeamDetailResponse response = teamService.getTeamDetail(teamId);
         return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @PostMapping("/apply/{teamId}")
+    public ResponseEntity<ApiResponse<Void>> applyTeam(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId,
+            @RequestBody TeamApplyRequest request
+    ) {
+        teamService.applyTeam(userDetails.getUserId(), teamId, request);
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

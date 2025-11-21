@@ -11,6 +11,7 @@ import org.baljaguk.domain.team.entity.RegisterStatus;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.baljaguk.domain.team.entity.QTeam.team;
@@ -58,11 +59,26 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
                 .select(team)
                 .from(teamMember)
                 .join(teamMember.team, team)
-                .join(team.contest, contest).fetchJoin() // ⭐ Contest fetch join
+                .join(team.contest, contest).fetchJoin()
                 .where(
                         teamMember.member.id.eq(userId),
                         team.status.eq(TeamStatus.CLOSED)
                 )
                 .fetch();
+    }
+
+    @Override
+    public Optional<Team> findTeamWithContestByTeamId(Long teamId) {
+        QTeam team = QTeam.team;
+        QContest contest = QContest.contest;
+
+        Team result = queryFactory
+                .select(team)
+                .from(team)
+                .join(team.contest, contest).fetchJoin()
+                .where(team.id.eq(teamId))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 }

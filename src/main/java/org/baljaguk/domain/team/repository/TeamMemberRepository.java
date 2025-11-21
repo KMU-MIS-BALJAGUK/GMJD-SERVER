@@ -6,9 +6,13 @@ import org.baljaguk.domain.team.entity.TeamMember;
 import org.baljaguk.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
+import java.util.Optional;
+
+public interface TeamMemberRepository extends JpaRepository<TeamMember, Long>, TeamMemberRepositoryCustom {
 
     Long countByTeam(Team team);
 
     boolean existsByMemberAndTeamContest(User user, Contest contest);
+
+    Optional<TeamMember> findByTeamAndMember(Team team, User member);
 }

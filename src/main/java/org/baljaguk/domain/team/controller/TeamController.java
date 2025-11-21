@@ -90,4 +90,14 @@ public class TeamController {
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
+    @GetMapping("/my-teams/{teamId}")
+    public ResponseEntity<ApiResponse<MyTeamDetailResponse>> getMyTeamDetail(
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        MyTeamDetailResponse response = teamService.getMyTeamDetail(userDetails.getUserId(), teamId);
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
 }

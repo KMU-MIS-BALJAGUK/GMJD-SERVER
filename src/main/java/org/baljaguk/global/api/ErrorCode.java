@@ -56,7 +56,10 @@ public enum ErrorCode {
      * 500 INTERNAL_SERVER_ERROR
      */
     // DB 제약조건 위반 에러
-    DB_CONSTRAINT_VIOLATION(HttpStatus.INTERNAL_SERVER_ERROR, 50018, "DB 제약조건 문제 발생, 서버 개발자에게 문의해주세요"),;
+    DB_CONSTRAINT_VIOLATION(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "DB 제약조건 문제 발생, 서버 개발자에게 문의해주세요"),
+
+    // OpenAI 관련
+    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다."),;
 
 
     private final HttpStatus status;

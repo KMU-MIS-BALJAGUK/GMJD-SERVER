@@ -264,8 +264,8 @@ public class TeamServiceImpl implements TeamService {
     @Transactional(readOnly = true)
     public MyRecruitListResponse getMyRecruitList(Long userId) {
 
-        // 1) 팀장 기준으로 팀 조회
-        List<Team> myTeams = teamRepository.findByTeamLeaderId(userId);
+        // 1) 팀장 기준으로 팀 + 공모전 Fetch Join 조회
+        List<Team> myTeams = teamRepository.findAllWithContestByTeamLeaderId(userId);
 
         List<MyRecruitListResponse.MyRecruitInfoResponse> result = myTeams.stream()
                 .map(team -> {

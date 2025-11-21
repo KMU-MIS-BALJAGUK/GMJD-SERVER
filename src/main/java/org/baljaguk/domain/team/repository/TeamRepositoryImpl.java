@@ -4,6 +4,8 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.team.entity.QTeam;
+import org.baljaguk.domain.team.entity.QTeamMember;
+import org.baljaguk.domain.team.entity.Team;
 import org.baljaguk.domain.team.entity.TeamStatus;
 import org.springframework.stereotype.Repository;
 
@@ -43,5 +45,21 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
                         tuple -> tuple.get(team.count())
                 )
         );
+    }
+
+    @Override
+    public List<Team> findClosedTeamsByUserId(Long userId) {
+        QTeam team = QTeam.team;
+        QTeamMember teamMember = QTeamMember.teamMember;
+
+        return queryFactory
+                .select(team)
+                .from(teamMember)
+                .join(teamMember.team, team)
+                .where(
+                        teamMember.member.id.eq(userId),
+                        team.status.eq(TeamStatus.CLOSED)
+                )
+                .fetch();
     }
 }

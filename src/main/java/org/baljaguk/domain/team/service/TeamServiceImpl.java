@@ -7,10 +7,7 @@ import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
-import org.baljaguk.domain.team.dto.response.AIQuestionJsonResponse;
-import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
-import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
-import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
+import org.baljaguk.domain.team.dto.response.*;
 import org.baljaguk.domain.team.entity.*;
 import org.baljaguk.domain.team.repository.QuestionRepository;
 import org.baljaguk.domain.team.repository.TeamApplyRepository;
@@ -230,5 +227,34 @@ public class TeamServiceImpl implements TeamService {
 
         // save
         teamApplyRepository.save(apply);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyTeamListResponse getMyTeamList(Long userId) {
+
+        // 1) 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+
+        // 2) QueryDSL로 CLOSED 팀 조회
+        List<Team> closedTeams = teamRepository.findClosedTeamsByUserId(userId);
+
+        // 3) 응답 변환
+        List<MyTeamListResponse.MyTeamInfoResponse> responseList = closedTeams.stream()
+                .map(team -> {
+                    Long memberCount = teamMemberRepository.countByTeam(team);
+
+                    return MyTeamListResponse.MyTeamInfoResponse.of(
+                            team.getContest().getImageUrl(),
+                            team.getContest().getName(),
+                            team.getContest().getOrganizationName(),
+                            memberCount,
+                            team.getStatus().getDisplayName()
+                    );
+                })
+                .toList();
+
+        return MyTeamListResponse.of(responseList);
     }
 }

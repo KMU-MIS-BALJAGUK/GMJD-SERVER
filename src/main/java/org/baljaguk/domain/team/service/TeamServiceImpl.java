@@ -329,4 +329,47 @@ public class TeamServiceImpl implements TeamService {
 
         return MyApplyListResponse.of(responseList);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyTeamDetailResponse getMyTeamDetail(Long userId, Long teamId) {
+
+        // 팀 & 공모전 fetch join 조회 (N+1 방지)
+        Team team = teamRepository.findTeamWithContestByTeamId(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+
+        // 해당 팀에 userId가 속하는지 확인 + 내 팀원 타입 조회
+        TeamMember myTeamMember = teamMemberRepository.findByTeamAndMember(team, user)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_MY_TEAM));
+
+        String myType = myTeamMember.getType().getDisplayName();
+
+        // 팀 전체 멤버 + User 페치조인 (N+1 방지)
+        List<TeamMember> teamMembers = teamMemberRepository.findAllWithUserByTeamId(teamId);
+
+        Long memberCount = (long) teamMembers.size();
+
+        // DTO 변환 - 팀원 리스트
+        List<MyTeamDetailResponse.MemberInfo> members = teamMembers.stream()
+                .map(tm -> MyTeamDetailResponse.MemberInfo.of(
+                        tm.getId(),
+                        tm.getMember().getProfileImageUrl(),
+                        tm.getMember().getName(),
+                        tm.getType().getDisplayName()
+                ))
+                .toList();
+
+        // 최종 응답 DTO 생성
+        return MyTeamDetailResponse.of(
+                team.getTitle(),
+                team.getContest().getName(),
+                team.getContest().getOrganizationName(),
+                memberCount,
+                myType,
+                members
+        );
+    }
 }

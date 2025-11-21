@@ -2,12 +2,14 @@ package org.baljaguk.domain.team.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.response.AIQuestionJsonResponse;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
+import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
 import org.baljaguk.domain.team.entity.Question;
 import org.baljaguk.domain.team.entity.Team;
 import org.baljaguk.domain.team.entity.TeamStatus;
@@ -23,8 +25,10 @@ import org.baljaguk.global.util.PromptUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -126,5 +130,37 @@ public class TeamServiceImpl implements TeamService {
 
         // 4. 응답 DTO 반환
         return ContestTeamListResponse.of(teamInfoList);
+    }
+
+    @Override
+    public TeamDetailResponse getTeamDetail(Long teamId) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        Long memberCount = teamMemberRepository.countByTeam(team);
+
+        List<String> questionList = questionRepository.findByTeam(team)
+                .stream()
+                .map(Question::getContent)
+                .toList();
+
+        String createdAtFormatted = team.getCreatedAt()
+                .toLocalDate()
+                .format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+
+        String contestEndDateFormatted = team.getContest().getEndDate()
+                .format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+
+        return TeamDetailResponse.of(
+                team.getTitle(),
+                team.getTeamLeader().getName(),
+                createdAtFormatted,
+                memberCount,
+                team.getMaxMember(),
+                contestEndDateFormatted,
+                team.getIntroduction(),
+                questionList
+        );
     }
 }

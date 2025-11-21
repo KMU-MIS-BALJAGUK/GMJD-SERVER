@@ -19,7 +19,7 @@ public class Question {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team", nullable = false)
+    @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
     //정팩메

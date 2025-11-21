@@ -42,6 +42,9 @@ public enum ErrorCode {
     // 공모전 관련
     NOT_FOUND_CONTEST(HttpStatus.NOT_FOUND, 40404, "공모전을 찾을 수 없습니다."),
 
+    // 팀관련
+    NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 40405, "팀을 찾을 수 없습니다."),
+
     /**
      * 405 METHOD_NOT_ALLOWED
      */

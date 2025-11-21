@@ -1,14 +1,15 @@
 package org.baljaguk.domain.team.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.service.TeamService;
+import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.global.api.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +24,17 @@ public class TeamController {
     ) {
         AIRecommendQuestionsResponse response = teamService.getAIRecommendQuestions(contestId);
         return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @PostMapping("/{contestId}")
+    public ResponseEntity<ApiResponse<Void>> createTeam(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long contestId,
+            @RequestBody @Valid CreateTeamRequest request
+    ) {
+        Long userId = userDetails.getUserId();
+
+        teamService.createTeam(userId, contestId, request);
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

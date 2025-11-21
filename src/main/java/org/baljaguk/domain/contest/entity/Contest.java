@@ -2,11 +2,8 @@ package org.baljaguk.domain.contest.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.baljaguk.domain.category.entity.ContestCategory;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

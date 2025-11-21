@@ -3,10 +3,7 @@ package org.baljaguk.domain.team.service;
 import jakarta.validation.Valid;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
-import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
-import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
-import org.baljaguk.domain.team.dto.response.MyTeamListResponse;
-import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
+import org.baljaguk.domain.team.dto.response.*;
 
 public interface TeamService {
     AIRecommendQuestionsResponse getAIRecommendQuestions(Long contestId);
@@ -20,4 +17,6 @@ public interface TeamService {
     void applyTeam(Long userId, Long teamId, TeamApplyRequest request);
 
     MyTeamListResponse getMyTeamList(Long userId);
+
+    MyRecruitListResponse getMyRecruitList(Long userId);
 }

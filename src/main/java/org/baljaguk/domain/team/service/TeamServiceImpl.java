@@ -246,6 +246,7 @@ public class TeamServiceImpl implements TeamService {
                     Long memberCount = teamMemberRepository.countByTeam(team);
 
                     return MyTeamListResponse.MyTeamInfoResponse.of(
+                            team.getId(),
                             team.getContest().getImageUrl(),
                             team.getContest().getName(),
                             team.getContest().getOrganizationName(),
@@ -256,5 +257,38 @@ public class TeamServiceImpl implements TeamService {
                 .toList();
 
         return MyTeamListResponse.of(responseList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyRecruitListResponse getMyRecruitList(Long userId) {
+
+        // 1) 팀장 기준으로 팀 조회
+        List<Team> myTeams = teamRepository.findByTeamLeaderId(userId);
+
+        List<MyRecruitListResponse.MyRecruitInfoResponse> result = myTeams.stream()
+                .map(team -> {
+
+                    // 2) 팀 멤버 수
+                    Long memberCount = teamMemberRepository.countByTeam(team);
+
+                    // 3) 팀 신청자 중 REQUESTED 상태 수 (QueryDSL)
+                    Long requestedApplyCount =
+                            teamApplyRepository.countRequestedApplyByTeamId(team.getId());
+
+                    // 4) DTO 조립
+                    return MyRecruitListResponse.MyRecruitInfoResponse.of(
+                            team.getId(),
+                            team.getContest().getImageUrl(),
+                            team.getContest().getName(),
+                            team.getContest().getOrganizationName(),
+                            memberCount,
+                            requestedApplyCount,
+                            team.getStatus().getDisplayName()
+                            );
+                })
+                .toList();
+
+        return MyRecruitListResponse.of(result);
     }
 }

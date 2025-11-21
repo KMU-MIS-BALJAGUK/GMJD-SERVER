@@ -7,7 +7,7 @@ import org.baljaguk.domain.team.entity.TeamApply;
 import org.baljaguk.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TeamApplyRepository extends JpaRepository<TeamApply, Long> {
+public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, TeamApplyRepositoryCustom {
     boolean existsByUserAndTeam(User user, Team team);
 
     boolean existsByUserAndTeamContestAndStatus(User user, Contest contest, RegisterStatus status);

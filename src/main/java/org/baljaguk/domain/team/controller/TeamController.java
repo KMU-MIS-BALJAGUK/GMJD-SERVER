@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
-import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
-import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
-import org.baljaguk.domain.team.dto.response.MyTeamListResponse;
-import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
+import org.baljaguk.domain.team.dto.response.*;
 import org.baljaguk.domain.team.service.TeamService;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.global.api.ApiResponse;
@@ -72,6 +69,15 @@ public class TeamController {
     ) {
 
         MyTeamListResponse response = teamService.getMyTeamList(userDetails.getUserId());
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/my-recruit")
+    public ResponseEntity<ApiResponse<MyRecruitListResponse>> getMyRecruitList(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        MyRecruitListResponse response = teamService.getMyRecruitList(userDetails.getUserId());
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

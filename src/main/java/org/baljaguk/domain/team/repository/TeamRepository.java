@@ -16,4 +16,6 @@ public interface TeamRepository extends JpaRepository<Team, Long>, TeamRepositor
             User teamLeader,
             TeamStatus status
     );
+
+    List<Team> findByTeamLeaderId(Long teamLeaderId);
 }

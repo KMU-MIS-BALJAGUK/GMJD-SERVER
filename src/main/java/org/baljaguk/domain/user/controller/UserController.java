@@ -10,6 +10,7 @@ import org.baljaguk.domain.user.dto.request.EducationUpdateRequest;
 import org.baljaguk.domain.user.dto.request.SkillUpdateRequest;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
 import org.baljaguk.domain.user.dto.response.ProfileResponse;
+import org.baljaguk.domain.user.dto.response.UserSkillsResponse;
 import org.baljaguk.domain.user.service.UserService;
 import org.baljaguk.global.api.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -83,5 +84,11 @@ public class UserController {
         ProfileResponse result = userService.getMyProfile(userDetails.getUser().getId());
 
         return ResponseEntity.ok(ApiResponse.ok(result));
+    }
+
+    @GetMapping("/skills")
+    public ResponseEntity<ApiResponse<UserSkillsResponse>> getMySkills(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        UserSkillsResponse response = userService.getMySkills(userDetails.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

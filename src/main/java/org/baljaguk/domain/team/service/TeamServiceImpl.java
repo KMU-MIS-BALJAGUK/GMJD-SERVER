@@ -250,6 +250,7 @@ public class TeamServiceImpl implements TeamService {
                             team.getContest().getImageUrl(),
                             team.getContest().getName(),
                             team.getContest().getOrganizationName(),
+                            team.getMaxMember(),
                             memberCount,
                             team.getStatus().getDisplayName()
                     );
@@ -282,6 +283,7 @@ public class TeamServiceImpl implements TeamService {
                             team.getContest().getImageUrl(),
                             team.getContest().getName(),
                             team.getContest().getOrganizationName(),
+                            team.getMaxMember(),
                             memberCount,
                             requestedApplyCount,
                             team.getStatus().getDisplayName()
@@ -290,5 +292,40 @@ public class TeamServiceImpl implements TeamService {
                 .toList();
 
         return MyRecruitListResponse.of(result);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyApplyListResponse getMyApplyList(Long userId) {
+
+        // 1) 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+
+        // 2) fetch join으로 팀/공모전까지 한 번에 조회
+        List<TeamApply> applies = teamApplyRepository.findAllWithTeamAndContestByUser(user);
+
+        // 3) 응답 변환
+        List<MyApplyListResponse.MyApplyInfoResponse> responseList = applies.stream()
+                .map(apply -> {
+
+                    Team team = apply.getTeam();
+                    Contest contest = team.getContest();
+
+                    // 팀 멤버 수 조회 (이건 count 쿼리 1개)
+                    Long memberCount = teamMemberRepository.countByTeam(team);
+
+                    return MyApplyListResponse.MyApplyInfoResponse.of(
+                            contest.getImageUrl(),
+                            contest.getName(),
+                            team.getTitle(),
+                            team.getMaxMember(),
+                            memberCount,
+                            team.getStatus().getDisplayName()
+                    );
+                })
+                .toList();
+
+        return MyApplyListResponse.of(responseList);
     }
 }

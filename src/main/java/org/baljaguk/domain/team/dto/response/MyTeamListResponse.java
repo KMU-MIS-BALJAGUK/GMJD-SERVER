@@ -14,6 +14,7 @@ public record MyTeamListResponse(
             String contestImageUrl,
             String contestName,
             String contestOrganizationName,
+            Integer maxMember,
             Long memberCount,
             String type
     ) {
@@ -22,6 +23,7 @@ public record MyTeamListResponse(
                 String contestImageUrl,
                 String contestName,
                 String contestOrganizationName,
+                Integer maxMember,
                 Long memberCount,
                 String type
         ) {
@@ -30,6 +32,7 @@ public record MyTeamListResponse(
                     contestImageUrl,
                     contestName,
                     contestOrganizationName,
+                    maxMember,
                     memberCount,
                     type
             );

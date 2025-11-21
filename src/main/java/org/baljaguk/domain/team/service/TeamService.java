@@ -19,4 +19,6 @@ public interface TeamService {
     MyTeamListResponse getMyTeamList(Long userId);
 
     MyRecruitListResponse getMyRecruitList(Long userId);
+
+    MyApplyListResponse getMyApplyList(Long userId);
 }

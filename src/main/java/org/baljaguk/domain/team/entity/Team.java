@@ -2,7 +2,6 @@ package org.baljaguk.domain.team.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.baljaguk.domain.contest.entity.Contest;
@@ -17,16 +16,6 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    // 어떤 공모전의 팀인지
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contest_id", nullable = false)
-    private Contest contest;
-
-    // 팀장
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_leader_id", nullable = false)
-    private User teamLeader;
 
     // 팀 제목
     @Column(nullable = false, length = 100)
@@ -45,5 +34,16 @@ public class Team {
     @Column(nullable = false, length = 20)
     private TeamStatus status;
 
-    private
+    @Column(nullable = true)
+    private String memo;
+
+    // 어떤 공모전의 팀인지
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contest_id", nullable = false)
+    private Contest contest;
+
+    // 팀장
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_leader_id", nullable = false)
+    private User teamLeader;
 }

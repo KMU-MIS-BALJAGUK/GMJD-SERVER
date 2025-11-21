@@ -2,8 +2,11 @@ package org.baljaguk.domain.team.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.contest.service.ContestService;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
+import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
+import org.baljaguk.domain.team.entity.Team;
 import org.baljaguk.domain.team.service.TeamService;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.global.api.ApiResponse;
@@ -36,5 +39,11 @@ public class TeamController {
 
         teamService.createTeam(userId, contestId, request);
         return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @GetMapping("/{contestId}")
+    public ResponseEntity<ApiResponse<ContestTeamListResponse>> getTeamList(@PathVariable Long contestId) {
+        ContestTeamListResponse response = teamService.getTeamList(contestId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

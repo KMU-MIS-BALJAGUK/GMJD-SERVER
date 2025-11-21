@@ -7,9 +7,12 @@ import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.response.AIQuestionJsonResponse;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
+import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
 import org.baljaguk.domain.team.entity.Question;
 import org.baljaguk.domain.team.entity.Team;
+import org.baljaguk.domain.team.entity.TeamStatus;
 import org.baljaguk.domain.team.repository.QuestionRepository;
+import org.baljaguk.domain.team.repository.TeamMemberRepository;
 import org.baljaguk.domain.team.repository.TeamRepository;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
@@ -31,6 +34,7 @@ public class TeamServiceImpl implements TeamService {
     private final ContestRepository contestRepository;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     private final GptClient gptClient;
 
@@ -93,5 +97,34 @@ public class TeamServiceImpl implements TeamService {
 
             questionRepository.saveAll(questionEntities);
         }
+    }
+
+    @Override
+    public ContestTeamListResponse getTeamList(Long contestId) {
+
+        // 1. Contest 존재 여부 검증
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CONTEST));
+
+        // 2. 해당 Contest의 OPEN 상태 팀 목록 조회
+        List<Team> teams = teamRepository.findByContestAndStatus(contest, TeamStatus.OPEN);
+
+        // 3. 팀별 현재 멤버 수 조회 후 DTO 변환
+        List<ContestTeamListResponse.TeamInfo> teamInfoList = teams.stream()
+                .map(team -> {
+                    Long memberCount = teamMemberRepository.countByTeam(team);
+
+                    return ContestTeamListResponse.TeamInfo.of(
+                            team.getId(),
+                            team.getTitle(),
+                            team.getMaxMember(),
+                            memberCount,
+                            team.getStatus().name()
+                    );
+                })
+                .toList();
+
+        // 4. 응답 DTO 반환
+        return ContestTeamListResponse.of(teamInfoList);
     }
 }

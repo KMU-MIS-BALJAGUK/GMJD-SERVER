@@ -7,6 +7,8 @@ import org.baljaguk.domain.team.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,6 +24,6 @@ public class TeamServiceImpl implements TeamService {
 
 
 
-        return AIRecommendQuestionsResponse.of();
+        return AIRecommendQuestionsResponse.of(new ArrayList<>());
     }
 }

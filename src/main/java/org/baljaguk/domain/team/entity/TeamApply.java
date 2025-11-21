@@ -1,8 +1,8 @@
-package org.baljaguk.domain.user.entity;
+package org.baljaguk.domain.team.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.baljaguk.domain.team.entity.Team;
+import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.entity.enums.RegisterStatus;
 
 @Entity
@@ -10,8 +10,8 @@ import org.baljaguk.domain.user.entity.enums.RegisterStatus;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
-@Table(name = "user_team")
-class UserTeam {
+@Table(name = "team_apply")
+class TeamApply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

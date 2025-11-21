@@ -44,4 +44,21 @@ public class Team {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_leader_id", nullable = false)
     private User teamLeader;
+
+    // 정팩메
+    public static Team create(String title,
+                              String introduction,
+                              Integer maxMember,
+                              Contest contest,
+                              User teamLeader) {
+
+        Team team = new Team();
+        team.title = title;
+        team.introduction = introduction;
+        team.maxMember = maxMember;
+        team.status = TeamStatus.OPEN; // 기본값
+        team.contest = contest;
+        team.teamLeader = teamLeader;
+        return team;
+    }
 }

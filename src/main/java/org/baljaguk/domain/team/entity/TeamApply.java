@@ -3,7 +3,6 @@ package org.baljaguk.domain.team.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.baljaguk.domain.user.entity.User;
-import org.baljaguk.domain.user.entity.enums.RegisterStatus;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -11,14 +10,18 @@ import org.baljaguk.domain.user.entity.enums.RegisterStatus;
 @Getter
 @Builder
 @Table(name = "team_apply")
-class TeamApply {
+public class TeamApply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private RegisterStatus status;
+
+    @Column(name = "skills", nullable = true)
+    private String skills; // 스킬셋은 ,로 나누어 저장
 
     @Column(name = "answer", nullable = false)
     private String answer;
@@ -30,4 +33,19 @@ class TeamApply {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
+    // 정팩메
+    public static TeamApply create(User user,
+                                   Team team,
+                                   String answer,
+                                   String skills) {
+
+        return TeamApply.builder()
+                .status(RegisterStatus.REQUESTED) // 신청은 기본 REQUESTED
+                .answer(answer)
+                .skills(skills)                   // "Java,SpringBoot" 형식
+                .user(user)
+                .team(team)
+                .build();
+    }
 }

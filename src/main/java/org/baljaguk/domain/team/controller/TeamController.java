@@ -2,11 +2,10 @@ package org.baljaguk.domain.team.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.baljaguk.domain.contest.service.ContestService;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
-import org.baljaguk.domain.team.entity.Team;
+import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
 import org.baljaguk.domain.team.service.TeamService;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.global.api.ApiResponse;
@@ -44,6 +43,14 @@ public class TeamController {
     @GetMapping("/{contestId}")
     public ResponseEntity<ApiResponse<ContestTeamListResponse>> getTeamList(@PathVariable Long contestId) {
         ContestTeamListResponse response = teamService.getTeamList(contestId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/{teamId}/detail")
+    public ResponseEntity<ApiResponse<TeamDetailResponse>> getTeamDetail(
+            @PathVariable Long teamId
+    ) {
+        TeamDetailResponse response = teamService.getTeamDetail(teamId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

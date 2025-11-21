@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.user.entity.User;
+import org.baljaguk.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "team")
-public class Team {
+public class Team extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

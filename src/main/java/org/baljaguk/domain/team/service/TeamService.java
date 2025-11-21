@@ -5,6 +5,7 @@ import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
+import org.baljaguk.domain.team.dto.response.MyTeamListResponse;
 import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
 
 public interface TeamService {
@@ -17,4 +18,6 @@ public interface TeamService {
     TeamDetailResponse getTeamDetail(Long teamId);
 
     void applyTeam(Long userId, Long teamId, TeamApplyRequest request);
+
+    MyTeamListResponse getMyTeamList(Long userId);
 }

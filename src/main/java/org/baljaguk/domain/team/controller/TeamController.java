@@ -6,6 +6,7 @@ import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.AIRecommendQuestionsResponse;
 import org.baljaguk.domain.team.dto.response.ContestTeamListResponse;
+import org.baljaguk.domain.team.dto.response.MyTeamListResponse;
 import org.baljaguk.domain.team.dto.response.TeamDetailResponse;
 import org.baljaguk.domain.team.service.TeamService;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
@@ -63,5 +64,15 @@ public class TeamController {
     ) {
         teamService.applyTeam(userDetails.getUserId(), teamId, request);
         return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @GetMapping("/my-teams")
+    public ResponseEntity<ApiResponse<MyTeamListResponse>> getMyTeamList(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        MyTeamListResponse response = teamService.getMyTeamList(userDetails.getUserId());
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }

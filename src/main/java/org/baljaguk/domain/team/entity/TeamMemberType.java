@@ -3,14 +3,13 @@ package org.baljaguk.domain.team.entity;
 import lombok.Getter;
 
 @Getter
-public enum TeamStatus {
-    OPEN("모집중"),
-    CLOSED("모집완료"),
-    EXPIRED("만료됨");;
+public enum TeamMemberType {
+    MEMBER("팀원"),
+    LEADER("팀장");
 
     private final String displayName;
 
-    TeamStatus(String displayName) {
+    TeamMemberType(String displayName) {
         this.displayName = displayName;
     }
 }

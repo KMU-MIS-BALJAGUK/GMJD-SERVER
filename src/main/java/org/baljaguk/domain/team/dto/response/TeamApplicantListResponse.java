@@ -13,11 +13,12 @@ public record TeamApplicantListResponse(
 
     // 지원자 1명 정보
     public record ApplicantInfo(
+            Long userId,
             String profileImageUrl,
             String name
     ) {
-        public static ApplicantInfo of(String profileImageUrl, String name) {
-            return new ApplicantInfo(profileImageUrl, name);
+        public static ApplicantInfo of(Long userId, String profileImageUrl, String name) {
+            return new ApplicantInfo(userId, profileImageUrl, name);
         }
     }
 }

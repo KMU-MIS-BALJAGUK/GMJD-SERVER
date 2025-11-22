@@ -9,10 +9,7 @@ import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.*;
 import org.baljaguk.domain.team.entity.*;
-import org.baljaguk.domain.team.repository.QuestionRepository;
-import org.baljaguk.domain.team.repository.TeamApplyRepository;
-import org.baljaguk.domain.team.repository.TeamMemberRepository;
-import org.baljaguk.domain.team.repository.TeamRepository;
+import org.baljaguk.domain.team.repository.*;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
@@ -37,6 +34,7 @@ public class TeamServiceImpl implements TeamService {
     private final QuestionRepository questionRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamApplyRepository teamApplyRepository;
+    private final AnswerRepository answerRepository;
 
     private final GptClient gptClient;
 
@@ -217,16 +215,29 @@ public class TeamServiceImpl implements TeamService {
             throw new GeneralException(ErrorCode.ALREADY_JOINED_IN_CONTEST);
         }
 
-        // TeamApply 생성
-        TeamApply apply = TeamApply.create(
-                user,
-                team,
-                request.answer(),
-                request.skills()
-        );
+        // skills 저장 형태: "Java,SpringBoot,React"
+        String skillsStr = String.join(",", request.skills());
 
-        // save
+        // 1) TeamApply 생성
+        TeamApply apply = TeamApply.create(user, team, skillsStr);
         teamApplyRepository.save(apply);
+
+        // 2) teamId로 question 조회
+        List<Question> questions = questionRepository.findByTeam(team);
+
+        if (questions.size() != request.answer().size()) {
+            throw new GeneralException(ErrorCode.INVALID_ANSWER_COUNT);
+        }
+
+        // 3) Answer 테이블에 질문 개수만큼 저장
+        for (int i = 0; i < questions.size(); i++) {
+            Answer answer = Answer.create(
+                    request.answer().get(i),
+                    apply,
+                    questions.get(i)
+            );
+            answerRepository.save(answer);
+        }
     }
 
     @Override
@@ -371,5 +382,33 @@ public class TeamServiceImpl implements TeamService {
                 myType,
                 members
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TeamApplicantListResponse getTeamApplicants(Long teamId, Long userId) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        if (!team.getTeamLeader().getId().equals(userId)) {
+            throw new GeneralException(
+                    ErrorCode.NO_AUTHORITY
+            );
+        }
+
+        List<TeamApply> applies = teamApplyRepository.findByTeamIdWithUser(teamId);
+
+        List<TeamApplicantListResponse.ApplicantInfo> applicants = applies.stream()
+                .map(apply ->
+                        TeamApplicantListResponse.ApplicantInfo.of(
+                                apply.getUser().getId(),
+                                apply.getUser().getProfileImageUrl(),
+                                apply.getUser().getName()
+                        )
+                )
+                .toList();
+
+        return TeamApplicantListResponse.of(teamId, applicants);
     }
 }

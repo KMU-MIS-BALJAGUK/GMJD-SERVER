@@ -100,4 +100,14 @@ public class TeamController {
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
+    @GetMapping("/my-recruit/{teamId}")
+    public ResponseEntity<ApiResponse<TeamApplicantListResponse>> getTeamApplicants(
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        TeamApplicantListResponse response = teamService.getTeamApplicants(teamId, userDetails.getUserId());
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
 }

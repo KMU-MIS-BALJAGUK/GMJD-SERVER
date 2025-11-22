@@ -4,7 +4,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.team.entity.QTeamApply;
 import org.baljaguk.domain.team.entity.RegisterStatus;
+import org.baljaguk.domain.team.entity.TeamApply;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+import static org.baljaguk.domain.team.entity.QTeamApply.teamApply;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,15 +19,23 @@ public class TeamApplyRepositoryImpl implements TeamApplyRepositoryCustom {
 
     @Override
     public Long countRequestedApplyByTeamId(Long teamId) {
-        QTeamApply ta = QTeamApply.teamApply;
 
         return queryFactory
-                .select(ta.id.count())
-                .from(ta)
+                .select(teamApply.id.count())
+                .from(teamApply)
                 .where(
-                        ta.team.id.eq(teamId),
-                        ta.status.eq(RegisterStatus.REQUESTED)
+                        teamApply.team.id.eq(teamId),
+                        teamApply.status.eq(RegisterStatus.REQUESTED)
                 )
                 .fetchOne();
+    }
+
+    @Override
+    public List<TeamApply> findByTeamIdWithUser(Long teamId) {
+        return queryFactory
+                .selectFrom(teamApply)
+                .join(teamApply.user).fetchJoin()
+                .where(teamApply.team.id.eq(teamId))
+                .fetch();
     }
 }

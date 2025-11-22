@@ -31,6 +31,9 @@ public enum ErrorCode {
     // 인증관련
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 40100, "유효하지 않은 엑세스 토큰입니다."),
 
+    // 팀관련
+    NO_AUTHORITY(HttpStatus.UNAUTHORIZED, 40101, "팀의 리더만이 지원자를 조회할 수 있습니다."),
+
 
     /**
      * 404 NOT_FOUND
@@ -78,7 +81,10 @@ public enum ErrorCode {
     DB_CONSTRAINT_VIOLATION(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "DB 제약조건 문제 발생, 서버 개발자에게 문의해주세요"),
 
     // OpenAI 관련
-    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다."),;
+    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다."),
+
+    // 팀 관련
+    INVALID_ANSWER_COUNT(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "질문과 답변의 개수가 다릅니다."),;
 
 
     private final HttpStatus status;

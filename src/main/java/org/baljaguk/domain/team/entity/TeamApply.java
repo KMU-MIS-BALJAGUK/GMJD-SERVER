@@ -23,9 +23,6 @@ public class TeamApply {
     @Column(name = "skills", nullable = true)
     private String skills; // 스킬셋은 ,로 나누어 저장
 
-    @Column(name = "answer", nullable = false)
-    private String answer;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -37,12 +34,10 @@ public class TeamApply {
     // 정팩메
     public static TeamApply create(User user,
                                    Team team,
-                                   String answer,
                                    String skills) {
 
         return TeamApply.builder()
                 .status(RegisterStatus.REQUESTED) // 신청은 기본 REQUESTED
-                .answer(answer)
                 .skills(skills)                   // "Java,SpringBoot" 형식
                 .user(user)
                 .team(team)

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.baljaguk.domain.team.entity.Team;
 
-import java.util.List;
-
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)

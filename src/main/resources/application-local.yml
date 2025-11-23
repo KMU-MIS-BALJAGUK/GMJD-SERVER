@@ -50,15 +50,34 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+
+#docker 이미지로 실행
+  rabbitmq:
+    host: ${LOCAL_MQ_HOST}
+    port: ${LOCAL_MQ_AMQP_PORT}
+    username: ${LOCAL_MQ_USER}
+    password: ${LOCAL_MQ_PW}
+
   stomp:
     relay-port: ${LOCAL_MQ_STOMP_PORT}
 
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
-  expire-length: 3600000 # 1시간
-  refresh-expire-length: 1209600000 # 14일
+  expire-length: 600000 # 10분
+  refresh-expire-length: 3600000 # 1시간
   header: Authorization
+
+#docker 이미지로 실행
+  rabbitmq:
+    host: ${LOCAL_MQ_HOST}
+    port: ${LOCAL_MQ_PORT}
+    username: ${LOCAL_MQ_PORT}
+    password: ${LOCAL_MQ_PW}
+
+
+
+
 
 app:
   cookie:

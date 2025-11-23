@@ -55,6 +55,8 @@ public enum ErrorCode {
     // 팀관련
     NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 40405, "팀을 찾을 수 없습니다."),
     NOT_MY_TEAM(HttpStatus.NOT_FOUND, 40406, "내가 속한 팀이 아닙니다."),
+    NOT_TEAM_LEADER(HttpStatus.NOT_FOUND, 40407, "팀 리더를 찾을 수 없습니다."),
+    APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, 40408, "신청을 찾을 수 없습니다."),
 
 
     /**

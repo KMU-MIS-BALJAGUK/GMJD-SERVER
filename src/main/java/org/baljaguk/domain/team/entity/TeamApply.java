@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.baljaguk.domain.user.entity.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,6 +33,9 @@ public class TeamApply {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
+    @OneToMany(mappedBy = "teamApply", fetch = FetchType.LAZY)
+    private List<Answer> answer = new ArrayList<>();
 
     // 정팩메
     public static TeamApply create(User user,

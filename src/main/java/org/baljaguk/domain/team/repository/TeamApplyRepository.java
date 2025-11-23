@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, TeamApplyRepositoryCustom {
     boolean existsByUserAndTeam(User user, Team team);
@@ -25,4 +26,18 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
     where ta.user = :user
 """)
     List<TeamApply> findAllWithTeamAndContestByUser(@Param("user") User user);
+
+    @Query("""
+    select distinct ta
+    from TeamApply ta
+    join fetch ta.user u
+    left join fetch ta.answer ans
+    left join fetch ans.question q
+    where ta.team.id = :teamId
+      and ta.user.id = :applicantUserId
+""")
+    Optional<TeamApply> findApplyDetail(
+            @Param("teamId") Long teamId,
+            @Param("applicantUserId") Long applicantUserId
+    );
 }

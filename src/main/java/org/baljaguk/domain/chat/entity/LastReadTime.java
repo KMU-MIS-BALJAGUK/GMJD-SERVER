@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="last_read_time")
 public class LastReadTime {
 

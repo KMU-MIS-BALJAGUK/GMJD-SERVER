@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    //application.yaml 파일에서 load
+    //yaml 파일에서 load
     @Value("${spring.rabbitmq.host}")
     private String host;
 

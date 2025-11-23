@@ -25,4 +25,6 @@ public interface TeamService {
     MyTeamDetailResponse getMyTeamDetail(Long userId, Long teamId);
 
     TeamApplicantListResponse getTeamApplicants(Long teamId, Long userId);
+
+    ApplicantDetailResponse getApplicantDetail(Long teamId, Long applicantUserId, Long userId);
 }

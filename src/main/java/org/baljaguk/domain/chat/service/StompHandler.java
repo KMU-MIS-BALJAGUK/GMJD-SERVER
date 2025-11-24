@@ -1,5 +1,6 @@
 package org.baljaguk.domain.chat.service;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class StompHandler implements ChannelInterceptor {
     private static final Pattern ROOM_ID_PATTERN = Pattern.compile("/topic/chat\\.room\\.(\\d+)");
 
     private final JWTUtil jwtUtil;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * 클라이언트로부터 메시지가 송신되기 전에 가로채서 처리
@@ -113,9 +115,16 @@ public class StompHandler implements ChannelInterceptor {
                     sessionAttributes.put(ROOM_ID_KEY, roomId);
                     log.info("STOMP SUBSCRIBE: RoomId={} extracted and saved to session attributes. Session ID: {}", roomId, accessor.getSessionId());
 
+                    // 클라이언트에게 구독 성공 메시지 전송
+                    Map<String, String> confirmationMessage = new java.util.HashMap<>();
+                    confirmationMessage.put("type", "SYSTEM");
+                    confirmationMessage.put("message", "Successfully subscribed to chat room: " + roomId);
+                    messagingTemplate.convertAndSend("/topic/chat.room." + roomId, confirmationMessage);
+                    log.info("Sent subscription confirmation to /topic/chat.room.{}", roomId);
+
                 } catch (NumberFormatException e) {
                     log.error("Failed to parse roomId from destination: {}", destination, e);
-                }
+                } 
             } else {
                 log.debug("STOMP SUBSCRIBE: Destination does not match chat room pattern. Destination: {}", destination);
             }

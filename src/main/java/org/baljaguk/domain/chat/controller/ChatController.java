@@ -46,6 +46,8 @@ public class ChatController {
                 .createdAt(LocalDateTime.now())
                 .build();
 
+        log.info("Attempting to send message to RabbitMQ persistence queue. RoomId: {}, UserId: {}, Message: {}",
+                roomId, user.getId(), message.getMessage());
         // Queue로 message publishing (AMPQ)
         rabbitTemplate.convertAndSend(
                 RabbitMqConfig.PERSISTENCE_QUEUE_NAME,

@@ -18,6 +18,7 @@ public class ChatListener {
     @RabbitListener(queues = RabbitMqConfig.PERSISTENCE_QUEUE_NAME)
     public void handleChatMessage(ChatMessageDto chatMessageDto) {
         try {
+            log.info("AMQP Consumed - Received message from queue: {}", chatMessageDto);
             log.info("AMQP Consumed - Saving message to DB: {}", chatMessageDto.getMessage());
 
             chatPersistenceService.saveMessage(chatMessageDto);

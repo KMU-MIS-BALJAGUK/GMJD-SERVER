@@ -21,6 +21,8 @@ public enum ErrorCode {
     CANNOT_APPLY_OWN_TEAM(HttpStatus.BAD_REQUEST, 40003, "본인이 만든 팀에는 신청할 수 없습니다."),
     ALREADY_REQUESTED_IN_CONTEST(HttpStatus.BAD_REQUEST, 40004, "해당 공모전에 대한 팀 신청은 동시에 1개만 가능합니다."),
     ALREADY_JOINED_IN_CONTEST(HttpStatus.BAD_REQUEST, 40005, "이미 해당 공모전의 팀에 소속되어 있습니다."),
+    APPLY_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, 40006, "이미 처리된 지원입니다."),
+    TEAM_MEMBER_FULL(HttpStatus.BAD_REQUEST, 40007, "팀 정원이 모두 찼습니다."),
 
     // 팀 관련
     CONTEST_ALREADY_HAS_OPEN_TEAM(HttpStatus.BAD_REQUEST, 40006, "해당 공모전에 이미 모집 중인 팀이 존재합니다."),

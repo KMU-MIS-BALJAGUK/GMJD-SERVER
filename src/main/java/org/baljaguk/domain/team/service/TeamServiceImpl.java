@@ -456,4 +456,64 @@ public class TeamServiceImpl implements TeamService {
                 qaList
         );
     }
+
+    @Override
+    @Transactional
+    public void approveApplicant(Long teamId, Long applicantUserId, Long leaderId) {
+
+        // 1) 팀 조회 + 팀장 검증
+        Team team = teamRepository.findTeamWithLeaderById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        if (!team.getTeamLeader().getId().equals(leaderId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+        // 2) 지원 데이터 조회 (TeamApply + User fetch join)
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
+
+        // 이미 처리된 신청은 재승인 불가
+        if (apply.getStatus() != RegisterStatus.REQUESTED) {
+            throw new GeneralException(ErrorCode.APPLY_ALREADY_PROCESSED);
+        }
+
+        // 3) 팀 인원 초과 체크
+        Long memberCount = teamMemberRepository.countByTeam(team);
+        if (memberCount >= team.getMaxMember()) {
+            throw new GeneralException(ErrorCode.TEAM_MEMBER_FULL);
+        }
+
+        // 4) 승인 처리
+        apply.setStatus(RegisterStatus.ACCEPTED);
+
+        // 5) 팀 멤버 추가
+        TeamMember member = TeamMember.create(TeamMemberType.MEMBER, team, apply.getUser());
+        teamMemberRepository.save(member);
+    }
+
+
+    @Override
+    @Transactional
+    public void rejectApplicant(Long teamId, Long applicantUserId, Long leaderId) {
+
+        // 1) 팀 조회 + 팀장 검증
+        Team team = teamRepository.findTeamWithLeaderById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        if (!team.getTeamLeader().getId().equals(leaderId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+        // 2) 지원 데이터 조회
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
+
+        if (apply.getStatus() != RegisterStatus.REQUESTED) {
+            throw new GeneralException(ErrorCode.APPLY_ALREADY_PROCESSED);
+        }
+
+        // 3) 거절 처리
+        apply.setStatus(RegisterStatus.REJECTED);
+    }
 }

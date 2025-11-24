@@ -167,4 +167,29 @@ public class TeamController {
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
+    @PostMapping("/my-recruit/{teamId}/applicant/{applicantUserId}/approve")
+    @Operation(summary = "지원자 승인 API",
+            description = "팀장이 지원자의 팀 신청을 승인합니다. 승인 시 팀멤버로 추가되고, 신청 상태는 APPROVED로 변경됩니다.")
+    public ResponseEntity<ApiResponse<Void>> approveApplicant(
+            @PathVariable Long teamId,
+            @PathVariable Long applicantUserId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        teamService.approveApplicant(teamId, applicantUserId, userDetails.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+
+    @PostMapping("/my-recruit/{teamId}/applicant/{applicantUserId}/reject")
+    @Operation(summary = "지원자 거절 API",
+            description = "팀장이 지원자의 팀 신청을 거절합니다. 신청 상태는 REJECTED로 변경되며 팀멤버로 추가되지 않습니다.")
+    public ResponseEntity<ApiResponse<Void>> rejectApplicant(
+            @PathVariable Long teamId,
+            @PathVariable Long applicantUserId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        teamService.rejectApplicant(teamId, applicantUserId, userDetails.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }

@@ -3,12 +3,15 @@ package org.baljaguk.domain.team.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.baljaguk.domain.team.entity.QTeam;
-import org.baljaguk.domain.team.entity.TeamStatus;
+import org.baljaguk.domain.contest.entity.QContest;
+import org.baljaguk.domain.team.dto.response.MyRecruitListResponse;
+import org.baljaguk.domain.team.entity.*;
 import org.springframework.stereotype.Repository;
+import org.baljaguk.domain.team.entity.RegisterStatus;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.baljaguk.domain.team.entity.QTeam.team;
@@ -43,5 +46,39 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
                         tuple -> tuple.get(team.count())
                 )
         );
+    }
+
+    @Override
+    public List<Team> findClosedTeamsByUserId(Long userId) {
+
+        QTeam team = QTeam.team;
+        QTeamMember teamMember = QTeamMember.teamMember;
+        QContest contest = QContest.contest;
+
+        return queryFactory
+                .select(team)
+                .from(teamMember)
+                .join(teamMember.team, team)
+                .join(team.contest, contest).fetchJoin()
+                .where(
+                        teamMember.member.id.eq(userId),
+                        team.status.eq(TeamStatus.CLOSED)
+                )
+                .fetch();
+    }
+
+    @Override
+    public Optional<Team> findTeamWithContestByTeamId(Long teamId) {
+        QTeam team = QTeam.team;
+        QContest contest = QContest.contest;
+
+        Team result = queryFactory
+                .select(team)
+                .from(team)
+                .join(team.contest, contest).fetchJoin()
+                .where(team.id.eq(teamId))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 }

@@ -1,4 +1,4 @@
-package org.baljaguk.domain.user.entity.enums;
+package org.baljaguk.domain.team.entity;
 
 public enum RegisterStatus {
     REQUESTED,   // 신청됨 (대기 중)

@@ -39,9 +39,10 @@ public class GoogleAuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistTokenRepository blacklistTokenRepository;
 
-    public ResponseEntity<ApiResponse<Void>> loginOrRegisterWithResponse(String code) {
-            JwtLoginResponse jwtLoginResponse = loginOrRegister(code);
-            return tokenResponseBuilder.buildLoginResponse(jwtLoginResponse);
+    public ResponseEntity<ApiResponse<Void>> loginOrRegisterWithResponse(String code,
+                                                                         HttpServletResponse response) {
+        JwtLoginResponse jwtLoginResponse = loginOrRegister(code);
+        return tokenResponseBuilder.buildLoginResponse(jwtLoginResponse, response);
     }
 
     @Transactional
@@ -52,6 +53,7 @@ public class GoogleAuthService {
 
         // 2. DB에 유저 존재 여부 확인
         User user;
+
         Optional<User> optionalUser = userRepository.findByEmail(profile.email());
 
         if (optionalUser.isPresent()) {
@@ -63,11 +65,11 @@ public class GoogleAuthService {
         }
 
         // 3. JWT 토큰 생성
-        String serverAccessToken = jwtUtil.generateAccessToken(user.getId());
+        String serverAccessToken = jwtUtil.generateAccessToken(user.getId(), user.isRegistered());
         String serverRefreshToken = jwtUtil.generateRefreshToken(user.getId());
-        log.info("🔑 JWT 발급 완료 - userId: {}", user.getId());
+        log.info("🔑 JWT 발급 완료 - userId: {}, isRegistered: {}", user.getId(), user.isRegistered());
 
-        return JwtLoginResponse.of(user, serverAccessToken, serverRefreshToken);
+        return JwtLoginResponse.of(user, serverAccessToken, serverRefreshToken, user.isRegistered());
     }
 
     /**

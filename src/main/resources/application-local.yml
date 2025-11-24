@@ -67,6 +67,10 @@ jwt:
 
 app:
   cookie:
-    domain: ""
-    same-site: Lax
-    secure: false
+    domain: ".gmjd.site"
+    same-site: None
+    secure: true
+
+openai:
+  secret-key: ${OPENAI_API_KEY}
+  model: "gpt-5-nano"

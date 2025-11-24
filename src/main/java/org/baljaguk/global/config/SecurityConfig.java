@@ -98,7 +98,8 @@ public class SecurityConfig {
                         "/swagger-ui.html",
                         "/swagger-resources/**",
                         "/webjars/**",
-                        "/access"
+                        "/access",
+                        "/favicon.ico"
                 ).permitAll()
                 .anyRequest().authenticated()
         );
@@ -108,6 +109,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.logout(AbstractHttpConfigurer::disable);
+
+        http.addFilterBefore(new CorsLoggingFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

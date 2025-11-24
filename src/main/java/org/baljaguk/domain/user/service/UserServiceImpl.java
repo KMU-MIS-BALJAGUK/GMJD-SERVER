@@ -7,8 +7,10 @@ import org.baljaguk.domain.category.repository.CategoryRepository;
 import org.baljaguk.domain.category.repository.UserCategoryRepository;
 import org.baljaguk.domain.user.dto.request.EducationUpdateRequest;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
-import org.baljaguk.domain.user.dto.request.SkillUpdateRequest; //추가됨
-import org.baljaguk.domain.user.dto.request.CategoryUpdateRequest; // 추가됨
+import org.baljaguk.domain.user.dto.request.SkillUpdateRequest;
+import org.baljaguk.domain.user.dto.request.CategoryUpdateRequest;
+import org.baljaguk.domain.user.dto.response.ProfileResponse;
+import org.baljaguk.domain.user.dto.response.UserSkillsResponse;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
@@ -91,5 +93,22 @@ public class UserServiceImpl implements UserService {
 
             userCategoryRepository.saveAll(newUserCategories);
         }
+    }
+
+    public ProfileResponse getMyProfile(Long userId) {
+
+        User user = userRepository.findUserWithCategories(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+        return ProfileResponse.of(user);
+    }
+
+    @Override
+    public UserSkillsResponse getMySkills(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserException(ErrorCode.NOT_FOUND_USER)
+        );
+
+        return UserSkillsResponse.from(user.getSkills());
     }
 }

@@ -12,17 +12,39 @@ public enum ErrorCode {
     REQUEST_HEADER_EMPTY(HttpStatus.BAD_REQUEST, 40000, "요청 헤더가 누락되었습니다."),
 
     // 입력값 검증 예외
-    NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, 40008, "유효하지 않은 입력값입니다."),
+    NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, 40001, "유효하지 않은 입력값입니다."),
 
     // 클라이언트가 JSON body를 잘못 보냈을 때
-    REQUEST_BODY_NOT_READABLE(HttpStatus.BAD_REQUEST, 40016, "요청 데이터 타입이 일치하지 않습니다."),
+    REQUEST_BODY_NOT_READABLE(HttpStatus.BAD_REQUEST, 40002, "요청 데이터 타입이 일치하지 않습니다."),
 
+    // 신청관련
+    CANNOT_APPLY_OWN_TEAM(HttpStatus.BAD_REQUEST, 40003, "본인이 만든 팀에는 신청할 수 없습니다."),
+    ALREADY_REQUESTED_IN_CONTEST(HttpStatus.BAD_REQUEST, 40004, "해당 공모전에 대한 팀 신청은 동시에 1개만 가능합니다."),
+    ALREADY_JOINED_IN_CONTEST(HttpStatus.BAD_REQUEST, 40005, "이미 해당 공모전의 팀에 소속되어 있습니다."),
+    APPLY_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, 40006, "이미 처리된 지원입니다."),
+    TEAM_MEMBER_FULL(HttpStatus.BAD_REQUEST, 40007, "팀 정원이 모두 찼습니다."),
+    NOT_MY_APPLY(HttpStatus.BAD_REQUEST, 40008, "나의 신청이 아닙니다."),
+
+    // 팀 관련
+    CONTEST_ALREADY_HAS_OPEN_TEAM(HttpStatus.BAD_REQUEST, 40009, "해당 공모전에 이미 모집 중인 팀이 존재합니다."),
+    CANNOT_REMOVE_TEAM_LEADER(HttpStatus.BAD_REQUEST, 40010, "팀장은 자신을 강퇴할 수 없습니다."),
+    ALREADY_CLOSED_TEAM(HttpStatus.BAD_REQUEST, 40011, "이미 모집이 마감된 팀입니다."),
+    ALREADY_EXPIRED_TEAM(HttpStatus.BAD_REQUEST, 40012, "만료된 팀은 모집 상태를 변경할 수 없습니다."),
+    INVALID_ANSWER_COUNT(HttpStatus.BAD_REQUEST, 40013, "질문과 답변의 개수가 다릅니다."),
 
     /**
      * 401 UNAUTHORIZED
      */
     // 인증관련
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 40100, "유효하지 않은 엑세스 토큰입니다."),
+
+
+    /**
+     * 403 FORBIDDEN
+     */
+    // 팀 관련
+    NO_AUTHORITY(HttpStatus.FORBIDDEN, 40301, "팀의 리더만이 지원자를 조회할 수 있습니다."),
+    NOT_MY_TEAM(HttpStatus.FORBIDDEN, 40302, "내가 속한 팀이 아닙니다."),
 
 
     /**
@@ -42,10 +64,24 @@ public enum ErrorCode {
     // 공모전 관련
     NOT_FOUND_CONTEST(HttpStatus.NOT_FOUND, 40404, "공모전을 찾을 수 없습니다."),
 
+    // 팀관련
+    NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 40405, "팀을 찾을 수 없습니다."),
+    NOT_TEAM_LEADER(HttpStatus.NOT_FOUND, 40407, "팀 리더를 찾을 수 없습니다."),
+    APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, 40408, "신청을 찾을 수 없습니다."),
+    TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 40409, "해당 팀원을 찾을 수 없습니다."),
+
+
     /**
      * 405 METHOD_NOT_ALLOWED
      */
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, 40500, "잘못된 HTTP method 요청입니다."),
+
+
+    /**
+     * 409 Conflict
+     */
+    ALREADY_APPLIED_TEAM(HttpStatus.CONFLICT, 40900, "이미 신청한 팀입니다."),
+
 
     /**
      * 429 Too_Many_Requests
@@ -56,7 +92,10 @@ public enum ErrorCode {
      * 500 INTERNAL_SERVER_ERROR
      */
     // DB 제약조건 위반 에러
-    DB_CONSTRAINT_VIOLATION(HttpStatus.INTERNAL_SERVER_ERROR, 50018, "DB 제약조건 문제 발생, 서버 개발자에게 문의해주세요"),;
+    DB_CONSTRAINT_VIOLATION(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "DB 제약조건 문제 발생, 서버 개발자에게 문의해주세요"),
+
+    // OpenAI 관련
+    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다.");
 
 
     private final HttpStatus status;

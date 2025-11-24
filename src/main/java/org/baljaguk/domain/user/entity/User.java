@@ -54,6 +54,9 @@ public class User {
     @Column(name = "skill", nullable = true)
     private String skills;  // 스킬셋은 콤마로 나누어 저장 및 응답합니다.
 
+    @Column(name = "is_registered", nullable = false)
+    private boolean isRegistered;   // 최초 회원가입 시 false, 정보입력 후 true
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserCategory> categories = new ArrayList<>();
 
@@ -67,6 +70,7 @@ public class User {
                 .email(email)
                 .name(name)
                 .profileImageUrl(profileImageUrl)
+                .isRegistered(false)   // 신규가입자 → 기본 false
                 .level(1)                              // 기본 레벨
                 .build();
     }
@@ -87,6 +91,9 @@ public class User {
 
         this.education = request.education();
         this.recognizedDegree = request.recognizedDegree();
+
+        // 최초 회원가입 완료
+        this.isRegistered = true;
     }
 
 

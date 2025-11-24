@@ -31,7 +31,7 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody UserUpdateRequest request
     ) {
-        userService.updateUserProfile(userDetails.getUser().getId(), request);
+        userService.updateUserProfile(userDetails.getUserId(), request);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
@@ -44,7 +44,7 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody SkillUpdateRequest request
     ) {
-        userService.updateMySkills(userDetails.getUser().getId(), request);
+        userService.updateMySkills(userDetails.getUserId(), request);
 
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
@@ -57,7 +57,7 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody EducationUpdateRequest request
     ) {
-        userService.updateEducation(userDetails.getUser().getId(), request);
+        userService.updateEducation(userDetails.getUserId(), request);
 
         return ResponseEntity.ok(ApiResponse.ok("학력 정보가 수정되었습니다."));
     }
@@ -72,7 +72,7 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CategoryUpdateRequest request
     ) {
-        userService.updateInterests(userDetails.getUser().getId(), request);
+        userService.updateInterests(userDetails.getUserId(), request);
 
         return ResponseEntity.ok(ApiResponse.ok("관심 분야가 수정되었습니다."));
     }
@@ -81,7 +81,7 @@ public class UserController {
     @Operation(summary = "유저 마이프로필 조회",
             description = "마이프로필 조회합니다.")
     public ResponseEntity<ApiResponse<ProfileResponse>> getMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        ProfileResponse result = userService.getMyProfile(userDetails.getUser().getId());
+        ProfileResponse result = userService.getMyProfile(userDetails.getUserId());
 
         return ResponseEntity.ok(ApiResponse.ok(result));
     }

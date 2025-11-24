@@ -67,4 +67,8 @@ public class Team extends BaseEntity {
     public void updateMemo(String memo) {
         this.memo = memo;
     }
+
+    public void updateStatus(TeamStatus newStatus) {
+        this.status = newStatus;
+    }
 }

@@ -560,4 +560,57 @@ public class TeamServiceImpl implements TeamService {
         // 3) 메모 업데이트
         team.updateMemo(memo);
     }
+
+    @Override
+    @Transactional
+    public void cancelMyApply(Long userId, Long teamId) {
+
+        // 1) 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+
+        // 2) TeamApply 조회 (user + team 기반)
+        TeamApply apply = teamApplyRepository.findByUserAndTeamIdWithFetch(userId, teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
+
+        // 3) 본인이 아닌 경우 — 이론상 발생하지 않지만 안전하게 검사
+        if (!apply.getUser().getId().equals(userId)) {
+            throw new GeneralException(ErrorCode.NOT_MY_APPLY);
+        }
+
+        // 4) 이미 처리된 신청은 취소할 수 없음
+        if (apply.getStatus() != RegisterStatus.REQUESTED) {
+            throw new GeneralException(ErrorCode.APPLY_ALREADY_PROCESSED);
+        }
+
+        // 5) 상태 변경 → CANCELED
+        apply.setStatus(RegisterStatus.CANCELED);
+    }
+
+    @Override
+    @Transactional
+    public void closeTeamRecruit(Long teamId, Long userId) {
+
+        // 1) 팀 조회
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        // 2) 팀장인지 검증
+        if (!team.getTeamLeader().getId().equals(userId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+        // 3) 이미 마감된 상태인지 확인
+        if (team.getStatus() == TeamStatus.CLOSED) {
+            throw new GeneralException(ErrorCode.ALREADY_CLOSED_TEAM);
+        }
+
+        // 4) 만료된 팀이면 마감 불가
+        if (team.getStatus() == TeamStatus.EXPIRED) {
+            throw new GeneralException(ErrorCode.ALREADY_EXPIRED_TEAM);
+        }
+
+        // 5) 모집 마감 처리
+        team.updateStatus(TeamStatus.CLOSED);
+    }
 }

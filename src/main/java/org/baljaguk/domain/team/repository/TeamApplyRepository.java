@@ -40,4 +40,14 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
             @Param("teamId") Long teamId,
             @Param("applicantUserId") Long applicantUserId
     );
+
+    @Query("""
+        SELECT ta 
+        FROM TeamApply ta 
+        JOIN FETCH ta.user u
+        JOIN FETCH ta.team t
+        WHERE u.id = :userId
+          AND t.id = :teamId
+        """)
+    Optional<TeamApply> findByUserAndTeamIdWithFetch(Long userId, Long teamId);
 }

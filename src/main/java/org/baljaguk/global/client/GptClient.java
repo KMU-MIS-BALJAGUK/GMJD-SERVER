@@ -33,24 +33,53 @@ public class GptClient {
                 new HttpEntity<>(requestBody, httpHeaders);
 
         try {
-            ResponseEntity<Map> response = restTemplate.exchange(
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     GPT_URL,
                     HttpMethod.POST,
                     entity,
-                    Map.class
+                    (Class<Map<String, Object>>)(Class<?>)Map.class
             );
 
-            if (response.getBody() == null) {
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                log.error("GPT 호출 실패 - status: {}, body: {}", response.getStatusCode(), response.getBody());
+                throw new RuntimeException("GPT API가 비정상 상태 코드를 반환했습니다.");
+            }
+
+
+            Map<String, Object> body = response.getBody();
+            if (body == null) {
                 throw new RuntimeException("GPT 응답이 비어있습니다.");
             }
 
-            List<Map<String, Object>> choices =
-                    (List<Map<String, Object>>) response.getBody().get("choices");
+            Object choicesObj = body.get("choices");
+            if (!(choicesObj instanceof List)) {
+                log.error("GPT 응답에 choices 필드가 없거나 형식이 잘못되었습니다: {}", body);
+                throw new RuntimeException("GPT 응답 형식이 올바르지 않습니다(choices).");
+            }
 
-            Map<String, Object> message =
-                    (Map<String, Object>) choices.get(0).get("message");
+            List<?> choices = (List<?>) choicesObj;
+            if (choices.isEmpty()) {
+                throw new RuntimeException("GPT 응답의 choices가 비어 있습니다.");
+            }
 
-            return (String) message.get("content");
+            Object firstChoice = choices.get(0);
+            if (!(firstChoice instanceof Map)) {
+                throw new RuntimeException("GPT 응답 형식이 올바르지 않습니다(first choice).");
+            }
+
+            Map<?, ?> firstChoiceMap = (Map<?, ?>) firstChoice;
+            Object messageObj = firstChoiceMap.get("message");
+            if (!(messageObj instanceof Map)) {
+                throw new RuntimeException("GPT 응답 형식이 올바르지 않습니다(message).");
+            }
+
+            Map<?, ?> messageMap = (Map<?, ?>) messageObj;
+            Object contentObj = messageMap.get("content");
+            if (!(contentObj instanceof String)) {
+                throw new RuntimeException("GPT 응답 형식이 올바르지 않습니다(content).");
+            }
+
+            return (String) contentObj;
 
         } catch (Exception e) {
             log.error("🔥 GPT 호출 오류: {}", e.getMessage(), e);

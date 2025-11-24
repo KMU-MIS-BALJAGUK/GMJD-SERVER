@@ -31,4 +31,6 @@ public interface TeamService {
     void approveApplicant(Long teamId, Long applicantUserId, Long userId);
 
     void rejectApplicant(Long teamId, Long applicantUserId, Long userId);
+
+    void removeTeamMember(Long teamId, Long memberId, Long leaderId);
 }

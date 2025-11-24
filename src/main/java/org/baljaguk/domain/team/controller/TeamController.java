@@ -192,4 +192,27 @@ public class TeamController {
         teamService.rejectApplicant(teamId, applicantUserId, userDetails.getUserId());
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
+
+    @DeleteMapping("/{teamId}/members/{memberId}")
+    @Operation(
+            summary = "팀원 내보내기(강퇴) API",
+            description = """
+                팀장이 특정 팀원을 강퇴하는 API입니다.\n
+                - PathVariable teamId: 팀 ID\n
+                - PathVariable memberId: 내보낼 팀원 ID\n
+                - 팀 리더만 강퇴가 가능합니다.
+                """
+    )
+    public ResponseEntity<ApiResponse<Void>> removeTeamMember(
+            @PathVariable Long teamId,
+            @PathVariable Long memberId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        Long leaderId = userDetails.getUserId();
+
+        teamService.removeTeamMember(teamId, memberId, leaderId);
+
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }

@@ -516,4 +516,30 @@ public class TeamServiceImpl implements TeamService {
         // 3) 거절 처리
         apply.setStatus(RegisterStatus.REJECTED);
     }
+
+    @Override
+    @Transactional
+    public void removeTeamMember(Long teamId, Long memberId, Long leaderId) {
+
+        // 1) 팀 + 팀장 조회 (fetch join)
+        Team team = teamRepository.findTeamWithLeaderById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        // 2) 팀장 본인인지 검증
+        if (!team.getTeamLeader().getId().equals(leaderId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+        // 3) 팀장은 본인을 내보낼 수 없음
+        if (team.getTeamLeader().getId().equals(memberId)) {
+            throw new GeneralException(ErrorCode.CANNOT_REMOVE_TEAM_LEADER);
+        }
+
+        // 4) 팀원 조회
+        TeamMember teamMember = teamMemberRepository.findByTeamIdAndMemberId(teamId, memberId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.TEAM_MEMBER_NOT_FOUND));
+
+        // 5) 팀원 삭제
+        teamMemberRepository.delete(teamMember);
+    }
 }

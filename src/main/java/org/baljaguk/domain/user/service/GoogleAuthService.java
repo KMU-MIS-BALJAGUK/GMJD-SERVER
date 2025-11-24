@@ -53,22 +53,25 @@ public class GoogleAuthService {
 
         // 2. DB에 유저 존재 여부 확인
         User user;
+        boolean isNewUser = false;
+
         Optional<User> optionalUser = userRepository.findByEmail(profile.email());
 
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
         } else {
+            isNewUser = true;
             user = userRepository.save(
                     User.createSocialUser(profile.email(), profile.name(), profile.picture())
             );
         }
 
         // 3. JWT 토큰 생성
-        String serverAccessToken = jwtUtil.generateAccessToken(user.getId());
+        String serverAccessToken = jwtUtil.generateAccessToken(user.getId(), user.isRegistered());
         String serverRefreshToken = jwtUtil.generateRefreshToken(user.getId());
-        log.info("🔑 JWT 발급 완료 - userId: {}", user.getId());
+        log.info("🔑 JWT 발급 완료 - userId: {}", user.getId(), user.isRegistered());
 
-        return JwtLoginResponse.of(user, serverAccessToken, serverRefreshToken);
+        return JwtLoginResponse.of(user, serverAccessToken, serverRefreshToken, isNewUser);
     }
 
     /**

@@ -26,12 +26,13 @@ public class JWTUtil {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(Long userId) {
+    public String generateAccessToken(Long userId, boolean isRegistered) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtProperties.getExpireLength());
 
         return Jwts.builder()
                 .setSubject(userId.toString())
+                .claim("isRegistered", isRegistered)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)

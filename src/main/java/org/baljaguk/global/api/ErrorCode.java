@@ -26,6 +26,7 @@ public enum ErrorCode {
 
     // 팀 관련
     CONTEST_ALREADY_HAS_OPEN_TEAM(HttpStatus.BAD_REQUEST, 40006, "해당 공모전에 이미 모집 중인 팀이 존재합니다."),
+    CANNOT_REMOVE_TEAM_LEADER(HttpStatus.BAD_REQUEST, 40008, "팀장은 자신을 강퇴할 수 없습니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -59,6 +60,7 @@ public enum ErrorCode {
     NOT_MY_TEAM(HttpStatus.NOT_FOUND, 40406, "내가 속한 팀이 아닙니다."),
     NOT_TEAM_LEADER(HttpStatus.NOT_FOUND, 40407, "팀 리더를 찾을 수 없습니다."),
     APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, 40408, "신청을 찾을 수 없습니다."),
+    TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 40409, "해당 팀원을 찾을 수 없습니다."),
 
 
     /**

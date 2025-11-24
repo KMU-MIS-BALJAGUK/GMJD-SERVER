@@ -36,7 +36,11 @@ public class ChatController {
                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         //user객체 생성
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인 정보가 없음");
+        }
         User user = userDetails.getUser();
+
 
         //ChatMessageDto 생성
         ChatMessageDto chatMessageDto = ChatMessageDto.builder()
@@ -49,10 +53,15 @@ public class ChatController {
         log.info("Attempting to send message to RabbitMQ persistence queue. RoomId: {}, UserId: {}, Message: {}",
                 roomId, user.getId(), message.getMessage());
         // Queue로 message publishing (AMPQ)
-        rabbitTemplate.convertAndSend(
-                RabbitMqConfig.PERSISTENCE_QUEUE_NAME,
-                chatMessageDto
-        );
+        try {
+            rabbitTemplate.convertAndSend(
+                    RabbitMqConfig.PERSISTENCE_QUEUE_NAME,
+                    chatMessageDto
+            );
+        }catch (Exception e){
+            log.info("Failed to send message to RabbitMQ. RoomId: {}, UserId: {}", roomId, user.getId(), e);
+            throw new RuntimeException("메시지 발행 실패", e);
+        }
 
         log.info("Message sent to AMQP queue for persistence.");
 

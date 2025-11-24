@@ -45,6 +45,6 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 클라이언트 websocket 최초 접속(핸드셰이크) 엔드포인트
         registry.addEndpoint("/ws/chat")
-                .setAllowedOriginPatterns("https://gmjd-web.vercel.app/", "localhost:8080");
+                .setAllowedOriginPatterns("https://gmjd-web.vercel.app", "http://localhost:8080");
     }
 }

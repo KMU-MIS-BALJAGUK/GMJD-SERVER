@@ -47,5 +47,4 @@ src/main/generated
 
 ### docker ###
 docker-compose.yml
-rabbitmq.conf
 

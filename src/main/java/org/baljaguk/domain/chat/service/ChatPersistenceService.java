@@ -30,7 +30,7 @@ public class ChatPersistenceService {
 
         ChatMessage  chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage())
                 .userId(chatMessageDto.getUserId())
-                .createdAt(chatMessageDto.getCreatedAt())
+                
                 .chatRoom(chatRoom)
                 .build();
 

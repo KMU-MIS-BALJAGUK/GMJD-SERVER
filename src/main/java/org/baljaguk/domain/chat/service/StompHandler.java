@@ -79,7 +79,7 @@ public class StompHandler implements ChannelInterceptor {
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             log.warn("STOMP CONNECT: Authorization header missing or malformed. Session ID: {}", accessor.getSessionId());
-            return;
+            throw new IllegalArgumentException("Authorization header missing or malformed");
         }
 
         String token = authorizationHeader.substring(7);
@@ -92,7 +92,8 @@ public class StompHandler implements ChannelInterceptor {
             log.info("STOMP CONNECT: User successfully authenticated and UserId={} saved to session attributes.", userId);
 
         } catch (Exception e) {
-            log.error("JWT validation failed for token: {}. Session ID: {}", token, accessor.getSessionId(), e);
+            log.error("JWT validation failed for Session ID: {}", accessor.getSessionId(), e);
+            throw new IllegalArgumentException("JWT validation failed", e);
         }
     }
 
@@ -103,7 +104,7 @@ public class StompHandler implements ChannelInterceptor {
      */
     private void handleSubscribe(@NonNull StompHeaderAccessor accessor, @NonNull Map<String, Object> sessionAttributes) {
 
-        //destination => /room/123
+        //destination => /chat.room/123
         String destination = accessor.getDestination();
 
         if (destination != null) {

@@ -51,8 +51,7 @@ public class LastReadTimeService {
     @Transactional
     public void markMessagesAsRead(Long roomId, Long userId) {
 
-        LastReadTime lastReadTime = lastReadTimeRepository.findByUserIdAndRoomId(userId, roomId)
-                .orElseGet(() -> findOrCreateParticipant(userId, roomId));
+        LastReadTime lastReadTime = findOrCreateParticipant(userId, roomId);
 
         // lastReadAt 갱신
         lastReadTime.updateLastReadTime();

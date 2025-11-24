@@ -169,9 +169,9 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    @PostMapping("/my-recruit/{teamId}/applicant/{applicantUserId}/approve")
+    @PostMapping("/my-recruit/{teamId}/applicant/{applicantUserId}/accept")
     @Operation(summary = "지원자 승인 API",
-            description = "팀장이 지원자의 팀 신청을 승인합니다. 승인 시 팀멤버로 추가되고, 신청 상태는 APPROVED로 변경됩니다.")
+            description = "팀장이 지원자의 팀 신청을 승인합니다. 승인 시 팀멤버로 추가되고, 신청 상태는 ACCEPTED로 변경됩니다.")
     public ResponseEntity<ApiResponse<Void>> approveApplicant(
             @PathVariable Long teamId,
             @PathVariable Long applicantUserId,

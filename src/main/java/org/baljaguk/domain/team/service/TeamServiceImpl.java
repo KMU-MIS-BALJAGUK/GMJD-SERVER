@@ -47,8 +47,8 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CONTEST));
 
         String prompt = PromptUtil.generatePrompt(
-                contest.getName(),
-                contest.getEndDate().toString()
+                contest.getEndDate().toString(),
+                contest.getName()
         );
 
         String aiResponse = PromptUtil.extractJson(gptClient.callOpenAI(prompt));

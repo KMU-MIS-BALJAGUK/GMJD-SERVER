@@ -8,6 +8,7 @@ public record MyTeamDetailResponse(
         String contestOrganizationName,
         Long memberCount,
         String myMemberType,   // 나의 팀원 타입
+        String mamo,
         List<MemberInfo> members
 ) {
 
@@ -16,6 +17,7 @@ public record MyTeamDetailResponse(
                                           String contestOrganizationName,
                                           Long memberCount,
                                           String myMemberType,
+                                          String mamo,
                                           List<MemberInfo> members) {
         return new MyTeamDetailResponse(
                 teamTitle,
@@ -23,6 +25,7 @@ public record MyTeamDetailResponse(
                 contestOrganizationName,
                 memberCount,
                 myMemberType,
+                mamo,
                 members
         );
     }

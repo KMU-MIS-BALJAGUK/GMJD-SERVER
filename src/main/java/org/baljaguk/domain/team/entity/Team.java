@@ -58,8 +58,13 @@ public class Team extends BaseEntity {
         team.introduction = introduction;
         team.maxMember = maxMember;
         team.status = TeamStatus.OPEN; // 기본값
+        team.memo = "";  // 기본값
         team.contest = contest;
         team.teamLeader = teamLeader;
         return team;
+    }
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
     }
 }

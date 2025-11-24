@@ -380,6 +380,7 @@ public class TeamServiceImpl implements TeamService {
                 team.getContest().getOrganizationName(),
                 memberCount,
                 myType,
+                team.getMemo(),
                 members
         );
     }
@@ -541,5 +542,22 @@ public class TeamServiceImpl implements TeamService {
 
         // 5) 팀원 삭제
         teamMemberRepository.delete(teamMember);
+    }
+
+    @Override
+    @Transactional
+    public void updateTeamMemo(Long leaderId, Long teamId, String memo) {
+
+        // 1) 팀 조회 (팀장까지 fetch join)
+        Team team = teamRepository.findTeamWithLeaderById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        // 2) 팀장 검증
+        if (!team.getTeamLeader().getId().equals(leaderId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+        // 3) 메모 업데이트
+        team.updateMemo(memo);
     }
 }

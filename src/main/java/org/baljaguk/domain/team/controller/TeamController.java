@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
+import org.baljaguk.domain.team.dto.request.UpdateTeamMemoRequest;
 import org.baljaguk.domain.team.dto.response.*;
 import org.baljaguk.domain.team.service.TeamService;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
@@ -213,6 +214,22 @@ public class TeamController {
 
         teamService.removeTeamMember(teamId, memberId, leaderId);
 
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @PatchMapping("/my-teams/{teamId}/memo")
+    @Operation(
+            summary = "나의 팀 메모 수정 API",
+            description = "해당 팀의 팀장만 메모를 수정할 수 있습니다.\n" +
+                    "아무 메모도 없다면, null이 아닌 빈문자열을 입력해야합니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> updateTeamMemo(
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UpdateTeamMemoRequest request
+    ) {
+
+        teamService.updateTeamMemo(userDetails.getUserId(), teamId, request.memo());
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

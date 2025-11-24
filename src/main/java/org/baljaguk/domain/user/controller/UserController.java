@@ -24,9 +24,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @Operation(summary = "자체 회원가입 API",
-            description = "소셜 로그인 직후 진행되는 자체 회원가입입니다.\n" +
-                    "값들을 받아 유저 레코드에 반영합니다.")
+    @Operation(
+            summary = "자체 회원가입 API",
+            description = """
+                    소셜 로그인 직후 진행되는 자체 회원가입입니다.\n
+                    • 유저의 기본 프로필 정보(학교, 전공, 소개 등)를 최초로 저장합니다.\n
+                    • 요청 필드 중 스킬셋은 List<String>을 받아 콤마(,)로 구분된 문자열 형태로 저장됩니다.
+                    """
+    )
     public ResponseEntity<ApiResponse<Void>> localSignUp(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody UserUpdateRequest request
@@ -50,8 +55,17 @@ public class UserController {
     }
 
     @PatchMapping("/education")
-    @Operation(summary = "학력 정보 수정 API",
-            description = "로그인한 사용자의 **대학교명, 전공, 학력 상태(Enum), 학위(Enum)** 네 가지 정보를 모두 수정합니다."
+    @Operation(
+            summary = "학력 정보 수정 API",
+            description = """
+                    로그인한 사용자의 학력 정보를 수정합니다.\n
+                    • 대학교명\n
+                    • 전공\n
+                    • education (ENUM)\n
+                    • recognizedDegree (ENUM)\n
+                    
+                    위 네 가지 정보를 한 번에 업데이트합니다.
+                    """
     )
     public ResponseEntity<ApiResponse<String>> updateEducation(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -86,6 +100,14 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
+    @Operation(
+            summary = "내 스킬셋 조회 API",
+            description = """
+                    로그인한 사용자의 스킬셋을 조회합니다.\n
+                    스킬은 List<String> 형태로 응답됩니다.\n
+                    해당 api는 팀 신청하기시 스킬셋이 디폴트로 입력이 되어있기 위함입니다.
+                    """
+    )
     @GetMapping("/skills")
     public ResponseEntity<ApiResponse<UserSkillsResponse>> getMySkills(@AuthenticationPrincipal CustomUserDetails userDetails) {
         UserSkillsResponse response = userService.getMySkills(userDetails.getUserId());

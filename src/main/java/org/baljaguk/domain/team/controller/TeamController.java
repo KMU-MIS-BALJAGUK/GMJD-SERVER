@@ -1,5 +1,6 @@
 package org.baljaguk.domain.team.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
@@ -19,6 +20,10 @@ public class TeamController {
 
     private final TeamService teamService;
 
+    @Operation(
+            summary = "AI 질문 추천",
+            description = "공모전 ID를 기반으로 팀 생성 시 활용할 AI 질문 리스트를 생성합니다."
+    )
     @PostMapping("/{contestId}/ai-question")
     public ResponseEntity<ApiResponse<AIRecommendQuestionsResponse>> getAIRecommendQuestions(
             @PathVariable Long contestId
@@ -27,6 +32,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "팀 생성",
+            description = "로그인한 사용자가 특정 공모전에 대한 팀을 생성합니다. 동일 공모전에는 하나의 OPEN 팀만 생성할 수 있습니다."
+    )
     @PostMapping("/{contestId}")
     public ResponseEntity<ApiResponse<Void>> createTeam(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -39,12 +48,20 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
+    @Operation(
+            summary = "공모전별 팀 목록 조회",
+            description = "특정 공모전에 등록된 OPEN 상태의 팀 목록을 조회합니다."
+    )
     @GetMapping("/{contestId}")
     public ResponseEntity<ApiResponse<ContestTeamListResponse>> getTeamList(@PathVariable Long contestId) {
         ContestTeamListResponse response = teamService.getTeamList(contestId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "팀 상세 조회",
+            description = "팀 신청하기 버튼을 눌러 팀 ID로 팀 상세 정보를 조회합니다. 팀 구성, 모집 정보 등을 확인할 수 있습니다."
+    )
     @GetMapping("/{teamId}/detail")
     public ResponseEntity<ApiResponse<TeamDetailResponse>> getTeamDetail(
             @PathVariable Long teamId
@@ -53,6 +70,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "팀 신청",
+            description = "로그인한 사용자가 특정 팀에 신청합니다. 동일 공모전 내 중복 신청은 불가합니다."
+    )
     @PostMapping("/apply/{teamId}")
     public ResponseEntity<ApiResponse<Void>> applyTeam(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -63,6 +84,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
+    @Operation(
+            summary = "나의 팀 목록 조회",
+            description = "현재 로그인한 사용자가 속해 있는 팀(CLOSED 상태) 목록을 조회합니다."
+    )
     @GetMapping("/my-teams")
     public ResponseEntity<ApiResponse<MyTeamListResponse>> getMyTeamList(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -73,6 +98,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "나의 모집 팀 목록",
+            description = "현재 로그인한 사용자가 팀장으로 있는 팀 목록을 조회합니다. OPEN/CLOSED 상태 모두 조회합니다."
+    )
     @GetMapping("/my-recruit")
     public ResponseEntity<ApiResponse<MyRecruitListResponse>> getMyRecruitList(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -82,6 +111,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "나의 지원 목록 조회",
+            description = "현재 로그인한 사용자가 지원한 팀 목록을 조회합니다."
+    )
     @GetMapping("/my-applies")
     public ResponseEntity<ApiResponse<MyApplyListResponse>> getMyApplyList(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -91,6 +124,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "나의 팀 상세 조회",
+            description = "내가 팀원으로 참여 중인 특정 팀의 상세 정보를 조회합니다."
+    )
     @GetMapping("/my-teams/{teamId}")
     public ResponseEntity<ApiResponse<MyTeamDetailResponse>> getMyTeamDetail(
             @PathVariable Long teamId,
@@ -101,6 +138,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "팀 지원자 목록 조회",
+            description = "팀장이 해당 팀에 지원한 지원자 목록을 조회합니다."
+    )
     @GetMapping("/my-recruit/{teamId}")
     public ResponseEntity<ApiResponse<TeamApplicantListResponse>> getTeamApplicants(
             @PathVariable Long teamId,
@@ -111,6 +152,10 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
+    @Operation(
+            summary = "지원자 상세 조회",
+            description = "팀장이 특정 지원자의 상세 정보를 조회합니다. 지원서 내용, 질문 답변, 사용자 정보 등이 포함됩니다."
+    )
     @GetMapping("/my-recruit/{teamId}/applicant/{applicantUserId}")
     public ResponseEntity<ApiResponse<ApplicantDetailResponse>> getApplicantDetail(
             @PathVariable Long teamId,

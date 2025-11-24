@@ -49,4 +49,8 @@ public class TeamApply {
                 .team(team)
                 .build();
     }
+
+    public void setStatus(RegisterStatus status) {
+        this.status = status;
+    }
 }

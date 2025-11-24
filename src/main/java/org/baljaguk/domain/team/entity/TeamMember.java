@@ -1,16 +1,14 @@
 package org.baljaguk.domain.team.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.baljaguk.domain.user.entity.User;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
 @Table(name = "team_member")
 public class TeamMember {
 
@@ -29,4 +27,12 @@ public class TeamMember {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private User member;
+
+    public static TeamMember create(TeamMemberType type, Team team, User user) {
+        return TeamMember.builder()
+                .type(type)
+                .team(team)
+                .member(user)
+                .build();
+    }
 }

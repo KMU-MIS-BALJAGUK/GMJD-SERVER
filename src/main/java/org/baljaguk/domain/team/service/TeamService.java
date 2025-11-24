@@ -27,4 +27,8 @@ public interface TeamService {
     TeamApplicantListResponse getTeamApplicants(Long teamId, Long userId);
 
     ApplicantDetailResponse getApplicantDetail(Long teamId, Long applicantUserId, Long userId);
+
+    void approveApplicant(Long teamId, Long applicantUserId, Long userId);
+
+    void rejectApplicant(Long teamId, Long applicantUserId, Long userId);
 }

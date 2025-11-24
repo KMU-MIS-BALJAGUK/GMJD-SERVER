@@ -57,7 +57,7 @@ public class TeamController {
     public ResponseEntity<ApiResponse<Void>> applyTeam(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long teamId,
-            @RequestBody TeamApplyRequest request
+            @RequestBody @Valid TeamApplyRequest request
     ) {
         teamService.applyTeam(userDetails.getUserId(), teamId, request);
         return ResponseEntity.ok(ApiResponse.ok(null));

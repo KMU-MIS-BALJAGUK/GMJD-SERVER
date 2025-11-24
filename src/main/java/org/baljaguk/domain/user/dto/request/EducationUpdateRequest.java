@@ -26,8 +26,8 @@ public record EducationUpdateRequest(
         Education education,
 
         @Schema(
-                description = "인정 학위 (Enum: BS, MS, PHD 등)",
-                example = "ASSOCIATE, BACHELOR"
+                description = "ASSOCIATE, BACHELOR",
+                example = "ASSOCIATE"
         )
         RecognizedDegree recognizedDegree
 ) {}

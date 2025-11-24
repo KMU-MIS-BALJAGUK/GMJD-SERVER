@@ -232,4 +232,34 @@ public class TeamController {
         teamService.updateTeamMemo(userDetails.getUserId(), teamId, request.memo());
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
+
+    @PatchMapping("/apply/{teamId}/cancel")
+    @Operation(
+            summary = "팀 신청 취소 API",
+            description = "현재 로그인한 사용자가 특정 팀에 대해 했던 신청을 취소합니다.\n" +
+                    "신청 상태는 CANCELED 로 변경됩니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> cancelMyApply(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long teamId
+    ) {
+        teamService.cancelMyApply(userDetails.getUserId(), teamId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @PatchMapping("/{teamId}/close")
+    @Operation(
+            summary = "팀 모집 마감 API",
+            description = """
+                팀장이 자신의 팀 모집 상태를 '모집완료(CLOSED)'로 변경합니다.\n
+                팀장이 아닌 사용자가 호출할 경우 권한 오류가 발생합니다.
+                """
+    )
+    public ResponseEntity<ApiResponse<Void>> closeTeamRecruit(
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        teamService.closeTeamRecruit(teamId, userDetails.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }

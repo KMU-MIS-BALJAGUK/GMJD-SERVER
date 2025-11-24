@@ -35,4 +35,8 @@ public interface TeamService {
     void removeTeamMember(Long teamId, Long memberId, Long leaderId);
 
     void updateTeamMemo(Long userId, Long teamId, String memo);
+
+    void cancelMyApply(Long userId, Long teamId);
+
+    void closeTeamRecruit(Long teamId, Long userId);
 }

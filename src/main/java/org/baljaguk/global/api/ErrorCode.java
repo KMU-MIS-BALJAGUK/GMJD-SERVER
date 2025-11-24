@@ -23,10 +23,13 @@ public enum ErrorCode {
     ALREADY_JOINED_IN_CONTEST(HttpStatus.BAD_REQUEST, 40005, "이미 해당 공모전의 팀에 소속되어 있습니다."),
     APPLY_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, 40006, "이미 처리된 지원입니다."),
     TEAM_MEMBER_FULL(HttpStatus.BAD_REQUEST, 40007, "팀 정원이 모두 찼습니다."),
+    NOT_MY_APPLY(HttpStatus.BAD_REQUEST, 40008, "나의 신청이 아닙니다."),
 
     // 팀 관련
-    CONTEST_ALREADY_HAS_OPEN_TEAM(HttpStatus.BAD_REQUEST, 40006, "해당 공모전에 이미 모집 중인 팀이 존재합니다."),
-    CANNOT_REMOVE_TEAM_LEADER(HttpStatus.BAD_REQUEST, 40008, "팀장은 자신을 강퇴할 수 없습니다."),
+    CONTEST_ALREADY_HAS_OPEN_TEAM(HttpStatus.BAD_REQUEST, 40009, "해당 공모전에 이미 모집 중인 팀이 존재합니다."),
+    CANNOT_REMOVE_TEAM_LEADER(HttpStatus.BAD_REQUEST, 40010, "팀장은 자신을 강퇴할 수 없습니다."),
+    ALREADY_CLOSED_TEAM(HttpStatus.BAD_REQUEST, 40011, "이미 모집이 마감된 팀입니다."),
+    ALREADY_EXPIRED_TEAM(HttpStatus.BAD_REQUEST, 40012, "만료된 팀은 모집 상태를 변경할 수 없습니다."),
 
     /**
      * 401 UNAUTHORIZED

@@ -9,7 +9,6 @@ import org.baljaguk.domain.user.dto.request.CategoryUpdateRequest;
 import org.baljaguk.domain.user.dto.request.EducationUpdateRequest;
 import org.baljaguk.domain.user.dto.request.SkillUpdateRequest;
 import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
-import org.baljaguk.domain.user.dto.response.ProfileResponse;
 import org.baljaguk.domain.user.service.UserService;
 import org.baljaguk.global.api.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -74,14 +73,5 @@ public class UserController {
         userService.updateInterests(userDetails.getUser().getId(), request);
 
         return ResponseEntity.ok(ApiResponse.ok("관심 분야가 수정되었습니다."));
-    }
-
-    @GetMapping("/my-profile")
-    @Operation(summary = "유저 마이프로필 조회",
-            description = "마이프로필 조회합니다.")
-    public ResponseEntity<ApiResponse<ProfileResponse>> getMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        ProfileResponse result = userService.getMyProfile(userDetails.getUser().getId());
-
-        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

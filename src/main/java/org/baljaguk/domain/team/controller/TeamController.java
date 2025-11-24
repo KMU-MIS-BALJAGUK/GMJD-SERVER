@@ -226,7 +226,7 @@ public class TeamController {
     public ResponseEntity<ApiResponse<Void>> updateTeamMemo(
             @PathVariable Long teamId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UpdateTeamMemoRequest request
+            @RequestBody @Valid UpdateTeamMemoRequest request
     ) {
 
         teamService.updateTeamMemo(userDetails.getUserId(), teamId, request.memo());

@@ -1,7 +1,9 @@
 package org.baljaguk.domain.team.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record UpdateTeamMemoRequest(
 
-        String memo
+        @NotNull String memo
 
 ) {}

@@ -1,11 +1,33 @@
 package org.baljaguk.domain.user.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.baljaguk.domain.user.entity.enums.Education;
 import org.baljaguk.domain.user.entity.enums.RecognizedDegree;
 
+@Schema(description = "사용자의 학력 정보 수정 요청 DTO")
 public record EducationUpdateRequest(
+
+        @Schema(
+                description = "대학교 이름",
+                example = "Kookmin University"
+        )
         String universityName,
+
+        @Schema(
+                description = "전공명",
+                example = "Management Information Systems"
+        )
         String major,
-        Education education,              // 학력 상태 (Enum)
-        RecognizedDegree recognizedDegree // 학위 (Enum)
+
+        @Schema(
+                description = "HIGH_SCHOOL, UNIVERSITY",
+                example = "UNIVERSITY"
+        )
+        Education education,
+
+        @Schema(
+                description = "인정 학위 (Enum: BS, MS, PHD 등)",
+                example = "ASSOCIATE, BACHELOR"
+        )
+        RecognizedDegree recognizedDegree
 ) {}

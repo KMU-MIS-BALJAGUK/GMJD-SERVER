@@ -38,8 +38,13 @@ public enum ErrorCode {
     // 인증관련
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 40100, "유효하지 않은 엑세스 토큰입니다."),
 
-    // 팀관련
-    NO_AUTHORITY(HttpStatus.UNAUTHORIZED, 40101, "팀의 리더만이 지원자를 조회할 수 있습니다."),
+
+    /**
+     * 403 FORBIDDEN
+     */
+    // 팀 관련
+    NO_AUTHORITY(HttpStatus.FORBIDDEN, 40301, "팀의 리더만이 지원자를 조회할 수 있습니다."),
+    NOT_MY_TEAM(HttpStatus.FORBIDDEN, 40302, "내가 속한 팀이 아닙니다."),
 
 
     /**
@@ -61,7 +66,6 @@ public enum ErrorCode {
 
     // 팀관련
     NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 40405, "팀을 찾을 수 없습니다."),
-    NOT_MY_TEAM(HttpStatus.NOT_FOUND, 40406, "내가 속한 팀이 아닙니다."),
     NOT_TEAM_LEADER(HttpStatus.NOT_FOUND, 40407, "팀 리더를 찾을 수 없습니다."),
     APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, 40408, "신청을 찾을 수 없습니다."),
     TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 40409, "해당 팀원을 찾을 수 없습니다."),
@@ -91,7 +95,7 @@ public enum ErrorCode {
     DB_CONSTRAINT_VIOLATION(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "DB 제약조건 문제 발생, 서버 개발자에게 문의해주세요"),
 
     // OpenAI 관련
-    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다."),;
+    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다.");
 
 
     private final HttpStatus status;

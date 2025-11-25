@@ -49,7 +49,7 @@ public class ContestServiceImpl implements ContestService {
         Page<Contest> contests = contestRepository.searchByKeyword(keyword, pageable);
 
         if (contests.isEmpty()) {
-            return ContestListResponse.of(List.of(), contests.getTotalPages(), contests.getNumber(), contests.getTotalElements());
+            return ContestListResponse.of(List.of(), contests.getNumber(), contests.getTotalPages(), contests.getTotalElements());
         }
 
         // 2. contestId 리스트

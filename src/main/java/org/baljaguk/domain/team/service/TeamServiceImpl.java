@@ -263,7 +263,11 @@ public class TeamServiceImpl implements TeamService {
             JsonNode root = mapper.readTree(json);
 
             List<String> tags = new ArrayList<>();
-            root.get("tags").forEach(tagNode -> tags.add(tagNode.asText()));
+            JsonNode tagsNode = root.get("tags");
+            if (tagsNode == null || !tagsNode.isArray()) {
+                throw new IllegalStateException("AI 응답에 'tags' 배열이 없습니다");
+            }
+            tagsNode.forEach(tagNode -> tags.add(tagNode.asText()));
 
             // 엔티티에 저장
             apply.updateAiTags(tags);

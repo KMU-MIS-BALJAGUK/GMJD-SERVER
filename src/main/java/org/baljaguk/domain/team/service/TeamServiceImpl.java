@@ -1,5 +1,6 @@
 package org.baljaguk.domain.team.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +15,13 @@ import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
 import org.baljaguk.global.api.GeneralException;
-import org.baljaguk.global.client.GptClient;
+import org.baljaguk.global.client.GeminiClient;
 import org.baljaguk.global.util.PromptUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -36,7 +38,7 @@ public class TeamServiceImpl implements TeamService {
     private final TeamApplyRepository teamApplyRepository;
     private final AnswerRepository answerRepository;
 
-    private final GptClient gptClient;
+    private final GeminiClient geminiClient;
 
 
     @Override
@@ -46,12 +48,12 @@ public class TeamServiceImpl implements TeamService {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CONTEST));
 
-        String prompt = PromptUtil.generatePrompt(
+        String prompt = PromptUtil.generateQuestionPrompt(
                 contest.getEndDate().toString(),
                 contest.getName()
         );
 
-        String aiResponse = PromptUtil.extractJson(gptClient.callOpenAI(prompt));
+        String aiResponse = PromptUtil.extractJson(geminiClient.generate(prompt));
 
         ObjectMapper objectMapper = new ObjectMapper();
         AIQuestionJsonResponse parsed;
@@ -189,8 +191,12 @@ public class TeamServiceImpl implements TeamService {
         }
 
         // 이미 해당 팀에 신청했는지 확인 (팀 단위 중복 신청 방지)
-        boolean exists = teamApplyRepository.existsByUserAndTeam(user, team);
-        if (exists) {
+        boolean existsRequested = teamApplyRepository.existsByUserAndTeamAndStatus(
+                user,
+                team,
+                RegisterStatus.REQUESTED
+        );
+        if (existsRequested) {
             throw new GeneralException(ErrorCode.ALREADY_APPLIED_TEAM);
         }
 
@@ -237,6 +243,36 @@ public class TeamServiceImpl implements TeamService {
                     questions.get(i)
             );
             answerRepository.save(answer);
+        }
+
+        try {
+            // Prompt 생성
+            String prompt = PromptUtil.generateSummaryTagPrompt(
+                    user.getLevel(),
+                    request
+            );
+
+            // Gemini 호출
+            String aiResponse = geminiClient.generate(prompt);
+
+            // JSON만 추출
+            String json = PromptUtil.extractJson(aiResponse);
+
+            // JSON 파싱 (tags 배열 추출)
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(json);
+
+            List<String> tags = new ArrayList<>();
+            root.get("tags").forEach(tagNode -> tags.add(tagNode.asText()));
+
+            // 엔티티에 저장
+            apply.updateAiTags(tags);
+
+            log.info("✨ AI 요약 태그 저장 완료: {}", tags);
+
+        } catch (Exception e) {
+            log.error("❌ AI 요약 태그 생성 실패 — 계속 진행 (지원은 정상 처리됨)", e);
+            // 실패해도 팀 신청 자체는 성공해야 하므로 예외 던지지 않음
         }
     }
 
@@ -405,7 +441,8 @@ public class TeamServiceImpl implements TeamService {
                         TeamApplicantListResponse.ApplicantInfo.of(
                                 apply.getUser().getId(),
                                 apply.getUser().getProfileImageUrl(),
-                                apply.getUser().getName()
+                                apply.getUser().getName(),
+                                apply.getAiTags()
                         )
                 )
                 .toList();

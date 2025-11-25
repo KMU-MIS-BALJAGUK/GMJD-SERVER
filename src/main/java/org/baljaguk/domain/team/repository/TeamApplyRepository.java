@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, TeamApplyRepositoryCustom {
-    boolean existsByUserAndTeam(User user, Team team);
+    boolean existsByUserAndTeamAndStatus(User user, Team team, RegisterStatus status);
 
     boolean existsByUserAndTeamContestAndStatus(User user, Contest contest, RegisterStatus status);
 

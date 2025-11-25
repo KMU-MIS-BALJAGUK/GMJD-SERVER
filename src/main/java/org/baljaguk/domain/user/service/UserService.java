@@ -1,9 +1,7 @@
 package org.baljaguk.domain.user.service;
 
-import org.baljaguk.domain.user.dto.request.CategoryUpdateRequest;
-import org.baljaguk.domain.user.dto.request.EducationUpdateRequest;
-import org.baljaguk.domain.user.dto.request.SkillUpdateRequest;
-import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
+import jakarta.validation.Valid;
+import org.baljaguk.domain.user.dto.request.*;
 import org.baljaguk.domain.user.dto.response.ProfileResponse;
 import org.baljaguk.domain.user.dto.response.UserSkillsResponse;
 
@@ -19,6 +17,8 @@ public interface UserService {
     ProfileResponse getMyProfile(Long userId);
 
     UserSkillsResponse getMySkills(Long userId);
+
+    void updateIntroduction(Long userId, @Valid IntroductionUpdateRequest request);
 }
 
 

@@ -5,10 +5,7 @@ import jakarta.validation.Valid;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
-import org.baljaguk.domain.user.dto.request.CategoryUpdateRequest;
-import org.baljaguk.domain.user.dto.request.EducationUpdateRequest;
-import org.baljaguk.domain.user.dto.request.SkillUpdateRequest;
-import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
+import org.baljaguk.domain.user.dto.request.*;
 import org.baljaguk.domain.user.dto.response.ProfileResponse;
 import org.baljaguk.domain.user.dto.response.UserSkillsResponse;
 import org.baljaguk.domain.user.service.UserService;
@@ -112,5 +109,19 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserSkillsResponse>> getMySkills(@AuthenticationPrincipal CustomUserDetails userDetails) {
         UserSkillsResponse response = userService.getMySkills(userDetails.getUserId());
         return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @PatchMapping("/introduction")
+    @Operation(
+            summary = "한줄소개(Introduction) 수정 API",
+            description = "로그인한 사용자의 한줄소개를 수정합니다. 비어 있을 수 없으며, 1개의 문자열만 전달합니다."
+    )
+    public ResponseEntity<ApiResponse<Void>> updateIntroduction(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody IntroductionUpdateRequest request
+    ) {
+        userService.updateIntroduction(userDetails.getUserId(), request);
+
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

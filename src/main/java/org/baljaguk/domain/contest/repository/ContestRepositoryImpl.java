@@ -40,11 +40,12 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
         }
 
         // 전체 개수 조회
-        long total = queryFactory
+        Long totalCount = queryFactory
                 .select(c.count())
                 .from(c)
                 .where(builder)
                 .fetchOne();
+        long total = totalCount != null ? totalCount : 0L;
 
         // 실제 데이터 조회 + 페이징
         List<Contest> results = queryFactory
@@ -54,7 +55,7 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(results, pageable, total);
+        return new PageImpl<>(results, pageable, totalCount);
     }
 
     @Override
@@ -93,12 +94,13 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
                 .fetch();
 
         // total count 조회
-        long total = queryFactory
+        Long totalCount = queryFactory
                 .select(c.count())
                 .from(c)
                 .where(builder)
                 .fetchOne();
+        long total = totalCount != null ? totalCount : 0L;
 
-        return new PageImpl<>(results, pageable, total);
+        return new PageImpl<>(results, pageable, totalCount);
     }
 }

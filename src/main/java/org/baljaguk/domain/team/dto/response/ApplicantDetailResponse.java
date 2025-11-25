@@ -1,5 +1,6 @@
 package org.baljaguk.domain.team.dto.response;
 
+import java.util.Arrays;
 import java.util.List;
 
 public record ApplicantDetailResponse(
@@ -8,8 +9,9 @@ public record ApplicantDetailResponse(
         String profileImageUrl,
         String name,
         Integer level,
-        List<String> skills,              // TeamApply.skills CSV → List<String>
-        List<QuestionAnswerInfo> qaList   // 질문 + 답변 리스트
+        List<String> aiTags,               // CSV → List<String>
+        List<String> skills,               // CSV → List<String>
+        List<QuestionAnswerInfo> qaList
 ) {
 
     public static ApplicantDetailResponse of(
@@ -17,7 +19,8 @@ public record ApplicantDetailResponse(
             String profileImageUrl,
             String name,
             Integer level,
-            List<String> skills,
+            String aiTagsCsv,          // CSV 문자열
+            String skillsCsv,          // CSV 문자열
             List<QuestionAnswerInfo> qaList
     ) {
         return new ApplicantDetailResponse(
@@ -25,15 +28,23 @@ public record ApplicantDetailResponse(
                 profileImageUrl,
                 name,
                 level,
-                skills,
+                convertCsvToList(aiTagsCsv),
+                convertCsvToList(skillsCsv),
                 qaList
         );
     }
 
-    /**
-     * 이너 DTO
-     * 질문 content + 코드 작성한 answer
-     */
+    /** CSV → List<String> 변환 유틸 */
+    private static List<String> convertCsvToList(String csv) {
+        if (csv == null || csv.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(csv.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+    }
+
     public record QuestionAnswerInfo(
             String question,
             String answer

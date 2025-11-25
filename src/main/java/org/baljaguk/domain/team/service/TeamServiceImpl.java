@@ -468,12 +468,7 @@ public class TeamServiceImpl implements TeamService {
 
         User applicant = apply.getUser();
 
-        // 3) 스킬 CSV → List<String>
-        List<String> skills = (apply.getSkills() == null || apply.getSkills().isBlank())
-                ? List.of()
-                : List.of(apply.getSkills().split(","));
-
-        // 4) Answer → QuestionAnswerInfo 매핑
+        // 3) Answer → QuestionAnswerInfo 매핑
         List<ApplicantDetailResponse.QuestionAnswerInfo> qaList =
                 apply.getAnswer().stream()
                         .map(answer ->
@@ -484,13 +479,14 @@ public class TeamServiceImpl implements TeamService {
                         )
                         .toList();
 
-        // 5) 응답 생성
+        // 4) 응답 생성
         return ApplicantDetailResponse.of(
                 applicant.getId(),
                 applicant.getProfileImageUrl(),
                 applicant.getName(),
                 applicant.getLevel(),
-                skills,
+                apply.getAiTags(),
+                apply.getSkills(),
                 qaList
         );
     }

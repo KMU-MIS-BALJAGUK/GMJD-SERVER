@@ -31,8 +31,14 @@ public class ContestController {
     @PostMapping("/search")
     @Operation(summary = "검색어로 공모전 조회",
             description = "공모전 제목, 공모전 주최기업명, 기업형태 중 검색어가 포함된 공모전을 조회합니다.")
-    public ResponseEntity<ApiResponse<ContestListResponse>> search(@Valid @RequestBody SearchRequest keyword) {
-        return ResponseEntity.ok(ApiResponse.ok(contestService.search(keyword)));
+    public ResponseEntity<ApiResponse<ContestListResponse>> search(
+            @Valid @RequestBody SearchRequest keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
+    ) {
+        ContestListResponse result = contestService.search(keyword, page, size);
+
+        return ResponseEntity.ok(ApiResponse.<ContestListResponse>ok(result));
     }
 
     @GetMapping
@@ -46,10 +52,13 @@ public class ContestController {
                     "\n  - 마감임박순 : deadline")
     public ResponseEntity<ApiResponse<ContestListResponse>> getContestsWithFilterAndSort(
             @RequestParam(required = false) List<Long> categoryIdList,
-            @RequestParam(defaultValue = "latest") String sortType
+            @RequestParam(defaultValue = "latest") String sortType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
     ) {
-        ContestListResponse result = contestService.getContestsWithFilterAndSort(categoryIdList, sortType);
+        ContestListResponse result =
+                contestService.getContestsWithFilterAndSort(categoryIdList, sortType, page, size);
 
-        return ResponseEntity.ok(ApiResponse.ok(result));
+        return ResponseEntity.ok(ApiResponse.<ContestListResponse>ok(result));
     }
 }

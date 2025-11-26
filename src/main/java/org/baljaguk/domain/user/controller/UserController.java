@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping
+    @PatchMapping
     @Operation(
             summary = "자체 회원가입 API",
             description = """

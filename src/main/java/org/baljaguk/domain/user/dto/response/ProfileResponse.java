@@ -1,6 +1,8 @@
 package org.baljaguk.domain.user.dto.response;
 
 import org.baljaguk.domain.user.entity.User;
+import org.baljaguk.domain.user.entity.enums.Education;
+import org.baljaguk.domain.user.entity.enums.RecognizedDegree;
 
 import java.util.List;
 
@@ -12,6 +14,8 @@ public record ProfileResponse(
         String email,
         String universityName,
         String major,
+        Education education,
+        RecognizedDegree recognizedDegree,
         List<String> skillList, // 스킬셋
         List<String> categoryList // 관심분야
 ) {
@@ -35,6 +39,8 @@ public record ProfileResponse(
                 user.getEmail(),
                 user.getUniversityName(),
                 user.getMajor(),
+                user.getEducation(),
+                user.getRecognizedDegree(),
                 skillList,
                 categoryList
         );

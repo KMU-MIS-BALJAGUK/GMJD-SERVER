@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="last_read_time")
+@Table(name="last_read_time", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id","room_id"}))
 public class LastReadTime {
 
     @Id
@@ -25,7 +25,7 @@ public class LastReadTime {
     @Column(name="room_id",nullable = false)
     private Long roomId;
 
-    @Column(name="last_read_At")
+    @Column(name="last_read_at")
     private LocalDateTime lastReadAt;
 
     public void updateLastReadTime() {

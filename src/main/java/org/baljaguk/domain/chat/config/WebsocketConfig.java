@@ -1,6 +1,11 @@
 package org.baljaguk.domain.chat.config;
+import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.chat.service.StompHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -24,6 +29,10 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${spring.rabbitmq.password}")
     private String password;
 
+    @Autowired
+    @Lazy
+    private StompHandler stompHandler;
+
     //websocket + stomp메시징 구성
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -46,5 +55,10 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         // 클라이언트 websocket 최초 접속(핸드셰이크) 엔드포인트
         registry.addEndpoint("/ws/chat")
                 .setAllowedOriginPatterns("https://gmjd-web.vercel.app", "http://localhost:8080");
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(stompHandler);
     }
 }

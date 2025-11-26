@@ -1,5 +1,10 @@
 package org.baljaguk.domain.chat.service;
 
+import org.baljaguk.domain.user.dto.CustomUserDetails;
+import org.baljaguk.domain.user.entity.User;
+import org.baljaguk.domain.user.repository.UserRepository;
+import org.baljaguk.domain.user.service.UserServiceImpl;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +15,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -34,9 +41,10 @@ public class StompHandler implements ChannelInterceptor {
 
     // 채팅방 구독 경로 패턴: /topic/chat.room.{roomId}
     private static final Pattern ROOM_ID_PATTERN = Pattern.compile("/topic/chat\\.room\\.(\\d+)");
-
     private final JWTUtil jwtUtil;
+    @Lazy
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
 
     /**
      * 클라이언트로부터 메시지가 송신되기 전에 가로채서 처리
@@ -75,6 +83,7 @@ public class StompHandler implements ChannelInterceptor {
      * @param sessionAttributes websocket 생명주기에 맞는 세션(사용자 정보를 저장)
      */
     private void handleConnect(@NonNull StompHeaderAccessor accessor, @NonNull Map<String, Object> sessionAttributes) {
+
         String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -85,8 +94,21 @@ public class StompHandler implements ChannelInterceptor {
         String token = authorizationHeader.substring(7);
 
         try {
-            // JWTUtil을 사용하여 토큰에서 userId를 추출합
+            // JWTUtil을 사용하여 토큰에서 userId를 추출
             Long userId = jwtUtil.getUserId(token);
+
+            //User 객체 조회
+            User user = userRepository.findById(userId).orElse(null);
+
+            CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    customUserDetails,
+                    null, //
+                    customUserDetails.getAuthorities()
+            );
+
+            accessor.setUser(authentication);
 
             sessionAttributes.put(USER_ID_KEY, userId);
             log.info("STOMP CONNECT: User successfully authenticated and UserId={} saved to session attributes.", userId);

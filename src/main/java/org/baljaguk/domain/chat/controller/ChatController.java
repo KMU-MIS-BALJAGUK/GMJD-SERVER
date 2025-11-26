@@ -42,6 +42,7 @@ public class ChatController {
         User user = userDetails.getUser();
 
 
+
         //ChatMessageDto 생성
         ChatMessageDto chatMessageDto = ChatMessageDto.builder()
                 .roomId(roomId)
@@ -59,7 +60,7 @@ public class ChatController {
                     chatMessageDto
             );
         }catch (Exception e){
-            log.info("Failed to send message to RabbitMQ. RoomId: {}, UserId: {}", roomId, user.getId(), e);
+            log.error("Failed to send message to RabbitMQ. RoomId: {}, UserId: {}", roomId, user.getId(), e);
             throw new RuntimeException("메시지 발행 실패", e);
         }
 

@@ -5,15 +5,13 @@ import org.baljaguk.domain.category.entity.Category;
 import org.baljaguk.domain.category.entity.UserCategory;
 import org.baljaguk.domain.category.repository.CategoryRepository;
 import org.baljaguk.domain.category.repository.UserCategoryRepository;
-import org.baljaguk.domain.user.dto.request.EducationUpdateRequest;
-import org.baljaguk.domain.user.dto.request.UserUpdateRequest;
-import org.baljaguk.domain.user.dto.request.SkillUpdateRequest;
-import org.baljaguk.domain.user.dto.request.CategoryUpdateRequest;
+import org.baljaguk.domain.user.dto.request.*;
 import org.baljaguk.domain.user.dto.response.ProfileResponse;
 import org.baljaguk.domain.user.dto.response.UserSkillsResponse;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
+import org.baljaguk.global.api.GeneralException;
 import org.baljaguk.global.api.handler.CategoryException;
 import org.baljaguk.global.api.handler.UserException;
 import org.springframework.stereotype.Service;
@@ -110,5 +108,17 @@ public class UserServiceImpl implements UserService {
         );
 
         return UserSkillsResponse.from(user.getSkills());
+    }
+
+    @Override
+    @Transactional
+    public void updateIntroduction(Long userId, IntroductionUpdateRequest request) {
+
+        // 1. 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+        // 2. 한줄소개 업데이트
+        user.updateIntroduction(request.introduction());
     }
 }

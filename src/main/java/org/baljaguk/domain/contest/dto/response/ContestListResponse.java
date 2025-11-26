@@ -7,11 +7,19 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public record ContestListResponse(
-        List<ContestSummaryResponse> contests
+        List<ContestSummaryResponse> contests,
+        int currentPage,      // 현재 페이지 번호
+        int totalPages,       // 전체 페이지 개수
+        long totalElements    // 전체 공모전 개수
 ) {
 
-    public static ContestListResponse from(List<ContestSummaryResponse> contests) {
-        return new ContestListResponse(contests);
+    public static ContestListResponse of(
+            List<ContestSummaryResponse> contests,
+            int currentPage,
+            int totalPages,
+            long totalElements
+    ) {
+        return new ContestListResponse(contests, currentPage, totalPages, totalElements);
     }
 
     public static record ContestSummaryResponse(
@@ -24,6 +32,7 @@ public record ContestListResponse(
     ) {
 
         public static ContestSummaryResponse of(Contest contest, long openTeamCount) {
+
             long remainingDays = ChronoUnit.DAYS.between(
                     LocalDate.now(),
                     contest.getEndDate()

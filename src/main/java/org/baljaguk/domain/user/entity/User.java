@@ -113,4 +113,8 @@ public class User {
         this.education = education;
         this.recognizedDegree = recognizedDegree;
     }
+
+    public void updateIntroduction(String introduction) {
+        this.introduction = introduction;
+    }
 }

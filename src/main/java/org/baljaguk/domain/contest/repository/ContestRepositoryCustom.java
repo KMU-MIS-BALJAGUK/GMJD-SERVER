@@ -1,14 +1,13 @@
 package org.baljaguk.domain.contest.repository;
 
 import org.baljaguk.domain.contest.entity.Contest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ContestRepositoryCustom {
-    List<Contest> searchByKeyword(String keyword);
+    Page<Contest> searchByKeyword(String keyword, Pageable pageable);
 
-    List<Contest> findContestsWithFilterAndSort(
-            List<String> categoryNames,
-            String sortType
-    );
+    Page<Contest> findContestsWithFilterAndSort(List<String> categoryNames, String sortType, Pageable pageable);
 }

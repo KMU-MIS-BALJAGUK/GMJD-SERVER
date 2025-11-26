@@ -12,6 +12,9 @@ import org.baljaguk.domain.team.entity.TeamStatus;
 import org.baljaguk.domain.team.repository.TeamRepository;
 import org.baljaguk.global.api.ErrorCode;
 import org.baljaguk.global.api.GeneralException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,40 +39,52 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestListResponse search(SearchRequest keywordRequest) {
+    public ContestListResponse search(SearchRequest keywordRequest, int page, int size) {
 
         String keyword = keywordRequest.normalizedKeyword();
 
-        // 1. 검색 결과 조회
-        List<Contest> contests = contestRepository.searchByKeyword(keyword);
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 1. 검색 결과 조회 (페이징)
+        Page<Contest> contests = contestRepository.searchByKeyword(keyword, pageable);
 
         if (contests.isEmpty()) {
-            return ContestListResponse.from(List.of());
+            return ContestListResponse.of(List.of(), contests.getNumber(), contests.getTotalPages(), contests.getTotalElements());
         }
 
-        // 2. contestId 리스트 추출
+        // 2. contestId 리스트
         List<Long> contestIds = contests.stream()
                 .map(Contest::getId)
                 .toList();
 
-        // 3. 한 번의 쿼리로 팀 개수 조회 (N+1 제거)
+        // 3. 열린 팀 개수 조회
         Map<Long, Long> teamCountMap =
                 teamRepository.countByContestIdsGrouped(contestIds, TeamStatus.OPEN);
 
         // 4. DTO 변환
         List<ContestListResponse.ContestSummaryResponse> summaryResponses =
                 contests.stream()
-                        .map(contest -> {
-                            long openTeams = teamCountMap.getOrDefault(contest.getId(), 0L);
-                            return ContestListResponse.ContestSummaryResponse.of(contest, openTeams);
-                        })
+                        .map(contest -> ContestListResponse.ContestSummaryResponse.of(
+                                contest,
+                                teamCountMap.getOrDefault(contest.getId(), 0L)
+                        ))
                         .toList();
 
-        return ContestListResponse.from(summaryResponses);
+        return ContestListResponse.of(
+                summaryResponses,
+                contests.getNumber(),
+                contests.getTotalPages(),
+                contests.getTotalElements()
+        );
     }
 
     @Override
-    public ContestListResponse getContestsWithFilterAndSort(List<Long> categoryIdList, String sortType) {
+    public ContestListResponse getContestsWithFilterAndSort(
+            List<Long> categoryIdList,
+            String sortType,
+            int page,
+            int size
+    ) {
 
         // 1. categoryId → categoryName List로 변환
         List<String> categoryNames = null;
@@ -81,20 +96,29 @@ public class ContestServiceImpl implements ContestService {
                     .toList();
         }
 
-        // 2. QueryDSL로 필터링 + 정렬까지 DB에서 처리
-        List<Contest> contests =
-                contestRepository.findContestsWithFilterAndSort(categoryNames, sortType);
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 2. Page<Contest> 조회
+        Page<Contest> contestsPage =
+                contestRepository.findContestsWithFilterAndSort(categoryNames, sortType, pageable);
+
+        List<Contest> contests = contestsPage.getContent();
 
         if (contests.isEmpty()) {
-            return ContestListResponse.from(List.of());
+            return ContestListResponse.of(
+                    List.of(),
+                    page,
+                    contestsPage.getTotalPages(),
+                    contestsPage.getTotalElements()
+            );
         }
 
-        // 3. contestId 리스트 추출
+        // 3. contestId 추출
         List<Long> contestIds = contests.stream()
                 .map(Contest::getId)
                 .toList();
 
-        // 4. 팀 카운트 일괄 조회 (N+1 제거)
+        // 4. 팀 카운트 일괄 조회
         Map<Long, Long> teamCountMap =
                 teamRepository.countByContestIdsGrouped(contestIds, TeamStatus.OPEN);
 
@@ -107,7 +131,12 @@ public class ContestServiceImpl implements ContestService {
                         })
                         .toList();
 
-        return ContestListResponse.from(responses);
+        return ContestListResponse.of(
+                responses,
+                contestsPage.getNumber(),
+                contestsPage.getTotalPages(),
+                contestsPage.getTotalElements()
+        );
     }
 }
 

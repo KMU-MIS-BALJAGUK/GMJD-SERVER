@@ -7,6 +7,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.contest.entity.QContest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,14 +21,13 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Contest> searchByKeyword(String keyword) {
+    public Page<Contest> searchByKeyword(String keyword, Pageable pageable) {
         QContest c = QContest.contest;
 
         BooleanBuilder builder = new BooleanBuilder();
 
         if (keyword != null && !keyword.isBlank()) {
 
-            // QueryDSL stringTemplate 로 공백 제거한 컬럼 생성
             var trimmedName = Expressions.stringTemplate("REPLACE({0}, ' ', '')", c.name);
             var trimmedOrgName = Expressions.stringTemplate("REPLACE({0}, ' ', '')", c.organizationName);
             var trimmedCompanyType = Expressions.stringTemplate("REPLACE({0}, ' ', '')", c.companyType);
@@ -37,16 +39,30 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
                     .or(trimmedCategories.lower().contains(keyword.toLowerCase()));
         }
 
-        return queryFactory
+        // 전체 개수 조회
+        Long totalCount = queryFactory
+                .select(c.count())
+                .from(c)
+                .where(builder)
+                .fetchOne();
+        long total = totalCount != null ? totalCount : 0L;
+
+        // 실제 데이터 조회 + 페이징
+        List<Contest> results = queryFactory
                 .selectFrom(c)
                 .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        return new PageImpl<>(results, pageable, totalCount);
     }
 
     @Override
-    public List<Contest> findContestsWithFilterAndSort(
+    public Page<Contest> findContestsWithFilterAndSort(
             List<String> categoryNames,
-            String sortType
+            String sortType,
+            Pageable pageable
     ) {
         QContest c = QContest.contest;
 
@@ -65,13 +81,26 @@ public class ContestRepositoryImpl implements ContestRepositoryCustom {
         OrderSpecifier<?> orderSpecifier = switch (sortType) {
             case "popular" -> c.views.desc();
             case "deadline" -> c.endDate.asc();
-            default -> c.startDate.desc();  // 최신순(default)
+            default -> c.startDate.desc();
         };
 
-        return queryFactory
+        // 데이터 조회
+        List<Contest> results = queryFactory
                 .selectFrom(c)
                 .where(builder)
                 .orderBy(orderSpecifier)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        // total count 조회
+        Long totalCount = queryFactory
+                .select(c.count())
+                .from(c)
+                .where(builder)
+                .fetchOne();
+        long total = totalCount != null ? totalCount : 0L;
+
+        return new PageImpl<>(results, pageable, totalCount);
     }
 }

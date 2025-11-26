@@ -11,14 +11,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CookieConfig {
 
-    @PostConstruct
-    public void logConfig() {
-        System.out.println("=== CookieConfig Loaded ===");
-        System.out.println("domain = [" + domain + "]");
-        System.out.println("sameSite = [" + sameSite + "]");
-        System.out.println("secure = " + secure);
-    }
-
     @Value("${app.cookie.domain:}")
     private String domain;
 

@@ -98,7 +98,8 @@ public class StompHandler implements ChannelInterceptor {
             Long userId = jwtUtil.getUserId(token);
 
             //User 객체 조회
-            User user = userRepository.findById(userId).orElse(null);
+            User user = userRepository.findById(userId).
+                    orElseThrow(()->new IllegalArgumentException("user not found at stomphandler"+userId));
 
             CustomUserDetails customUserDetails = new CustomUserDetails(user);
 

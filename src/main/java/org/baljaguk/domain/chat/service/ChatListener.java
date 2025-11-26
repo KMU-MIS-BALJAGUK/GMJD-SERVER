@@ -20,11 +20,11 @@ public class ChatListener {
     private final ChatPersistenceService chatPersistenceService;
 
     //RabbitMQ의 queue에서 message를 consume -> DB 저장
-    @RabbitListener(queues = RabbitMqConfig.PERSISTENCE_QUEUE_NAME)
+    @RabbitListener(queues = RabbitMqConfig.PERSISTENCE_QUEUE_NAME,containerFactory = "rabbitListenerContainerFactory")
     public void handleChatMessage(ChatMessageDto chatMessageDto, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
         try {
             log.info("AMQP Consumed - Received message from queue: {}", chatMessageDto);
-            log.info("AMQP Consumed - Saving message to DB: {}", chatMessageDto.getMessage());
+            log.error("AMQP Consumed - Saving message roomId: {}", chatMessageDto.getRoomId());
 
             chatPersistenceService.saveMessage(chatMessageDto);
             channel.basicAck(deliveryTag, false); // 메시지 처리 성공

@@ -23,8 +23,8 @@ public class ChatListener {
     @RabbitListener(queues = RabbitMqConfig.PERSISTENCE_QUEUE_NAME,containerFactory = "rabbitListenerContainerFactory")
     public void handleChatMessage(ChatMessageDto chatMessageDto, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
         try {
-            log.info("AMQP Consumed - Received message from queue: {}", chatMessageDto);
-            log.error("AMQP Consumed - Saving message roomId: {}", chatMessageDto.getRoomId());
+            log.debug("AMQP Consumed - Received message from roomId: {}", chatMessageDto.getRoomId());
+            log.debug("AMQP Consumed - Saving message roomId: {}", chatMessageDto.getRoomId());
 
             chatPersistenceService.saveMessage(chatMessageDto);
             channel.basicAck(deliveryTag, false); // 메시지 처리 성공

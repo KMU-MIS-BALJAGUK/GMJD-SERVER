@@ -30,8 +30,6 @@ public class GeminiClient {
                 geminiConfig.getApiKey()
         );
 
-        log.info("📌 Gemini 요청 URL = {}");
-
         // Gemini requestBody 규격에 맞게 변환
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(

@@ -39,56 +39,19 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public ContestListResponse search(SearchRequest keywordRequest, int page, int size) {
-
-        String keyword = keywordRequest.normalizedKeyword();
-
-        Pageable pageable = PageRequest.of(page, size);
-
-        // 1. 검색 결과 조회 (페이징)
-        Page<Contest> contests = contestRepository.searchByKeyword(keyword, pageable);
-
-        if (contests.isEmpty()) {
-            return ContestListResponse.of(List.of(), contests.getNumber(), contests.getTotalPages(), contests.getTotalElements());
-        }
-
-        // 2. contestId 리스트
-        List<Long> contestIds = contests.stream()
-                .map(Contest::getId)
-                .toList();
-
-        // 3. 열린 팀 개수 조회
-        Map<Long, Long> teamCountMap =
-                teamRepository.countByContestIdsGrouped(contestIds, TeamStatus.OPEN);
-
-        // 4. DTO 변환
-        List<ContestListResponse.ContestSummaryResponse> summaryResponses =
-                contests.stream()
-                        .map(contest -> ContestListResponse.ContestSummaryResponse.of(
-                                contest,
-                                teamCountMap.getOrDefault(contest.getId(), 0L)
-                        ))
-                        .toList();
-
-        return ContestListResponse.of(
-                summaryResponses,
-                contests.getNumber(),
-                contests.getTotalPages(),
-                contests.getTotalElements()
-        );
-    }
-
-    @Override
-    public ContestListResponse getContestsWithFilterAndSort(
+    public ContestListResponse getContestList(
+            SearchRequest keywordRequest,
             List<Long> categoryIdList,
             String sortType,
             int page,
             int size
     ) {
 
-        // 1. categoryId → categoryName List로 변환
-        List<String> categoryNames = null;
+        // 검색어 정리 (null 허용)
+        String keyword = (keywordRequest != null) ? keywordRequest.normalizedKeyword() : null;
 
+        // Category ID → Category Name 매핑
+        List<String> categoryNames = null;
         if (categoryIdList != null && !categoryIdList.isEmpty()) {
             categoryNames = categoryRepository.findAllById(categoryIdList)
                     .stream()
@@ -98,44 +61,45 @@ public class ContestServiceImpl implements ContestService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        // 2. Page<Contest> 조회
-        Page<Contest> contestsPage =
-                contestRepository.findContestsWithFilterAndSort(categoryNames, sortType, pageable);
+        // Page<Contest> 조회 (검색 + 필터 + 정렬 통합)
+        Page<Contest> contestPage =
+                contestRepository.findContestsUnified(keyword, categoryNames, sortType, pageable);
 
-        List<Contest> contests = contestsPage.getContent();
+        List<Contest> contests = contestPage.getContent();
 
         if (contests.isEmpty()) {
             return ContestListResponse.of(
                     List.of(),
                     page,
-                    contestsPage.getTotalPages(),
-                    contestsPage.getTotalElements()
+                    contestPage.getTotalPages(),
+                    contestPage.getTotalElements()
             );
         }
 
-        // 3. contestId 추출
+        // contestId 추출
         List<Long> contestIds = contests.stream()
                 .map(Contest::getId)
                 .toList();
 
-        // 4. 팀 카운트 일괄 조회
+        // 열린 팀 개수 일괄 조회
         Map<Long, Long> teamCountMap =
                 teamRepository.countByContestIdsGrouped(contestIds, TeamStatus.OPEN);
 
-        // 5. DTO 변환
+        // DTO 변환
         List<ContestListResponse.ContestSummaryResponse> responses =
                 contests.stream()
-                        .map(contest -> {
-                            long openTeams = teamCountMap.getOrDefault(contest.getId(), 0L);
-                            return ContestListResponse.ContestSummaryResponse.of(contest, openTeams);
-                        })
-                        .toList();
+                        .map(contest ->
+                                ContestListResponse.ContestSummaryResponse.of(
+                                        contest,
+                                        teamCountMap.getOrDefault(contest.getId(), 0L)
+                                )
+                        ).toList();
 
         return ContestListResponse.of(
                 responses,
-                contestsPage.getNumber(),
-                contestsPage.getTotalPages(),
-                contestsPage.getTotalElements()
+                contestPage.getNumber(),
+                contestPage.getTotalPages(),
+                contestPage.getTotalElements()
         );
     }
 }

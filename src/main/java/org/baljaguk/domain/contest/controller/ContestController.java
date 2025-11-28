@@ -28,37 +28,37 @@ public class ContestController {
         return ResponseEntity.ok(ApiResponse.ok(detailResponse));
     }
 
-    @PostMapping("/search")
-    @Operation(summary = "검색어로 공모전 조회",
-            description = "공모전 제목, 공모전 주최기업명, 기업형태 중 검색어가 포함된 공모전을 조회합니다.")
-    public ResponseEntity<ApiResponse<ContestListResponse>> search(
-            @Valid @RequestBody SearchRequest keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "30") int size
-    ) {
-        ContestListResponse result = contestService.search(keyword, page, size);
-
-        return ResponseEntity.ok(ApiResponse.<ContestListResponse>ok(result));
-    }
-
-    @GetMapping
-    @Operation(summary = "필터링 및 정렬된 공모전 조회",
-            description = "필터링 및 정렬하여 공모전을 조회합니다.\n" +
-                    "\n필터링은 필수가 아닙니다." +
-                    "\n필터링은 카테고리 id 리스트로 입력합니다." +
-                    "\n정렬은" +
-                    "\n  - 전체(최신순) : latest" +
-                    "\n  - 인기순 : popular" +
-                    "\n  - 마감임박순 : deadline")
-    public ResponseEntity<ApiResponse<ContestListResponse>> getContestsWithFilterAndSort(
+    @PostMapping
+    @Operation(
+            summary = "공모전 목록 조회 (검색 + 필터링 + 정렬 통합)",
+            description = """
+                하나의 API에서 검색어 기반 검색, 카테고리 필터링, 정렬, 페이지네이션을 모두 지원합니다.
+                
+                검색: SearchRequest (본문)
+                필터링: categoryIdList
+                정렬:
+                   - latest   : 최신순
+                   - popular  : 인기순
+                   - deadline : 마감임박순
+                페이지네이션: page, size
+                """
+    )
+    public ResponseEntity<ApiResponse<ContestListResponse>> getContestList(
+            @Valid @RequestBody SearchRequest keywordRequest,
             @RequestParam(required = false) List<Long> categoryIdList,
             @RequestParam(defaultValue = "latest") String sortType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size
     ) {
-        ContestListResponse result =
-                contestService.getContestsWithFilterAndSort(categoryIdList, sortType, page, size);
 
-        return ResponseEntity.ok(ApiResponse.<ContestListResponse>ok(result));
+        ContestListResponse result = contestService.getContestList(
+                keywordRequest,
+                categoryIdList,
+                sortType,
+                page,
+                size
+        );
+
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

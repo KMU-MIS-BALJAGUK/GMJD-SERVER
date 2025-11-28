@@ -9,6 +9,11 @@ public record SearchRequest(
 
 ) {
     public String normalizedKeyword() {
+
+        if (keyword == null) {
+            return null;    // 검색 조건 없음
+        }
+
         return keyword
                 .trim()                 // 앞뒤 공백 제거
                 .replaceAll("\\s+", "");  // 공백 제거

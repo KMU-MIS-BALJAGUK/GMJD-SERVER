@@ -10,7 +10,7 @@ public class KeywordValidator implements ConstraintValidator<ValidKeyword, Strin
     public boolean isValid(String value, ConstraintValidatorContext context) {
 
         if (value == null) {
-            return false;
+            return true;
         }
 
         // 모든 공백 제거

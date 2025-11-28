@@ -11,7 +11,6 @@ import org.baljaguk.domain.user.dto.response.UserSkillsResponse;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
-import org.baljaguk.global.api.GeneralException;
 import org.baljaguk.global.api.handler.CategoryException;
 import org.baljaguk.global.api.handler.UserException;
 import org.springframework.stereotype.Service;

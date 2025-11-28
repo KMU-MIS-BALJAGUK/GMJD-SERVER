@@ -3,17 +3,18 @@ package org.baljaguk.domain.team.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.baljaguk.domain.team.dto.ContestInfoDto;
 import org.baljaguk.domain.contest.entity.QContest;
-import org.baljaguk.domain.team.dto.response.MyRecruitListResponse;
+import org.baljaguk.domain.team.dto.QContestInfoDto;
 import org.baljaguk.domain.team.entity.*;
 import org.springframework.stereotype.Repository;
-import org.baljaguk.domain.team.entity.RegisterStatus;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// Q-클래스 임포트
 import static org.baljaguk.domain.team.entity.QTeam.team;
 
 @Repository
@@ -26,7 +27,7 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
     public Map<Long, Long> countByContestIdsGrouped(List<Long> contestIds, TeamStatus status) {
 
         if (contestIds == null || contestIds.isEmpty()) {
-                return Map.of();
+            return Map.of();
         }
 
         List<Tuple> results = queryFactory
@@ -80,5 +81,27 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
                 .fetchOne();
 
         return Optional.ofNullable(result);
+    }
+
+
+    @Override
+    public List<ContestInfoDto>findContestInfoByTeamIds(List<Long> teamIds){
+
+        QTeam qTeam = QTeam.team;
+        QContest qContest = QContest.contest;
+
+        if (teamIds == null || teamIds.isEmpty()) return List.of();
+
+        return queryFactory
+                .from(qTeam)
+                .join(qTeam.contest, qContest)
+                .where(qTeam.id.in(teamIds))
+                .select(new QContestInfoDto(
+                        qContest.id,        // contestId
+                        qContest.name,      // contestName
+                        qContest.imageUrl,       // contestUrl
+                        qTeam.id            // teamId
+                ))
+                .fetch();
     }
 }

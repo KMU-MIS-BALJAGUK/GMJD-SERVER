@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.QChatMessage;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Repository
 @RequiredArgsConstructor
 public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
 

@@ -7,7 +7,5 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ContestRepositoryCustom {
-    Page<Contest> searchByKeyword(String keyword, Pageable pageable);
-
-    Page<Contest> findContestsWithFilterAndSort(List<String> categoryNames, String sortType, Pageable pageable);
+    Page<Contest> findContestsUnified(String keyword, List<String> categoryNames, String sortType, Pageable pageable);
 }

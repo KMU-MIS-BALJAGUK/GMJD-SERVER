@@ -10,7 +10,5 @@ import java.util.List;
 public interface ContestService {
     ContestDetailResponse getContestDetail(Long contestId);
 
-    ContestListResponse search(@Valid SearchRequest keyword, int page, int size);
-
-    ContestListResponse getContestsWithFilterAndSort(List<Long> categoryIdList, String sortType, int page, int size);
+    ContestListResponse getContestList(@Valid SearchRequest keywordRequest, List<Long> categoryIdList, String sortType, int page, int size);
 }

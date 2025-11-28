@@ -98,9 +98,9 @@ public class TeamRepositoryImpl implements TeamRepositoryCustom{
                 .where(qTeam.id.in(teamIds))
                 .select(new QContestInfoDto(
                         qContest.id,        // contestId
-                        qContest.name,      // contestName
-                        qContest.imageUrl,       // contestUrl
-                        qTeam.id            // teamId
+                        qTeam.id,      // TeamId
+                        qContest.name,       // contestName
+                        qContest.imageUrl            // contestUrl
                 ))
                 .fetch();
     }

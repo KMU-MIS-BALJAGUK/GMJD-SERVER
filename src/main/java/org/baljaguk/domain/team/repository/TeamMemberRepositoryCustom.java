@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface TeamMemberRepositoryCustom {
     List<TeamMember> findAllWithUserByTeamId(Long teamId);
+    List<Long> findTeamIdsByMemberId(Long teamId);
 }

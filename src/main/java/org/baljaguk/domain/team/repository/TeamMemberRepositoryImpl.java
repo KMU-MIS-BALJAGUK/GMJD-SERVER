@@ -25,4 +25,19 @@ public class TeamMemberRepositoryImpl implements TeamMemberRepositoryCustom {
                 .where(tm.team.id.eq(teamId))
                 .fetch();
     }
+
+    @Override
+    public List<Long> findTeamIdsByMemberId(Long memberId) {
+
+        QTeamMember teamMember = QTeamMember.teamMember;
+
+
+        return queryFactory
+                .select(teamMember.team.id)
+                .from(teamMember)
+                .where(teamMember.member.id.eq(memberId))
+                .fetch(); //List 형태 반환
+    }
+
 }
+

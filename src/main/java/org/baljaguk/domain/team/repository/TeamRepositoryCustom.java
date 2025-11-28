@@ -1,6 +1,6 @@
 package org.baljaguk.domain.team.repository;
 
-import org.baljaguk.domain.team.dto.response.MyRecruitListResponse;
+import org.baljaguk.domain.team.dto.ContestInfoDto;
 import org.baljaguk.domain.team.entity.Team;
 import org.baljaguk.domain.team.entity.TeamStatus;
 
@@ -15,5 +15,7 @@ public interface TeamRepositoryCustom {
     List<Team> findClosedTeamsByUserId(Long userId);
 
     Optional<Team> findTeamWithContestByTeamId(Long teamId);
+
+    List<ContestInfoDto> findContestInfoByTeamIds(List<Long> teamIds);
 
 }

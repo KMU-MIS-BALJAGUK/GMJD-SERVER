@@ -3,7 +3,6 @@ package org.baljaguk.domain.chat.service;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.UserRepository;
-import org.baljaguk.domain.user.service.UserServiceImpl;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import lombok.NonNull;
@@ -39,7 +38,7 @@ public class StompHandler implements ChannelInterceptor {
     private static final String USER_ID_KEY = "userId";
     private static final String ROOM_ID_KEY = "roomId";
 
-    // 채팅방 구독 경로 패턴: /topic/chat.room.{roomId}
+    // SUBSCRIBE 프레임의 destination 헤더에서 roomId를 추출
     private static final Pattern ROOM_ID_PATTERN = Pattern.compile("/topic/chat\\.room\\.(\\d+)");
     private final JWTUtil jwtUtil;
     @Lazy
@@ -67,6 +66,7 @@ public class StompHandler implements ChannelInterceptor {
         }
         // 2. SUBSCRIBE 명령어 처리 (roomId 저장)
         else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+            log.info("subscribe: {}", sessionAttributes);
             handleSubscribe(accessor, sessionAttributes);
         }
         // 3. DISCONNECT 명령어 처리 (단순 로깅)

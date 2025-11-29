@@ -23,7 +23,7 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
             // permessage-deflate 제거
             String ext = req.getHeader("Sec-WebSocket-Extensions");
             if (ext != null && ext.contains("permessage-deflate")) {
-                req.setAttribute("Sec-WebSocket-Extensions", "");
+                serverHttpRequest.getHeaders().remove("Sec-WebSocket-Key");
             }
         }
 

@@ -20,4 +20,6 @@ public class ChatMessageDto {
     private Long userId;
 
     private LocalDateTime createdAt;
+
+    private String profileImageUrl;
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.baljaguk.global.security.jwt.JWTFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -103,6 +104,7 @@ public class SecurityConfig {
                         "/api/v1/contests/**",
                         "/api/v1/categories"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/teams/{contestId:[0-9]+}").permitAll()
                 .anyRequest().authenticated()
         );
 

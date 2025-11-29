@@ -1,8 +1,10 @@
 package org.baljaguk.domain.chat.config;
-import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.chat.service.StompHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -60,5 +62,12 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompHandler);
+    }
+
+    @Bean
+    public WebServerFactoryCustomizer<TomcatServletWebServerFactory> webServerFactoryCustomizer() {
+        return factory -> factory.addContextCustomizers(context -> {
+            context.getServletContext().setAttribute("org.apache.tomcat.websocket.server.DISABLE_PERMESSAGE_DEFLATE", true);
+        });
     }
 }

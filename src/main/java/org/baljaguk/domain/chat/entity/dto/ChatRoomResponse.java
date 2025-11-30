@@ -18,5 +18,5 @@ public class ChatRoomResponse {
 
     private LastChatInfoDto lastChatInfo;
 
-    private Long teamMemeberCount;
+    private Long teamMemberCount;
 }

@@ -72,8 +72,12 @@ public class ChatRoomService {
         List<ChatRoomResponse> chatRoomResponses = chatRooms.stream().map(room -> {
 
             ContestInfoDto contestInfo = contestInfoMap.get(room.getTeam().getId());
+
             long unreadCount = unreadCountMap.getOrDefault(room.getId(), 0L);
+
             ChatMessage latestMessage = latestMessageMap.get(room.getId());
+
+            Long teamMemberCount=teamMemberRepository.countByTeam(room.getTeam());
 
             LastChatInfoDto lastChatInfo = LastChatInfoDto.builder()
                     .lastMessage(latestMessage != null ? latestMessage.getMessage() : "아직 메시지가 없습니다.")
@@ -81,7 +85,7 @@ public class ChatRoomService {
                     .unReadMessageCount(unreadCount)
                     .build();
 
-            return new ChatRoomResponse(room.getId(), contestInfo, lastChatInfo);
+            return new ChatRoomResponse(room.getId(), contestInfo, lastChatInfo,teamMemberCount);
         }).collect(Collectors.toList());
 
         return new ChatRoomListResponse(chatRoomResponses);

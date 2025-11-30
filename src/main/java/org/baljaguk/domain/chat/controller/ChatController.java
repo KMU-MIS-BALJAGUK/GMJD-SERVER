@@ -49,10 +49,12 @@ public class ChatController {
                 .message(message.getMessage())
                 .userId(user.getId())
                 .createdAt(LocalDateTime.now())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
 
         log.info("Attempting to send message to RabbitMQ persistence queue. RoomId: {}, UserId: {}, Message: {}",
                 roomId, user.getId(), message.getMessage());
+
         // Queue로 message publishing (AMPQ)
         try {
             rabbitTemplate.convertAndSend(

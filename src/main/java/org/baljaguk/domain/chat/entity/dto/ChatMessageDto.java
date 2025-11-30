@@ -22,6 +22,8 @@ public class ChatMessageDto {
     private Long userId;
 
     private LocalDateTime createdAt;
+  
+    private String profileImageUrl;
 
     public static ChatMessageDto from(ChatMessage chatMessage) {
         return ChatMessageDto.builder()
@@ -31,4 +33,5 @@ public class ChatMessageDto {
                 .userId(chatMessage.getUserId())
                 .build();
     }
+    
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -16,5 +17,9 @@ public class ChatMessageResponse {
     private List<ChatMessageDto> messages;
 
     private List<TeamMemberInfoDto> teamMembers;
+
+    private Long lastMessageId;
+
+    private LocalDateTime lastMessageAt;
 
 }

@@ -1,6 +1,7 @@
 package org.baljaguk.domain.chat.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,14 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    private final QChatMessage chatMessage = QChatMessage.chatMessage;
+
     @Override
     public Map<Long, Long> getUnreadCounts(Map<Long, LocalDateTime> lastReadTimes) {
         if (lastReadTimes == null || lastReadTimes.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        QChatMessage chatMessage = QChatMessage.chatMessage;
         BooleanBuilder builder = new BooleanBuilder();
 
         // 각 채팅방마다 마지막으로 읽은 시간 이후의 메시지를 조회하는 조건을 동적으로 생성
@@ -62,7 +64,6 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
             return Collections.emptyList();
         }
 
-        QChatMessage chatMessage = QChatMessage.chatMessage;
         QChatMessage subChatMessage = new QChatMessage("subChatMessage");
 
         // 각 채팅방 ID별로 가장 최근 메시지 ID(max(id))를 찾는 서브쿼리 사용
@@ -75,5 +76,25 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
                                 .groupBy(subChatMessage.chatRoom.id)
                 ))
                 .fetch();
+    }
+
+    @Override
+    public List<ChatMessage> findMessagesByCursor(Long roomId, Long lastMessageId, LocalDateTime lastMessageAt, Integer size) {
+
+        return queryFactory.selectFrom(chatMessage)
+                .where(
+                        chatMessage.chatRoom.id.eq(roomId),
+                        cursorCondition(lastMessageId,lastMessageAt)
+                )
+                .orderBy(chatMessage.createdAt.desc(), chatMessage.id.desc())
+                .limit(size+1)
+                .fetch();
+    }
+
+    private BooleanExpression cursorCondition(Long lastMessageId, LocalDateTime lastMessageAt) {
+        if(lastMessageId == null || lastMessageAt == null) return null;
+
+        return chatMessage.createdAt.lt(lastMessageAt)
+                .or(chatMessage.createdAt.eq(lastMessageAt).and(chatMessage.chatRoom.id.lt(lastMessageId)));
     }
 }

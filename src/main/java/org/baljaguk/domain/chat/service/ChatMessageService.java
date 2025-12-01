@@ -34,7 +34,7 @@ public class ChatMessageService {
 
         // 1. roomId로 ChatRoom 조회, 없으면 예외 발생
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("채팅방 x: "+roomId));
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
 
         // 2. 사용자가 속한 Team 목록 조회
         List<Long> userTeams = teamMemberRepository.findTeamIdsByMemberId(customUserDetails.getUserId());
@@ -50,23 +50,26 @@ public class ChatMessageService {
         // chat history 조회 (size+1)로 조회함으로써 hasNext 판단
         List<ChatMessage> chatMessages = chatMessageRepository.findMessagesByCursor(roomId, cursorMessageId, cursorMessageAt, size + 1);
 
-        boolean hasNext = false;
+        boolean hasNext;
 
         // size보다 큰 messages가 들어오면 hasNext = true
         if (chatMessages.size() > size) {
             hasNext = true;
             //마지막 삭제
             chatMessages.remove(chatMessages.size() - 1);
-        }
+        }else hasNext = false;
 
-        Long nextCursorMessageId = null;
-        LocalDateTime nextCursorMessageAt = null;
+        Long nextCursorMessageId;
+        LocalDateTime nextCursorMessageAt;
 
         // 다음 커서 정보 추출 (메시지가 있을 경우에만)
         if (!chatMessages.isEmpty()) {
             ChatMessage lastMessage = chatMessages.get(chatMessages.size() - 1);
             nextCursorMessageId = lastMessage.getId();
             nextCursorMessageAt = lastMessage.getCreatedAt();
+        }else {
+            nextCursorMessageId = null;
+            nextCursorMessageAt = null;
         }
 
 

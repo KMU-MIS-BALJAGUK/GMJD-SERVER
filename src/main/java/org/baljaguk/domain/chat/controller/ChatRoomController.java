@@ -41,12 +41,13 @@ public class ChatRoomController {
             description = "roomId에 해당하는 채팅 내역을 커서(messageId, messageAt) 기반으로 조회합니다."
     )
     public ResponseEntity<ApiResponse<ChatMessageResponse>> getChatHistory(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long roomId,
             @RequestParam(required = false) Long cursorMessageId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorMessageAt,
             @RequestParam(defaultValue = "30") Integer size
     ){
-        ChatMessageResponse chatMessageResponse = chatMessageService.getChatHistory(roomId, cursorMessageId, cursorMessageAt, size);
+        ChatMessageResponse chatMessageResponse = chatMessageService.getChatHistory(customUserDetails,roomId, cursorMessageId, cursorMessageAt, size);
 
         return ResponseEntity.ok(ApiResponse.ok(chatMessageResponse));
     }

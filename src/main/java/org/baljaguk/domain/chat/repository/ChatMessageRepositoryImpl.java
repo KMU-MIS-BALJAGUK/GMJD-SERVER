@@ -95,6 +95,6 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
         if(lastMessageId == null || lastMessageAt == null) return null;
 
         return chatMessage.createdAt.lt(lastMessageAt)
-                .or(chatMessage.createdAt.eq(lastMessageAt).and(chatMessage.chatRoom.id.lt(lastMessageId)));
+                .or(chatMessage.createdAt.eq(lastMessageAt).and(chatMessage.id.lt(lastMessageId)));
     }
 }

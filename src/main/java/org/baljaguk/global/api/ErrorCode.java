@@ -70,7 +70,6 @@ public enum ErrorCode {
     APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, 40408, "신청을 찾을 수 없습니다."),
     TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 40409, "해당 팀원을 찾을 수 없습니다."),
 
-
     /**
      * 405 METHOD_NOT_ALLOWED
      */

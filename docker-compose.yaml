@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:4.2.0-management
+    container_name: gmjd-local-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP (spring.rabbitmq.port)
+      - "61613:61613" # STOMP (spring.websocket.broker.relay.port)
+      - "15672:15672" # RabbitMQ 관리자 UI
+
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

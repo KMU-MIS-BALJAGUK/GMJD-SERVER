@@ -3,16 +3,23 @@ package org.baljaguk.domain.chat.service;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.ChatRoom;
+import org.baljaguk.domain.chat.entity.ChatRoomMember;
 import org.baljaguk.domain.chat.entity.LastReadTime;
+import org.baljaguk.domain.chat.entity.dto.request.ChatRoomCreateRequest;
 import org.baljaguk.domain.chat.entity.dto.ChatRoomListResponse;
 import org.baljaguk.domain.chat.entity.dto.ChatRoomResponse;
 import org.baljaguk.domain.chat.entity.dto.LastChatInfoDto;
 import org.baljaguk.domain.chat.repository.ChatMessageRepository;
+import org.baljaguk.domain.chat.repository.ChatRoomMemberRepository;
 import org.baljaguk.domain.chat.repository.ChatRoomRepository;
 import org.baljaguk.domain.chat.repository.LastReadTimeRepository;
 import org.baljaguk.domain.team.dto.ContestInfoDto;
+import org.baljaguk.domain.team.entity.Team;
+import org.baljaguk.domain.team.entity.TeamMember;
 import org.baljaguk.domain.team.repository.TeamMemberRepository;
 import org.baljaguk.domain.team.repository.TeamRepository;
+import org.baljaguk.global.api.ErrorCode;
+import org.baljaguk.global.api.GeneralException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +36,7 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
     private final LastReadTimeRepository lastReadTimeRepository;
@@ -85,5 +93,33 @@ public class ChatRoomService {
         }).collect(Collectors.toList());
 
         return new ChatRoomListResponse(chatRoomResponses);
+    }
+
+    @Transactional
+    public Long createChatRoom(Long userId, ChatRoomCreateRequest request) {
+        // 1. 팀 찾기
+        Team team = teamRepository.findById(request.teamId())
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        // 2. 중복 방지
+        if (chatRoomRepository.existsByTeamId(team.getId())) {
+            throw new RuntimeException("이미 해당 팀의 채팅방이 존재합니다.");
+        }
+
+        // 3. 채팅방 생성
+        ChatRoom chatRoom = ChatRoom.create(team);
+        chatRoomRepository.save(chatRoom);
+
+        // 4. 팀원 조회
+        List<TeamMember> teamMembers = teamMemberRepository.findAllByTeam_Id(team.getId());
+
+        // 5. 멤버 저장
+        List<ChatRoomMember> chatRoomMembers = teamMembers.stream()
+                .map(tm -> ChatRoomMember.create(chatRoom, tm.getMember()))
+                .toList();
+
+        chatRoomMemberRepository.saveAll(chatRoomMembers);
+
+        return chatRoom.getId();
     }
 }

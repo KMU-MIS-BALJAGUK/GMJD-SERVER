@@ -19,4 +19,10 @@ public class ChatRoom {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
+    public static ChatRoom create(Team team) {
+        return ChatRoom.builder()
+                .team(team)
+                .build();
+    }
 }

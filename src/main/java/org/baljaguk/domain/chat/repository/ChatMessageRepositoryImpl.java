@@ -80,7 +80,10 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
 
     @Override
     public List<ChatMessage> findMessagesByCursor(Long roomId, Long lastMessageId, LocalDateTime lastMessageAt, Integer size) {
-
+        //size 검증 절차
+        if (size <= 0) {
+            throw new IllegalArgumentException("size must be positive");
+        }
         return queryFactory.selectFrom(chatMessage)
                 .where(
                         chatMessage.chatRoom.id.eq(roomId),
@@ -93,6 +96,7 @@ public class ChatMessageRepositoryImpl implements ChatMessageRepositoryCustom {
 
     private BooleanExpression cursorCondition(Long lastMessageId, LocalDateTime lastMessageAt) {
         if(lastMessageId == null || lastMessageAt == null) return null;
+
 
         return chatMessage.createdAt.lt(lastMessageAt)
                 .or(chatMessage.createdAt.eq(lastMessageAt).and(chatMessage.id.lt(lastMessageId)));

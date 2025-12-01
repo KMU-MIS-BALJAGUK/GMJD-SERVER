@@ -4,19 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.ChatRoom;
-import org.baljaguk.domain.chat.entity.ChatRoomMember;
 import org.baljaguk.domain.chat.entity.LastReadTime;
 import org.baljaguk.domain.chat.entity.dto.request.ChatRoomCreateRequest;
 import org.baljaguk.domain.chat.entity.dto.ChatRoomListResponse;
 import org.baljaguk.domain.chat.entity.dto.ChatRoomResponse;
 import org.baljaguk.domain.chat.entity.dto.LastChatInfoDto;
 import org.baljaguk.domain.chat.repository.ChatMessageRepository;
-import org.baljaguk.domain.chat.repository.ChatRoomMemberRepository;
 import org.baljaguk.domain.chat.repository.ChatRoomRepository;
 import org.baljaguk.domain.chat.repository.LastReadTimeRepository;
 import org.baljaguk.domain.team.dto.ContestInfoDto;
 import org.baljaguk.domain.team.entity.Team;
-import org.baljaguk.domain.team.entity.TeamMember;
 import org.baljaguk.domain.team.entity.TeamStatus;
 import org.baljaguk.domain.team.repository.TeamMemberRepository;
 import org.baljaguk.domain.team.repository.TeamRepository;
@@ -39,7 +36,6 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
     private final LastReadTimeRepository lastReadTimeRepository;
@@ -118,16 +114,6 @@ public class ChatRoomService {
             // 3. 채팅방 생성
             ChatRoom chatRoom = ChatRoom.create(team);
             chatRoomRepository.save(chatRoom);
-
-            // 4. 팀원 조회
-            List<TeamMember> teamMembers = teamMemberRepository.findAllByTeam_Id(team.getId());
-
-            // 5. 멤버 저장
-            List<ChatRoomMember> chatRoomMembers = teamMembers.stream()
-                    .map(tm -> ChatRoomMember.create(chatRoom, tm.getMember()))
-                    .toList();
-
-            chatRoomMemberRepository.saveAll(chatRoomMembers);
 
             return chatRoom.getId();
         }

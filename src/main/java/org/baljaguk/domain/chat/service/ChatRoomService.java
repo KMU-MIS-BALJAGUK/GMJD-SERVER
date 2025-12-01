@@ -1,6 +1,7 @@
 package org.baljaguk.domain.chat.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.ChatRoom;
 import org.baljaguk.domain.chat.entity.ChatRoomMember;
@@ -16,6 +17,7 @@ import org.baljaguk.domain.chat.repository.LastReadTimeRepository;
 import org.baljaguk.domain.team.dto.ContestInfoDto;
 import org.baljaguk.domain.team.entity.Team;
 import org.baljaguk.domain.team.entity.TeamMember;
+import org.baljaguk.domain.team.entity.TeamStatus;
 import org.baljaguk.domain.team.repository.TeamMemberRepository;
 import org.baljaguk.domain.team.repository.TeamRepository;
 import org.baljaguk.global.api.ErrorCode;
@@ -30,6 +32,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -98,28 +101,34 @@ public class ChatRoomService {
     @Transactional
     public Long createChatRoom(Long userId, ChatRoomCreateRequest request) {
         // 1. 팀 찾기
+        log.info("팀 찾기 쿼리 시작" + request.teamId());
         Team team = teamRepository.findById(request.teamId())
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+        log.info("팀 찾음" + team.getId());
 
-        // 2. 중복 방지
-        if (chatRoomRepository.existsByTeamId(team.getId())) {
-            throw new RuntimeException("이미 해당 팀의 채팅방이 존재합니다.");
+        if (team.getStatus() != TeamStatus.CLOSED) {
+            throw new GeneralException(ErrorCode.TEAM_NOT_CLOSED);
         }
 
-        // 3. 채팅방 생성
-        ChatRoom chatRoom = ChatRoom.create(team);
-        chatRoomRepository.save(chatRoom);
+            // 2. 중복 방지
+            if (chatRoomRepository.existsByTeamId(team.getId())) {
+                throw new RuntimeException("이미 해당 팀의 채팅방이 존재합니다.");
+            }
 
-        // 4. 팀원 조회
-        List<TeamMember> teamMembers = teamMemberRepository.findAllByTeam_Id(team.getId());
+            // 3. 채팅방 생성
+            ChatRoom chatRoom = ChatRoom.create(team);
+            chatRoomRepository.save(chatRoom);
 
-        // 5. 멤버 저장
-        List<ChatRoomMember> chatRoomMembers = teamMembers.stream()
-                .map(tm -> ChatRoomMember.create(chatRoom, tm.getMember()))
-                .toList();
+            // 4. 팀원 조회
+            List<TeamMember> teamMembers = teamMemberRepository.findAllByTeam_Id(team.getId());
 
-        chatRoomMemberRepository.saveAll(chatRoomMembers);
+            // 5. 멤버 저장
+            List<ChatRoomMember> chatRoomMembers = teamMembers.stream()
+                    .map(tm -> ChatRoomMember.create(chatRoom, tm.getMember()))
+                    .toList();
 
-        return chatRoom.getId();
+            chatRoomMemberRepository.saveAll(chatRoomMembers);
+
+            return chatRoom.getId();
+        }
     }
-}

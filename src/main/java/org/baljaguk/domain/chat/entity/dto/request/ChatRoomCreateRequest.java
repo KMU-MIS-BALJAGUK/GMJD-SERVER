@@ -1,8 +1,8 @@
 package org.baljaguk.domain.chat.entity.dto.request;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ChatRoomCreateRequest(
         @NotNull(message = "팀 ID는 필수입니다.")

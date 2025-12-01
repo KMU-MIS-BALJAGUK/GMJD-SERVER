@@ -1,6 +1,7 @@
 package org.baljaguk.domain.chat.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.baljaguk.domain.chat.entity.dto.request.ChatRoomCreateRequest;
 import org.baljaguk.domain.chat.entity.dto.ChatRoomListResponse;
@@ -37,7 +38,7 @@ public class ChatRoomController {
             description = "팀 모집이 마감되면 해당 팀의 채팅방을 생성하고 팀원들을 입장시킵니다.")
     public ResponseEntity<ApiResponse<Long>> createChatRoom(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ChatRoomCreateRequest request
+            @RequestBody @Valid ChatRoomCreateRequest request
     ) {
         Long roomId = chatRoomService.createChatRoom(userDetails.getUserId(), request);
         return ResponseEntity.ok(ApiResponse.ok(roomId));

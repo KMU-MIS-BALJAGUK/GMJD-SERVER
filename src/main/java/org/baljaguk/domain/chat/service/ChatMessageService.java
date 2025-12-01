@@ -9,7 +9,6 @@ import org.baljaguk.domain.chat.entity.dto.ChatMessageResponse;
 import org.baljaguk.domain.chat.entity.dto.TeamMemberInfoDto;
 import org.baljaguk.domain.chat.repository.ChatMessageRepository;
 import org.baljaguk.domain.chat.repository.ChatRoomRepository;
-import org.baljaguk.domain.team.entity.TeamMember;
 import org.baljaguk.domain.team.repository.TeamMemberRepository;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.global.api.ErrorCode;
@@ -35,7 +34,7 @@ public class ChatMessageService {
 
         // 1. roomId로 ChatRoom 조회, 없으면 예외 발생
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+                .orElseThrow(() -> new IllegalArgumentException("채팅방 x: "+roomId));
 
         // 2. 사용자가 속한 Team 목록 조회
         List<Long> userTeams = teamMemberRepository.findTeamIdsByMemberId(customUserDetails.getUserId());

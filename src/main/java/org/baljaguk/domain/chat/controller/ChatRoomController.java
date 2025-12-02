@@ -45,6 +45,8 @@ public class ChatRoomController {
     ) {
         ChatRoomIdResponse response = chatRoomService.createChatRoom(request);
         return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
     @GetMapping("/{roomId}")
     @Operation(
             summary = "채팅 내역 조회",

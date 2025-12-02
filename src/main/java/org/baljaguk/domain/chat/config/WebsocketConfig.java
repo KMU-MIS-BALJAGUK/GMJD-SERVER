@@ -1,5 +1,5 @@
 package org.baljaguk.domain.chat.config;
-import lombok.RequiredArgsConstructor;
+
 import org.baljaguk.domain.chat.service.StompHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
 
 //stomp 설정(채팅 broadcast)
 @Configuration
@@ -54,11 +55,13 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 클라이언트 websocket 최초 접속(핸드셰이크) 엔드포인트
         registry.addEndpoint("/ws/chat")
-                .setAllowedOriginPatterns("https://gmjd-web.vercel.app", "http://localhost:8080");
+                .setAllowedOriginPatterns("https://gmjd-web.vercel.app", "http://localhost:8080")
+                .addInterceptors(new WebSocketHandshakeInterceptor());
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompHandler);
     }
+
 }

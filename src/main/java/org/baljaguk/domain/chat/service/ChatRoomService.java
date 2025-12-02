@@ -76,11 +76,20 @@ public class ChatRoomService {
                 .stream()
                 .collect(Collectors.toMap(msg -> msg.getChatRoom().getId(), Function.identity()));
 
-        // 7. 데이터 조립
+        // 7. 팀 맴버 수 조회 -> Map<roomId, teamMemberCount>
+        Map<Long, Long> teamMemberCounts = teamIds.stream()
+                .collect(Collectors.toMap(
+                        teamId -> teamId,
+                        teamMemberRepository::countByTeamId
+                ));
+
+        // 8. 데이터 조립
         List<ChatRoomResponse> chatRoomResponses = chatRooms.stream().map(room -> {
 
             ContestInfoDto contestInfo = contestInfoMap.get(room.getTeam().getId());
+
             long unreadCount = unreadCountMap.getOrDefault(room.getId(), 0L);
+
             ChatMessage latestMessage = latestMessageMap.get(room.getId());
 
             LastChatInfoDto lastChatInfo = LastChatInfoDto.builder()
@@ -89,7 +98,9 @@ public class ChatRoomService {
                     .unReadMessageCount(unreadCount)
                     .build();
 
-            return new ChatRoomResponse(room.getId(), contestInfo, lastChatInfo);
+            Long teamMemberCount = teamMemberCounts.get(room.getTeam().getId());
+
+            return new ChatRoomResponse(room.getId(), contestInfo, lastChatInfo,teamMemberCount);
         }).collect(Collectors.toList());
 
         return new ChatRoomListResponse(chatRoomResponses);

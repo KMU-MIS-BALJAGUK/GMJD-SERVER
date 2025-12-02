@@ -9,4 +9,5 @@ import java.util.Map;
 public interface ChatMessageRepositoryCustom {
     Map<Long, Long> getUnreadCounts(Map<Long, LocalDateTime> lastReadTimes);
     List<ChatMessage> findLatestMessagesByRoomIds(List<Long> roomIds);
+    List<ChatMessage> findMessagesByCursor(Long roomId, Long lastMessageId, LocalDateTime lastMessageAt, Integer size);
 }

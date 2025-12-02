@@ -102,6 +102,15 @@ public class TeamServiceImpl implements TeamService {
         // 4. 팀 저장
         teamRepository.save(team);
 
+        // 본인을 팀멤버에 저장
+        TeamMember teamLeaderMember = TeamMember.create(
+                TeamMemberType.LEADER, // 팀장 타입
+                team,
+                user
+        );
+
+        teamMemberRepository.save(teamLeaderMember);
+
         // 5. 질문 저장
         if (request.questions() != null && !request.questions().isEmpty()) {
             List<Question> questionEntities = request.questions().stream()

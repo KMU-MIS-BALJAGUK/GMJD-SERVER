@@ -92,31 +92,31 @@ public class GoogleAuthService {
     public void logout(CustomUserDetails userDetails, HttpServletRequest request, HttpServletResponse response) {
         Long id = userDetails.getUser().getId();
 
-        // 1. Refresh Token 삭제
-        refreshTokenRepository.deleteById(id);
+        // 1. Refresh Token 쿠키에서 추출
+        String refreshToken = CookieUtil.getRefreshTokenFromCookie(request);
 
-        // 2. Access Token 추출
-        String authorizationHeader = request.getHeader(jwtConfig.getHeader());
-
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return;
+        if (refreshToken != null) {
+            String refreshJti = jwtUtil.getJti(refreshToken);
+            long ttl = jwtUtil.getRemainingExpiration(refreshToken);
+            blacklistTokenRepository.saveRefreshToken(refreshJti, ttl);
         }
 
-        String accessToken = authorizationHeader.substring(7).trim();
+        // 2. Redis 저장소에서 Refresh Token 삭제
+        refreshTokenRepository.deleteById(id);
 
         // 3. Access Token 블랙리스트 등록
-        String jti = jwtUtil.getJti(accessToken);
-        long expiration = jwtUtil.getRemainingExpiration(accessToken);
-        blacklistTokenRepository.save(jti, expiration);
+        String authorizationHeader = request.getHeader(jwtConfig.getHeader());
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String accessToken = authorizationHeader.substring(7).trim();
+            String accessJti = jwtUtil.getJti(accessToken);
+            long accessTtl = jwtUtil.getRemainingExpiration(accessToken);
+            blacklistTokenRepository.save(accessJti, accessTtl);
+        }
 
         // 4. 쿠키 삭제
-        CookieUtil.deleteCookie(
-                response,
-                "refreshToken",
-                cookieConfig.getDomain(),
-                cookieConfig.isSecure(),
-                cookieConfig.getSameSite()
-        );
+        CookieUtil.deleteCookie(response, "refreshToken",
+                cookieConfig.getDomain(), cookieConfig.isSecure(), cookieConfig.getSameSite());
     }
 
     public ResponseEntity<ApiResponse<Void>> reissueToken(HttpServletRequest request, HttpServletResponse response) {

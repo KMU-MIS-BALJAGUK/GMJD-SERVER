@@ -1,5 +1,6 @@
 package org.baljaguk.domain.user.service;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.domain.user.dto.response.JwtLoginResponse;
 import org.baljaguk.domain.user.entity.User;
 import org.baljaguk.domain.user.repository.BlacklistTokenRepository;
-import org.baljaguk.domain.user.repository.RefreshTokenRepository;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ApiResponse;
 import org.baljaguk.global.api.ErrorCode;
@@ -22,9 +22,7 @@ import org.baljaguk.global.security.client.dto.GoogleAccountProfileResponse;
 import org.baljaguk.global.util.CookieUtil;
 import org.baljaguk.global.util.JWTUtil;
 import org.baljaguk.global.util.TokenResponseBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +40,6 @@ public class GoogleAuthService {
     private final CookieConfig cookieConfig;
 
     private final TokenResponseBuilder tokenResponseBuilder;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistTokenRepository blacklistTokenRepository;
 
     public ResponseEntity<ApiResponse<Void>> loginOrRegisterWithResponse(String code,
@@ -52,6 +49,7 @@ public class GoogleAuthService {
             return tokenResponseBuilder.buildTokenResponse(jwtLoginResponse.accessToken(), jwtLoginResponse.refreshToken(), response);
         }
         catch (Exception e) {
+            log.error("소셜 로그인 실패: {}", e.getMessage(), e);
             throw new GeneralException(ErrorCode.AUTH_SOCIAL_LOGIN_FAIL);
         }
     }
@@ -96,22 +94,27 @@ public class GoogleAuthService {
         String refreshToken = CookieUtil.getRefreshTokenFromCookie(request);
 
         if (refreshToken != null) {
-            String refreshJti = jwtUtil.getJti(refreshToken);
-            long ttl = jwtUtil.getRemainingExpiration(refreshToken);
-            blacklistTokenRepository.saveRefreshToken(refreshJti, ttl);
+            try {
+                String refreshJti = jwtUtil.getJti(refreshToken);
+                long ttl = jwtUtil.getRemainingExpiration(refreshToken);
+                blacklistTokenRepository.saveRefreshToken(refreshJti, ttl);
+            } catch (Exception e) {
+                log.warn("리프레시 토큰 블랙리스트 등록 실패 (이미 만료되었을 수 있음): {}", e.getMessage());
+            }
         }
 
-        // 2. Redis 저장소에서 Refresh Token 삭제
-        refreshTokenRepository.deleteById(id);
-
-        // 3. Access Token 블랙리스트 등록
+        // 2. Access Token 블랙리스트 등록
         String authorizationHeader = request.getHeader(jwtConfig.getHeader());
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String accessToken = authorizationHeader.substring(7).trim();
-            String accessJti = jwtUtil.getJti(accessToken);
-            long accessTtl = jwtUtil.getRemainingExpiration(accessToken);
-            blacklistTokenRepository.save(accessJti, accessTtl);
+            try {
+                String accessToken = authorizationHeader.substring(7).trim();
+                String accessJti = jwtUtil.getJti(accessToken);
+                long accessTtl = jwtUtil.getRemainingExpiration(accessToken);
+                blacklistTokenRepository.save(accessJti, accessTtl);
+            } catch (Exception e) {
+                log.warn("액세스 토큰 블랙리스트 등록 실패: {}", e.getMessage());
+            }
         }
 
         // 4. 쿠키 삭제

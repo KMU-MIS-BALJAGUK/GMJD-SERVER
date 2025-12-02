@@ -61,7 +61,8 @@ public class SecurityConfig {
                                 "http://localhost:8080",
                                 "http://localhost:3000",
                                 "https://dev.gmjd.site",
-                                "https://www.gmjd.site"
+                                "https://www.gmjd.site",
+                                "https://gmjd-web.vercel.app"
                         ));
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                         configuration.setAllowCredentials(true);

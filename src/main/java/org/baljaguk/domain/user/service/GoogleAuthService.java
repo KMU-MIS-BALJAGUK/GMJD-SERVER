@@ -131,22 +131,34 @@ public class GoogleAuthService {
             // 2. Refresh Token 검증 & userId 추출
             Long userId = jwtUtil.validateRefreshToken(refreshToken);
 
-            // 3. DB에 해당 user 존재하는지 체크
+            // 3. 기존 Refresh Token의 jti 확인
+            String jti = jwtUtil.getJti(refreshToken);
+
+            // 4. 블랙리스트에 존재하면 → 재사용 공격
+            if (blacklistTokenRepository.exists(jti)) {
+                throw new GeneralException(ErrorCode.INVALID_REFRESH_TOKEN);
+            }
+
+            // 5. DB에서 유저 확인
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
 
-            // 4. 새로운 Access Token, Refresh Token 발급
+            // 6. 새로운 Access/Refresh Token 생성
             String newAccessToken = jwtUtil.generateAccessToken(user.getId(), user.isRegistered());
             String newRefreshToken = jwtUtil.generateRefreshToken(user.getId());
 
+            // 7. 기존 Refresh Token을 블랙리스트에 저장 (남은 TTL 만큼)
+            long remainingTtl = jwtUtil.getRemainingExpiration(refreshToken);
+            blacklistTokenRepository.saveRefreshToken(jti, remainingTtl);
+
+            // 8. 새 Refresh Token을 쿠키로 저장
             return tokenResponseBuilder.buildTokenResponse(
                     newAccessToken,
                     newRefreshToken,
                     response
             );
-
         } catch (JwtException e) {
-            throw new LoginException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new GeneralException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 }

@@ -38,6 +38,8 @@ public enum ErrorCode {
     // 인증관련
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 40100, "유효하지 않은 엑세스 토큰입니다."),
     AUTH_SOCIAL_LOGIN_FAIL(HttpStatus.UNAUTHORIZED, 40101, "유효하지 않은 인가 코드입니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, 40102, "리프레시 토큰이 존재하지 않습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, 40103, "리프레시 토큰이 유효하지 않습니다."),
 
 
     /**

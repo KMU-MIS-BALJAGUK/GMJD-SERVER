@@ -11,6 +11,8 @@ import org.baljaguk.domain.user.repository.BlacklistTokenRepository;
 import org.baljaguk.domain.user.repository.RefreshTokenRepository;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ApiResponse;
+import org.baljaguk.global.api.ErrorCode;
+import org.baljaguk.global.api.GeneralException;
 import org.baljaguk.global.config.CookieConfig;
 import org.baljaguk.global.config.JWTConfig;
 import org.baljaguk.global.security.client.GoogleClient;
@@ -41,8 +43,13 @@ public class GoogleAuthService {
 
     public ResponseEntity<ApiResponse<Void>> loginOrRegisterWithResponse(String code,
                                                                          HttpServletResponse response) {
-        JwtLoginResponse jwtLoginResponse = loginOrRegister(code);
-        return tokenResponseBuilder.buildLoginResponse(jwtLoginResponse, response);
+        try {
+            JwtLoginResponse jwtLoginResponse = loginOrRegister(code);
+            return tokenResponseBuilder.buildLoginResponse(jwtLoginResponse, response);
+        }
+        catch (Exception e) {
+            throw new GeneralException(ErrorCode.AUTH_SOCIAL_LOGIN_FAIL);
+        }
     }
 
     @Transactional

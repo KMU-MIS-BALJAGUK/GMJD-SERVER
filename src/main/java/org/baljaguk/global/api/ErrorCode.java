@@ -37,6 +37,7 @@ public enum ErrorCode {
      */
     // 인증관련
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 40100, "유효하지 않은 엑세스 토큰입니다."),
+    AUTH_SOCIAL_LOGIN_FAIL(HttpStatus.UNAUTHORIZED, 40101, "유효하지 않은 인가 코드입니다."),
 
 
     /**
@@ -94,7 +95,7 @@ public enum ErrorCode {
     DB_CONSTRAINT_VIOLATION(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "DB 제약조건 문제 발생, 서버 개발자에게 문의해주세요"),
 
     // OpenAI 관련
-    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다.");
+    GPT_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "GPT 응답을 JSON으로 파싱할 수 없습니다."),;
 
 
     private final HttpStatus status;

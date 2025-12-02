@@ -13,6 +13,8 @@ import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ApiResponse;
 import org.baljaguk.global.api.ErrorCode;
 import org.baljaguk.global.api.GeneralException;
+import org.baljaguk.global.api.handler.LoginException;
+import org.baljaguk.global.api.handler.UserException;
 import org.baljaguk.global.config.CookieConfig;
 import org.baljaguk.global.config.JWTConfig;
 import org.baljaguk.global.security.client.GoogleClient;
@@ -20,7 +22,9 @@ import org.baljaguk.global.security.client.dto.GoogleAccountProfileResponse;
 import org.baljaguk.global.util.CookieUtil;
 import org.baljaguk.global.util.JWTUtil;
 import org.baljaguk.global.util.TokenResponseBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +49,7 @@ public class GoogleAuthService {
                                                                          HttpServletResponse response) {
         try {
             JwtLoginResponse jwtLoginResponse = loginOrRegister(code);
-            return tokenResponseBuilder.buildLoginResponse(jwtLoginResponse, response);
+            return tokenResponseBuilder.buildTokenResponse(jwtLoginResponse.accessToken(), jwtLoginResponse.refreshToken(), response);
         }
         catch (Exception e) {
             throw new GeneralException(ErrorCode.AUTH_SOCIAL_LOGIN_FAIL);
@@ -113,5 +117,36 @@ public class GoogleAuthService {
                 cookieConfig.isSecure(),
                 cookieConfig.getSameSite()
         );
+    }
+
+    public ResponseEntity<ApiResponse<Void>> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+        // 1. 쿠키에서 Refresh Token 가져오기
+        String refreshToken = CookieUtil.getRefreshTokenFromCookie(request);
+
+        if (refreshToken == null) {
+            throw new LoginException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+        }
+
+        try {
+            // 2. Refresh Token 검증 & userId 추출
+            Long userId = jwtUtil.validateRefreshToken(refreshToken);
+
+            // 3. DB에 해당 user 존재하는지 체크
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+            // 4. 새로운 Access Token, Refresh Token 발급
+            String newAccessToken = jwtUtil.generateAccessToken(user.getId(), user.isRegistered());
+            String newRefreshToken = jwtUtil.generateRefreshToken(user.getId());
+
+            return tokenResponseBuilder.buildTokenResponse(
+                    newAccessToken,
+                    newRefreshToken,
+                    response
+            );
+
+        } catch (JwtException e) {
+            throw new LoginException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
     }
 }

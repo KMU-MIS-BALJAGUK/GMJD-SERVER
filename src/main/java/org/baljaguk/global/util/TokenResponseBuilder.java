@@ -15,24 +15,24 @@ public class TokenResponseBuilder {
 
     private final CookieConfig cookieConfig;
 
-    public ResponseEntity<ApiResponse<Void>> buildLoginResponse(JwtLoginResponse jwtLoginResponse,
-                                                                HttpServletResponse response) {
-
-        String accessToken = jwtLoginResponse.accessToken();
-        String refreshToken = jwtLoginResponse.refreshToken();
-
-        // refreshToken 쿠키 생성
+    public ResponseEntity<ApiResponse<Void>> buildTokenResponse(
+            String accessToken,
+            String refreshToken,
+            HttpServletResponse response
+    ) {
+        // refreshToken 쿠키 재설정
         CookieUtil.addCookie(
                 response,
                 "refreshToken",
                 refreshToken,
-                cookieConfig.getDomain(),   // ".gmjd.site"
-                cookieConfig.isSecure(),    // true
-                cookieConfig.getSameSite()  // None
+                cookieConfig.getDomain(),
+                cookieConfig.isSecure(),
+                cookieConfig.getSameSite()
         );
 
-        return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + accessToken)
-                .body(ApiResponse.ok(null));
+        // AccessToken 헤더 전달
+        response.setHeader("Authorization", "Bearer " + accessToken);
+
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

@@ -2,6 +2,7 @@ package org.baljaguk.global.util;
 
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -44,11 +45,11 @@ public class CookieUtil {
         response.addHeader("Set-Cookie", cookieHeader);
     }
 
-        public static void deleteCookie(HttpServletResponse response,
-                                    String name,
-                                    @Nullable String domain,
-                                    boolean secure,
-                                    @Nullable String sameSite) {
+    public static void deleteCookie(HttpServletResponse response,
+                                String name,
+                                @Nullable String domain,
+                                boolean secure,
+                                @Nullable String sameSite) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s=; Path=/; Max-Age=0; HttpOnly", name));   // 값 비우고 즉시 만료
@@ -69,5 +70,16 @@ public class CookieUtil {
         }
 
         response.addHeader("Set-Cookie", sb.toString());
+    }
+
+    public static String getRefreshTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals("refreshToken")) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }

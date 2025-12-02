@@ -32,6 +32,8 @@ public enum ErrorCode {
     ALREADY_EXPIRED_TEAM(HttpStatus.BAD_REQUEST, 40012, "만료된 팀은 모집 상태를 변경할 수 없습니다."),
     INVALID_ANSWER_COUNT(HttpStatus.BAD_REQUEST, 40013, "질문과 답변의 개수가 다릅니다."),
     TEAM_NOT_CLOSED(HttpStatus.BAD_REQUEST, 40014, "아직 팀 모집이 마감되지 않았습니다."),
+
+
     /**
      * 401 UNAUTHORIZED
      */
@@ -40,6 +42,7 @@ public enum ErrorCode {
     AUTH_SOCIAL_LOGIN_FAIL(HttpStatus.UNAUTHORIZED, 40101, "유효하지 않은 인가 코드입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, 40102, "리프레시 토큰이 존재하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, 40103, "리프레시 토큰이 유효하지 않습니다."),
+    ALREADY_LOGOUT_TOKEN(HttpStatus.UNAUTHORIZED, 40104, "이미 로그아웃된 토큰입니다."),
 
 
     /**

@@ -40,7 +40,6 @@ public class CookieUtil {
         }
 
         String cookieHeader = sb.toString();
-        log.info("Set-Cookie: {}", cookieHeader);
 
         response.addHeader("Set-Cookie", cookieHeader);
     }

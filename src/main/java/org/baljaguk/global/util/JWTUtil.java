@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class JWTUtil {
         Date expiry = new Date(now.getTime() + jwtProperties.getExpireLength());
 
         return Jwts.builder()
+                .setId(UUID.randomUUID().toString())
                 .setSubject(userId.toString())
                 .claim("isRegistered", isRegistered)
                 .setIssuedAt(now)
@@ -44,6 +46,7 @@ public class JWTUtil {
         Date expiry = new Date(now.getTime() + jwtProperties.getRefreshExpireLength());
 
         return Jwts.builder()
+                .setId(UUID.randomUUID().toString()) // JTI 추가
                 .setSubject(userId.toString())
                 .setIssuedAt(now)
                 .setExpiration(expiry)

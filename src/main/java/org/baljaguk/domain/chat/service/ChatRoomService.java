@@ -1,9 +1,12 @@
 package org.baljaguk.domain.chat.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.baljaguk.domain.chat.dto.response.ChatRoomIdResponse;
 import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.ChatRoom;
 import org.baljaguk.domain.chat.entity.LastReadTime;
+import org.baljaguk.domain.chat.entity.dto.request.ChatRoomCreateRequest;
 import org.baljaguk.domain.chat.entity.dto.ChatRoomListResponse;
 import org.baljaguk.domain.chat.entity.dto.ChatRoomResponse;
 import org.baljaguk.domain.chat.entity.dto.LastChatInfoDto;
@@ -11,8 +14,12 @@ import org.baljaguk.domain.chat.repository.ChatMessageRepository;
 import org.baljaguk.domain.chat.repository.ChatRoomRepository;
 import org.baljaguk.domain.chat.repository.LastReadTimeRepository;
 import org.baljaguk.domain.team.dto.ContestInfoDto;
+import org.baljaguk.domain.team.entity.Team;
+import org.baljaguk.domain.team.entity.TeamStatus;
 import org.baljaguk.domain.team.repository.TeamMemberRepository;
 import org.baljaguk.domain.team.repository.TeamRepository;
+import org.baljaguk.global.api.ErrorCode;
+import org.baljaguk.global.api.GeneralException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +30,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -96,5 +104,32 @@ public class ChatRoomService {
         }).collect(Collectors.toList());
 
         return new ChatRoomListResponse(chatRoomResponses);
+    }
+
+    @Transactional
+    public ChatRoomIdResponse createChatRoom(Long userId, ChatRoomCreateRequest request) {
+        // 1. 팀 찾기
+        Team team = teamRepository.findById(request.teamId())
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        if (team.getStatus() != TeamStatus.CLOSED) {
+            throw new GeneralException(ErrorCode.TEAM_NOT_CLOSED);
+        }
+
+        // 팀 리더인지 확인
+        if (!team.getTeamLeader().getId().equals(userId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+            // 2. 중복 방지
+        if (chatRoomRepository.existsByTeamId(team.getId())) {
+            throw new RuntimeException("이미 해당 팀의 채팅방이 존재합니다.");
+        }
+
+        // 3. 채팅방 생성
+        ChatRoom chatRoom = ChatRoom.create(team);
+        chatRoomRepository.save(chatRoom);
+
+        return ChatRoomIdResponse.of(chatRoom.getId());
     }
 }

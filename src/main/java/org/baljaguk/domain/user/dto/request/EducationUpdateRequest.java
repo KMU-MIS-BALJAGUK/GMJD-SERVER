@@ -26,7 +26,7 @@ public record EducationUpdateRequest(
         Education education,
 
         @Schema(
-                description = "ASSOCIATE, BACHELOR",
+                description = "ASSOCIATE, BACHELOR, MASTER",
                 example = "ASSOCIATE"
         )
         RecognizedDegree recognizedDegree

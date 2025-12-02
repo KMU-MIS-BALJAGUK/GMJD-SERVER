@@ -95,6 +95,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers(
                         "/oauth/google/**",
+                        "/oauth/reissue",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",

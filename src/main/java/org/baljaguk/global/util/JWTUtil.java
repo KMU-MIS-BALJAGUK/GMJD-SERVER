@@ -90,4 +90,27 @@ public class JWTUtil {
 
         return (expiration.getTime() - System.currentTimeMillis()) / 1000;
     }
+
+    // RefreshToken 검증
+    public Long validateRefreshToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            // 만료 체크 (만료된 경우 ExpiredJwtException 발생)
+            Date expiration = claims.getExpiration();
+            if (expiration.before(new Date())) {
+                throw new JwtException("Refresh Token is expired");
+            }
+
+            // userId(subject) 반환
+            return Long.parseLong(claims.getSubject());
+
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtException("Invalid Refresh Token: " + e.getMessage());
+        }
+    }
 }

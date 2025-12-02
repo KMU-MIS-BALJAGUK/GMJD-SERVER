@@ -41,9 +41,10 @@ public class ChatRoomController {
     @Operation(summary = "채팅방 생성",
             description = "팀 모집이 마감되면 해당 팀의 채팅방을 생성하고 팀원들을 입장시킵니다.")
     public ResponseEntity<ApiResponse<ChatRoomIdResponse>> createChatRoom(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody @Valid ChatRoomCreateRequest request
     ) {
-        ChatRoomIdResponse response = chatRoomService.createChatRoom(request);
+        ChatRoomIdResponse response = chatRoomService.createChatRoom(userDetails.getUserId(), request);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 

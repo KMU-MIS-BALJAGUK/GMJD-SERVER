@@ -107,13 +107,18 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoomIdResponse createChatRoom(ChatRoomCreateRequest request) {
+    public ChatRoomIdResponse createChatRoom(Long userId, ChatRoomCreateRequest request) {
         // 1. 팀 찾기
         Team team = teamRepository.findById(request.teamId())
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
 
         if (team.getStatus() != TeamStatus.CLOSED) {
             throw new GeneralException(ErrorCode.TEAM_NOT_CLOSED);
+        }
+
+        // 팀 리더인지 확인
+        if (!team.getTeamLeader().getId().equals(userId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
         }
 
             // 2. 중복 방지

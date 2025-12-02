@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.baljaguk.domain.user.entity.User;
+import org.baljaguk.domain.user.repository.BlacklistTokenRepository;
 import org.baljaguk.domain.user.repository.UserRepository;
 import org.baljaguk.global.api.ErrorCode;
 import org.baljaguk.global.api.GeneralException;
@@ -31,7 +32,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
     private final JWTConfig jwtConfig;
     private final UserRepository userRepository;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -47,11 +48,10 @@ public class JWTFilter extends OncePerRequestFilter {
 
         final String token = authHeader.substring(7); // "Bearer " 이후 토큰만 추출
 
-        //  1. 블랙리스트 확인 (Redis에 logout:<token> 존재하는지 확인)
-        String redisKey = "logout:" + token;
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
-            return;
+        //  1. 블랙리스트 확인 (로그아웃된 토큰인지)
+        String jti = jwtUtil.getJti(token);
+        if (blacklistTokenRepository.exists(jti)) {
+            throw new GeneralException(ErrorCode.ALREADY_LOGOUT_TOKEN);
         }
 
         //  2. 유효한 토큰인지 검증

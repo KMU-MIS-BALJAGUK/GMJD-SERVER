@@ -112,7 +112,7 @@ public class GoogleAuthService {
         // 4. 쿠키 삭제
         CookieUtil.deleteCookie(
                 response,
-                "refresh-token",
+                "refreshToken",
                 cookieConfig.getDomain(),
                 cookieConfig.isSecure(),
                 cookieConfig.getSameSite()

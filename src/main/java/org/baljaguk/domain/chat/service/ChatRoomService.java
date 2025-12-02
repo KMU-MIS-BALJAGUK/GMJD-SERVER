@@ -2,6 +2,7 @@ package org.baljaguk.domain.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.baljaguk.domain.chat.dto.response.ChatRoomIdResponse;
 import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.ChatRoom;
 import org.baljaguk.domain.chat.entity.LastReadTime;
@@ -95,12 +96,10 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public Long createChatRoom(Long userId, ChatRoomCreateRequest request) {
+    public ChatRoomIdResponse createChatRoom(ChatRoomCreateRequest request) {
         // 1. 팀 찾기
-        log.info("팀 찾기 쿼리 시작" + request.teamId());
         Team team = teamRepository.findById(request.teamId())
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
-        log.info("팀 찾음" + team.getId());
 
         if (team.getStatus() != TeamStatus.CLOSED) {
             throw new GeneralException(ErrorCode.TEAM_NOT_CLOSED);
@@ -115,6 +114,6 @@ public class ChatRoomService {
             ChatRoom chatRoom = ChatRoom.create(team);
             chatRoomRepository.save(chatRoom);
 
-            return chatRoom.getId();
+            return ChatRoomIdResponse.of(chatRoom.getId());
         }
     }

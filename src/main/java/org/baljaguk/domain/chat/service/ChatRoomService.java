@@ -106,14 +106,14 @@ public class ChatRoomService {
         }
 
             // 2. 중복 방지
-            if (chatRoomRepository.existsByTeamId(team.getId())) {
-                throw new RuntimeException("이미 해당 팀의 채팅방이 존재합니다.");
-            }
-
-            // 3. 채팅방 생성
-            ChatRoom chatRoom = ChatRoom.create(team);
-            chatRoomRepository.save(chatRoom);
-
-            return ChatRoomIdResponse.of(chatRoom.getId());
+        if (chatRoomRepository.existsByTeamId(team.getId())) {
+            throw new RuntimeException("이미 해당 팀의 채팅방이 존재합니다.");
         }
+
+        // 3. 채팅방 생성
+        ChatRoom chatRoom = ChatRoom.create(team);
+        chatRoomRepository.save(chatRoom);
+
+        return ChatRoomIdResponse.of(chatRoom.getId());
     }
+}

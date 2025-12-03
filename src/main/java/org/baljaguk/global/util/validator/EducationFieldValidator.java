@@ -12,9 +12,9 @@ public class EducationFieldValidator implements ConstraintValidator<ValidateEduc
     @Override
     public boolean isValid(UserUpdateRequest request, ConstraintValidatorContext context) {
 
-        // 학력이 HighSchool이면 대학 관련 필드는 null/빈값 허용
-        if (request.education() == Education.HIGH_SCHOOL) {
-            return true; // 별도 검증 필요 없음
+        // 학력이 UNIVERSITY가 아니면 검증 불필요
+        if (request.education() != Education.UNIVERSITY) {
+            return true;
         }
 
         // 학력이 UNIVERSITY인 경우 아래 값 모두 반드시 필수

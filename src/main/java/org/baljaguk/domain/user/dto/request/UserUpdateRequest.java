@@ -6,9 +6,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.baljaguk.domain.user.entity.enums.Education;
 import org.baljaguk.domain.user.entity.enums.RecognizedDegree;
+import org.baljaguk.global.util.customAnnotaion.ValidateEducationFields;
 
 import java.util.List;
 
+@ValidateEducationFields
 public record UserUpdateRequest(
 
         @NotBlank(message = "한줄 소개는 필수입니다")
@@ -19,7 +21,6 @@ public record UserUpdateRequest(
         @Schema(description = "학력", example = "UNIVERSITY")
         Education education,
 
-        @NotBlank(message = "학교 이름은 필수입니다")
         @Schema(description = "학교 이름", example = "고려대학교")
         String universityName,
 
@@ -29,10 +30,10 @@ public record UserUpdateRequest(
         @Schema(description = "전공명", example = "컴퓨터공학과")
         String major,
 
-        @ArraySchema(schema = @Schema(description = "관심 분야 카테고리 ID", example = "1"), arraySchema = @Schema(description = "관심 분야 ID 목록", example = "[1, 2, 3]"))
-        List<Long> categoryIds, // 선택 필드 (nullable, optional)
+        @ArraySchema(schema = @Schema(description = "관심 분야 카테고리 ID", example = "1"))
+        List<Long> categoryIds,
 
-        @ArraySchema(schema = @Schema(description = "스킬셋", example = "Java"), arraySchema = @Schema(description = "스킬셋 목록", example = "[\"Java\", \"Spring Boot\", \"AWS\"]"))
-        List<String> skills // 선택 필드 (nullable, optional)
+        @ArraySchema(schema = @Schema(description = "스킬셋", example = "Java"))
+        List<String> skills
 
 ) {}

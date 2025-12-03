@@ -35,7 +35,10 @@ public class TeamApplyRepositoryImpl implements TeamApplyRepositoryCustom {
         return queryFactory
                 .selectFrom(teamApply)
                 .join(teamApply.user).fetchJoin()
-                .where(teamApply.team.id.eq(teamId))
+                .where(
+                        teamApply.team.id.eq(teamId),
+                        teamApply.status.eq(RegisterStatus.REQUESTED)
+                )
                 .fetch();
     }
 }

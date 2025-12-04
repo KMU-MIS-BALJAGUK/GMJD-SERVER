@@ -368,7 +368,7 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
 
         // 2) fetch join으로 팀/공모전까지 한 번에 조회
-        List<TeamApply> applies = teamApplyRepository.findAllWithTeamAndContestByUser(user);
+        List<TeamApply> applies = teamApplyRepository.findAllWithTeamAndContestByUser(user, RegisterStatus.REQUESTED);
 
         // 3) 응답 변환
         List<MyApplyListResponse.MyApplyInfoResponse> responseList = applies.stream()

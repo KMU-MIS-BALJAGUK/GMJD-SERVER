@@ -24,8 +24,9 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
     join fetch t.contest c
     join fetch t.teamLeader tl
     where ta.user = :user
+        and ta.status = :status
 """)
-    List<TeamApply> findAllWithTeamAndContestByUser(@Param("user") User user);
+    List<TeamApply> findAllWithTeamAndContestByUser(@Param("user") User user, @Param("status") RegisterStatus status);
 
     @Query("""
     select distinct ta

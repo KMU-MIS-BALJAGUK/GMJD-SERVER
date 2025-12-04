@@ -194,7 +194,7 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
-    @DeleteMapping("/{teamId}/members/{memberId}")
+    @DeleteMapping("/{teamId}/members/{userId}")
     @Operation(
             summary = "팀원 내보내기(강퇴) API",
             description = """
@@ -206,13 +206,13 @@ public class TeamController {
     )
     public ResponseEntity<ApiResponse<Void>> removeTeamMember(
             @PathVariable Long teamId,
-            @PathVariable Long memberId,
+            @PathVariable Long userId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
 
         Long leaderId = userDetails.getUserId();
 
-        teamService.removeTeamMember(teamId, memberId, leaderId);
+        teamService.removeTeamMember(teamId, userId, leaderId);
 
         return ResponseEntity.ok(ApiResponse.ok(null));
     }

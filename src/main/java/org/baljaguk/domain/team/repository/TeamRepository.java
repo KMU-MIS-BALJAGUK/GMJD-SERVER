@@ -25,8 +25,12 @@ public interface TeamRepository extends JpaRepository<Team, Long>, TeamRepositor
     from Team t
     join fetch t.contest c
     where t.teamLeader.id = :userId
+      and t.status in (:statuses)
 """)
-    List<Team> findAllWithContestByTeamLeaderId(@Param("userId") Long userId);
+    List<Team> findAllWithContestByTeamLeaderId(
+            @Param("userId") Long userId,
+            @Param("statuses") List<TeamStatus> statuses
+    );
 
     @Query("""
     select t

@@ -200,7 +200,7 @@ public class TeamController {
             description = """
                 팀장이 특정 팀원을 강퇴하는 API입니다.\n
                 - PathVariable teamId: 팀 ID\n
-                - PathVariable memberId: 내보낼 팀원 ID\n
+                - PathVariable userId: 내보낼 팀원의 userId\n
                 - 팀 리더만 강퇴가 가능합니다.
                 """
     )

@@ -51,9 +51,11 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
         JOIN FETCH ta.team t
         WHERE u.id = :userId
           AND t.id = :teamId
+          and ta.status = :status
         """)
     Optional<TeamApply> findByUserAndTeamIdWithFetch(
             @Param("userId") Long userId,
-            @Param("teamId") Long teamId
+            @Param("teamId") Long teamId,
+            @Param("status") RegisterStatus status
     );
 }

@@ -35,16 +35,16 @@ public record MyTeamDetailResponse(
 
     // 내부 DTO
     public record MemberInfo(
-            Long memberId,
+            Long userId,
             String profileImageUrl,
             String name,
             String memberType
     ) {
-        public static MemberInfo of(Long memberId,
+        public static MemberInfo of(Long userId,
                                     String profileImageUrl,
                                     String name,
                                     String memberType) {
-            return new MemberInfo(memberId, profileImageUrl, name, memberType);
+            return new MemberInfo(userId, profileImageUrl, name, memberType);
         }
     }
 }

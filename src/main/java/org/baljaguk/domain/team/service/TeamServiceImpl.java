@@ -421,7 +421,7 @@ public class TeamServiceImpl implements TeamService {
         // DTO 변환 - 팀원 리스트
         List<MyTeamDetailResponse.MemberInfo> members = teamMembers.stream()
                 .map(tm -> MyTeamDetailResponse.MemberInfo.of(
-                        tm.getId(),
+                        user.getId(),
                         tm.getMember().getProfileImageUrl(),
                         tm.getMember().getName(),
                         tm.getType().getDisplayName()

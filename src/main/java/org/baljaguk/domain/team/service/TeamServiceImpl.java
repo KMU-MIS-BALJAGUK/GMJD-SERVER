@@ -436,7 +436,8 @@ public class TeamServiceImpl implements TeamService {
                 memberCount,
                 myType,
                 team.getMemo(),
-                members
+                members,
+                team.getContest().getId()
         );
     }
 

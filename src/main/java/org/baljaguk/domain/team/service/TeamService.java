@@ -39,4 +39,6 @@ public interface TeamService {
     void cancelMyApply(Long userId, Long teamId);
 
     void closeTeamRecruit(Long teamId, Long userId);
+
+    void expireTeamRecruit(Long teamId, Long userId);
 }

@@ -324,8 +324,11 @@ public class TeamServiceImpl implements TeamService {
     @Transactional(readOnly = true)
     public MyRecruitListResponse getMyRecruitList(Long userId) {
 
-        // 1) 팀장 기준으로 팀 + 공모전 Fetch Join 조회
-        List<Team> myTeams = teamRepository.findAllWithContestByTeamLeaderId(userId);
+        // 1) 조회할 TeamStatus 목록 정의
+        List<TeamStatus> statuses = List.of(TeamStatus.OPEN, TeamStatus.CLOSED);
+
+        // 2) Fetch Join 조회
+        List<Team> myTeams = teamRepository.findAllWithContestByTeamLeaderId(userId, statuses);
 
         List<MyRecruitListResponse.MyRecruitInfoResponse> result = myTeams.stream()
                 .map(team -> {
@@ -659,5 +662,27 @@ public class TeamServiceImpl implements TeamService {
 
         // 5) 모집 마감 처리
         team.updateStatus(TeamStatus.CLOSED);
+    }
+
+    @Override
+    @Transactional
+    public void expireTeamRecruit(Long teamId, Long userId) {
+
+        // 1) 팀 조회
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        // 2) 요청자가 팀장인지 확인
+        if (!team.getTeamLeader().getId().equals(userId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+        // 3) 현재 상태가 CLOSED가 아니라면 예외
+        if (team.getStatus() != TeamStatus.CLOSED) {
+            throw new GeneralException(ErrorCode.TEAM_NOT_CLOSED);
+        }
+
+        // 4) 상태 변경: CLOSED → EXPIRED
+        team.updateStatus(TeamStatus.EXPIRED);
     }
 }

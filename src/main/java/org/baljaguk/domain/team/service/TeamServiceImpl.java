@@ -484,7 +484,8 @@ public class TeamServiceImpl implements TeamService {
         }
 
         // 2) 지원자 조회 (TeamApply + User + Answer + Question fetch join)
-        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+        // REQUESTED 상태인 지원만 조회
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         User applicant = apply.getUser();
@@ -525,7 +526,8 @@ public class TeamServiceImpl implements TeamService {
         }
 
         // 2) 지원 데이터 조회 (TeamApply + User fetch join)
-        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+        // REQUESTED 상태인 지원만 조회
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         // 이미 처리된 신청은 재승인 불가
@@ -561,7 +563,8 @@ public class TeamServiceImpl implements TeamService {
         }
 
         // 2) 지원 데이터 조회
-        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+        // REQUESTED 상태인 지원만 조회
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         if (apply.getStatus() != RegisterStatus.REQUESTED) {

@@ -35,10 +35,12 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
     left join fetch ans.question q
     where ta.team.id = :teamId
       and ta.user.id = :applicantUserId
+      and ta.status = :status
 """)
     Optional<TeamApply> findApplyDetail(
             @Param("teamId") Long teamId,
-            @Param("applicantUserId") Long applicantUserId
+            @Param("applicantUserId") Long applicantUserId,
+            @Param("status") RegisterStatus status
     );
 
     @Query("""

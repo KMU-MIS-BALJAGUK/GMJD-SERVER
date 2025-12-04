@@ -627,7 +627,7 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
 
         // 2) TeamApply 조회 (user + team 기반)
-        TeamApply apply = teamApplyRepository.findByUserAndTeamIdWithFetch(userId, teamId)
+        TeamApply apply = teamApplyRepository.findByUserAndTeamIdWithFetch(userId, teamId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         // 3) 본인이 아닌 경우 — 이론상 발생하지 않지만 안전하게 검사

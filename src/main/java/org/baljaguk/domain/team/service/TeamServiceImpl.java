@@ -307,6 +307,7 @@ public class TeamServiceImpl implements TeamService {
 
                     return MyTeamListResponse.MyTeamInfoResponse.of(
                             team.getId(),
+                            team.getContest().getId(),
                             team.getContest().getImageUrl(),
                             team.getContest().getName(),
                             team.getContest().getOrganizationName(),
@@ -343,6 +344,7 @@ public class TeamServiceImpl implements TeamService {
                     // 4) DTO 조립
                     return MyRecruitListResponse.MyRecruitInfoResponse.of(
                             team.getId(),
+                            team.getContest().getId(),
                             team.getContest().getImageUrl(),
                             team.getContest().getName(),
                             team.getContest().getOrganizationName(),
@@ -380,6 +382,7 @@ public class TeamServiceImpl implements TeamService {
 
                     return MyApplyListResponse.MyApplyInfoResponse.of(
                             team.getId(),
+                            contest.getId(),
                             contest.getImageUrl(),
                             contest.getName(),
                             team.getTitle(),

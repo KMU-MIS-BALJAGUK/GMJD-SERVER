@@ -12,6 +12,7 @@ public record MyApplyListResponse(
     // 이너 DTO
     public record MyApplyInfoResponse(
             Long teamId,
+            Long contestId,
             String contestImageUrl,
             String contestName,
             String teamTitle,
@@ -21,6 +22,7 @@ public record MyApplyListResponse(
     ) {
         public static MyApplyInfoResponse of(
                 Long teamId,
+                Long contestId,
                 String contestImageUrl,
                 String contestName,
                 String teamTitle,
@@ -30,6 +32,7 @@ public record MyApplyListResponse(
         ) {
             return new MyApplyInfoResponse(
                     teamId,
+                    contestId,
                     contestImageUrl,
                     contestName,
                     teamTitle,

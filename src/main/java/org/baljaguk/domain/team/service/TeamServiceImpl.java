@@ -455,7 +455,8 @@ public class TeamServiceImpl implements TeamService {
                                 apply.getUser().getId(),
                                 apply.getUser().getProfileImageUrl(),
                                 apply.getUser().getName(),
-                                apply.getAiTags()
+                                apply.getAiTags(),
+                                apply.getStatus()
                         )
                 )
                 .toList();

@@ -37,7 +37,7 @@ public class TeamApplyRepositoryImpl implements TeamApplyRepositoryCustom {
                 .join(teamApply.user).fetchJoin()
                 .where(
                         teamApply.team.id.eq(teamId),
-                        teamApply.status.eq(RegisterStatus.REQUESTED)
+                        teamApply.status.in(RegisterStatus.ACCEPTED, RegisterStatus.REQUESTED)
                 )
                 .fetch();
     }

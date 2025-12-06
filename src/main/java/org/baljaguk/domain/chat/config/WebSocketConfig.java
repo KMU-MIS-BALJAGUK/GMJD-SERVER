@@ -22,9 +22,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         log.info("Configuring STOMP endpoints...");
         registry.addEndpoint("/ws/chat")
-                .setAllowedOrigins("*")
+                .setAllowedOriginPatterns(
+                        "http://localhost:8080",
+                        "http://localhost:3000",
+                        "https://dev.gmjd.site",
+                        "https://www.gmjd.site",
+                        "https://gmjd-web.vercel.app"
+                )
                 .withSockJS();
-        log.info("STOMP endpoient /ws/chat registered with allowed origins: *");
+        log.info("STOMP endpoint /ws/chat registered with allowed origins: *");
     }
 
     @Override

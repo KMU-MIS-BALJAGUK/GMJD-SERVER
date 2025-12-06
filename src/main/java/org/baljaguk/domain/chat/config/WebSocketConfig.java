@@ -21,7 +21,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
         registry.addEndpoint("/ws/chat")
-                .setAllowedOriginPatterns("")
+                .setAllowedOriginPatterns("/oauth/google/**",
+                        "/oauth/reissue",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        "/access",
+                        "/favicon.ico",
+                        "/api/v1/contests/**",
+                        "/api/v1/categories")
                 .withSockJS();
     }
 

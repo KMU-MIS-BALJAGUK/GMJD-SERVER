@@ -307,6 +307,7 @@ public class TeamServiceImpl implements TeamService {
 
                     return MyTeamListResponse.MyTeamInfoResponse.of(
                             team.getId(),
+                            team.getContest().getId(),
                             team.getContest().getImageUrl(),
                             team.getContest().getName(),
                             team.getContest().getOrganizationName(),
@@ -324,8 +325,11 @@ public class TeamServiceImpl implements TeamService {
     @Transactional(readOnly = true)
     public MyRecruitListResponse getMyRecruitList(Long userId) {
 
-        // 1) 팀장 기준으로 팀 + 공모전 Fetch Join 조회
-        List<Team> myTeams = teamRepository.findAllWithContestByTeamLeaderId(userId);
+        // 1) 조회할 TeamStatus 목록 정의
+        List<TeamStatus> statuses = List.of(TeamStatus.OPEN, TeamStatus.CLOSED);
+
+        // 2) Fetch Join 조회
+        List<Team> myTeams = teamRepository.findAllWithContestByTeamLeaderId(userId, statuses);
 
         List<MyRecruitListResponse.MyRecruitInfoResponse> result = myTeams.stream()
                 .map(team -> {
@@ -340,6 +344,7 @@ public class TeamServiceImpl implements TeamService {
                     // 4) DTO 조립
                     return MyRecruitListResponse.MyRecruitInfoResponse.of(
                             team.getId(),
+                            team.getContest().getId(),
                             team.getContest().getImageUrl(),
                             team.getContest().getName(),
                             team.getContest().getOrganizationName(),
@@ -363,7 +368,7 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
 
         // 2) fetch join으로 팀/공모전까지 한 번에 조회
-        List<TeamApply> applies = teamApplyRepository.findAllWithTeamAndContestByUser(user);
+        List<TeamApply> applies = teamApplyRepository.findAllWithTeamAndContestByUser(user, RegisterStatus.REQUESTED);
 
         // 3) 응답 변환
         List<MyApplyListResponse.MyApplyInfoResponse> responseList = applies.stream()
@@ -377,6 +382,7 @@ public class TeamServiceImpl implements TeamService {
 
                     return MyApplyListResponse.MyApplyInfoResponse.of(
                             team.getId(),
+                            contest.getId(),
                             contest.getImageUrl(),
                             contest.getName(),
                             team.getTitle(),
@@ -415,7 +421,7 @@ public class TeamServiceImpl implements TeamService {
         // DTO 변환 - 팀원 리스트
         List<MyTeamDetailResponse.MemberInfo> members = teamMembers.stream()
                 .map(tm -> MyTeamDetailResponse.MemberInfo.of(
-                        tm.getId(),
+                        tm.getMember().getId(),
                         tm.getMember().getProfileImageUrl(),
                         tm.getMember().getName(),
                         tm.getType().getDisplayName()
@@ -430,7 +436,8 @@ public class TeamServiceImpl implements TeamService {
                 memberCount,
                 myType,
                 team.getMemo(),
-                members
+                members,
+                team.getContest().getId()
         );
     }
 
@@ -455,7 +462,8 @@ public class TeamServiceImpl implements TeamService {
                                 apply.getUser().getId(),
                                 apply.getUser().getProfileImageUrl(),
                                 apply.getUser().getName(),
-                                apply.getAiTags()
+                                apply.getAiTags(),
+                                apply.getStatus()
                         )
                 )
                 .toList();
@@ -476,7 +484,8 @@ public class TeamServiceImpl implements TeamService {
         }
 
         // 2) 지원자 조회 (TeamApply + User + Answer + Question fetch join)
-        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+        // REQUESTED 상태인 지원만 조회
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         User applicant = apply.getUser();
@@ -517,7 +526,8 @@ public class TeamServiceImpl implements TeamService {
         }
 
         // 2) 지원 데이터 조회 (TeamApply + User fetch join)
-        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+        // REQUESTED 상태인 지원만 조회
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         // 이미 처리된 신청은 재승인 불가
@@ -553,7 +563,8 @@ public class TeamServiceImpl implements TeamService {
         }
 
         // 2) 지원 데이터 조회
-        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId)
+        // REQUESTED 상태인 지원만 조회
+        TeamApply apply = teamApplyRepository.findApplyDetail(teamId, applicantUserId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         if (apply.getStatus() != RegisterStatus.REQUESTED) {
@@ -616,7 +627,7 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
 
         // 2) TeamApply 조회 (user + team 기반)
-        TeamApply apply = teamApplyRepository.findByUserAndTeamIdWithFetch(userId, teamId)
+        TeamApply apply = teamApplyRepository.findByUserAndTeamIdWithFetch(userId, teamId, RegisterStatus.REQUESTED)
                 .orElseThrow(() -> new GeneralException(ErrorCode.APPLY_NOT_FOUND));
 
         // 3) 본인이 아닌 경우 — 이론상 발생하지 않지만 안전하게 검사
@@ -658,5 +669,27 @@ public class TeamServiceImpl implements TeamService {
 
         // 5) 모집 마감 처리
         team.updateStatus(TeamStatus.CLOSED);
+    }
+
+    @Override
+    @Transactional
+    public void expireTeamRecruit(Long teamId, Long userId) {
+
+        // 1) 팀 조회
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_TEAM));
+
+        // 2) 요청자가 팀장인지 확인
+        if (!team.getTeamLeader().getId().equals(userId)) {
+            throw new GeneralException(ErrorCode.NOT_TEAM_LEADER);
+        }
+
+        // 3) 현재 상태가 CLOSED가 아니라면 예외
+        if (team.getStatus() != TeamStatus.CLOSED) {
+            throw new GeneralException(ErrorCode.TEAM_NOT_CLOSED);
+        }
+
+        // 4) 상태 변경: CLOSED → EXPIRED
+        team.updateStatus(TeamStatus.EXPIRED);
     }
 }

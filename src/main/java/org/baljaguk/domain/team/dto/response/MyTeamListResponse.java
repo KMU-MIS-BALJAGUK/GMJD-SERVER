@@ -11,6 +11,7 @@ public record MyTeamListResponse(
 
     public static record MyTeamInfoResponse(
             Long teamId,
+            Long contestId,
             String contestImageUrl,
             String contestName,
             String contestOrganizationName,
@@ -20,6 +21,7 @@ public record MyTeamListResponse(
     ) {
         public static MyTeamInfoResponse of(
                 Long teamId,
+                Long contestId,
                 String contestImageUrl,
                 String contestName,
                 String contestOrganizationName,
@@ -29,6 +31,7 @@ public record MyTeamListResponse(
         ) {
             return new MyTeamInfoResponse(
                     teamId,
+                    contestId,
                     contestImageUrl,
                     contestName,
                     contestOrganizationName,

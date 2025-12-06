@@ -194,25 +194,25 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
-    @DeleteMapping("/{teamId}/members/{memberId}")
+    @DeleteMapping("/{teamId}/members/{userId}")
     @Operation(
             summary = "팀원 내보내기(강퇴) API",
             description = """
                 팀장이 특정 팀원을 강퇴하는 API입니다.\n
                 - PathVariable teamId: 팀 ID\n
-                - PathVariable memberId: 내보낼 팀원 ID\n
+                - PathVariable userId: 내보낼 팀원의 userId\n
                 - 팀 리더만 강퇴가 가능합니다.
                 """
     )
     public ResponseEntity<ApiResponse<Void>> removeTeamMember(
             @PathVariable Long teamId,
-            @PathVariable Long memberId,
+            @PathVariable Long userId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
 
         Long leaderId = userDetails.getUserId();
 
-        teamService.removeTeamMember(teamId, memberId, leaderId);
+        teamService.removeTeamMember(teamId, userId, leaderId);
 
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
@@ -260,6 +260,22 @@ public class TeamController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         teamService.closeTeamRecruit(teamId, userDetails.getUserId());
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @PatchMapping("/{teamId}/expire")
+    @Operation(
+            summary = "팀 모집 만료(EXPIRED) 처리 API",
+            description = """
+            팀장이 자신의 팀 모집 상태를 'EXPIRED'로 변경합니다.\n
+            팀장이 아닌 사용자가 호출하면 권한 오류가 발생합니다.
+            """
+    )
+    public ResponseEntity<ApiResponse<Void>> expireTeamRecruit(
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        teamService.expireTeamRecruit(teamId, userDetails.getUserId());
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

@@ -43,6 +43,16 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+
+#docker 이미지로 실행
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+
+  stomp:
+    relay-port: ${LOCAL_MQ_STOMP_PORT}
+
   data:
     redis:
       host: localhost
@@ -64,7 +74,3 @@ google:
   gemini:
     api-key: ${GEMINI_API_KEY}
     model: gemini-2.5-flash-lite
-
-logging: # Added logging configuration
-  level:
-    org.baljaguk: INFO

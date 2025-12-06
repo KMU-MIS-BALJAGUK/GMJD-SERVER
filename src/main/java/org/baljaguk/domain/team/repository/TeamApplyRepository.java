@@ -24,8 +24,9 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
     join fetch t.contest c
     join fetch t.teamLeader tl
     where ta.user = :user
+        and ta.status = :status
 """)
-    List<TeamApply> findAllWithTeamAndContestByUser(@Param("user") User user);
+    List<TeamApply> findAllWithTeamAndContestByUser(@Param("user") User user, @Param("status") RegisterStatus status);
 
     @Query("""
     select distinct ta
@@ -35,10 +36,12 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
     left join fetch ans.question q
     where ta.team.id = :teamId
       and ta.user.id = :applicantUserId
+      and ta.status = :status
 """)
     Optional<TeamApply> findApplyDetail(
             @Param("teamId") Long teamId,
-            @Param("applicantUserId") Long applicantUserId
+            @Param("applicantUserId") Long applicantUserId,
+            @Param("status") RegisterStatus status
     );
 
     @Query("""
@@ -48,9 +51,11 @@ public interface TeamApplyRepository extends JpaRepository<TeamApply, Long>, Tea
         JOIN FETCH ta.team t
         WHERE u.id = :userId
           AND t.id = :teamId
+          and ta.status = :status
         """)
     Optional<TeamApply> findByUserAndTeamIdWithFetch(
             @Param("userId") Long userId,
-            @Param("teamId") Long teamId
+            @Param("teamId") Long teamId,
+            @Param("status") RegisterStatus status
     );
 }

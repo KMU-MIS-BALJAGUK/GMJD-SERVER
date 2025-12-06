@@ -11,6 +11,7 @@ public record MyRecruitListResponse(
 
     public record MyRecruitInfoResponse(
             Long teamId,
+            Long contestId,
             String contestImageUrl,
             String contestName,
             String contestOrganizationName,
@@ -21,6 +22,7 @@ public record MyRecruitListResponse(
     ) {
         public static MyRecruitInfoResponse of(
                 Long teamId,
+                Long contestId,
                 String contestImageUrl,
                 String contestName,
                 String contestOrganizationName,
@@ -31,6 +33,7 @@ public record MyRecruitListResponse(
         ) {
             return new MyRecruitInfoResponse(
                     teamId,
+                    contestId,
                     contestImageUrl,
                     contestName,
                     contestOrganizationName,

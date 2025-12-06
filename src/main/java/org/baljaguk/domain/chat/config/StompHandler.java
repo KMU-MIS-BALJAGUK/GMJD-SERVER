@@ -28,7 +28,7 @@ public class StompHandler implements ChannelInterceptor {
     private static final String USER_ID_KEY = "userId";
     private static final String ROOM_ID_KEY = "roomId";
 
-    // 구독 경로 패턴: /topic/chat.room.1
+    // 구독 경로 패턴: /topic/chat.room/1
     private static final Pattern ROOM_ID_PATTERN = Pattern.compile("/topic/chat\\.room/(\\d+)");
 
     private final JWTUtil jwtUtil;
@@ -56,7 +56,9 @@ public class StompHandler implements ChannelInterceptor {
         return message;
     }
 
+    //CONNECT COMMAND
     private void handleConnect(StompHeaderAccessor accessor, Map<String, Object> sessionAttributes) {
+
         String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -79,9 +81,12 @@ public class StompHandler implements ChannelInterceptor {
             sessionAttributes.put(USER_ID_KEY, userId);
             log.info("STOMP CONNECT: UserId={} authenticated.", userId);
 
-        } catch (Exception e) {
-            log.error("JWT validation failed", e);
-            throw new IllegalArgumentException("JWT validation failed");
+        } catch (IllegalArgumentException e) {
+            log.error("JWT validation failed: {}", e.getMessage());
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error during authentication", e);
+            throw new IllegalArgumentException("Authentication failed", e);
         }
     }
 

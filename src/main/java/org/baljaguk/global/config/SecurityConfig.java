@@ -104,7 +104,8 @@ public class SecurityConfig {
                         "/access",
                         "/favicon.ico",
                         "/api/v1/contests/**",
-                        "/api/v1/categories"
+                        "/api/v1/categories",
+                        "/ws/chat/**"
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/teams/{contestId:[0-9]+}").permitAll()
                 .anyRequest().authenticated()

@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.baljaguk.domain.chat.entity.ChatMessage;
-
 import java.time.LocalDateTime;
 
 @Getter

@@ -127,10 +127,10 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     /**
-     //     * SUBSCRIBE 시 구독 경로에서 roomId를 추출하여 세션에 저장
-     //     * @param accessor 클라이언트의 stomp 프레임에 접근
-     //     * @param sessionAttributes websocket 생명주기에 맞는 세션(사용자 정보를 저장)
-     //     */
+    * SUBSCRIBE 시 구독 경로에서 roomId를 추출하여 세션에 저장
+    * @param accessor 클라이언트의 stomp 프레임에 접근
+    * @param sessionAttributes websocket 생명주기에 맞는 세션(사용자 정보를 저장)
+    */
     private void handleSubscribe(@NonNull StompHeaderAccessor accessor, @NonNull Map<String, Object> sessionAttributes) {
 
         //destination => /topic/chat.room/123

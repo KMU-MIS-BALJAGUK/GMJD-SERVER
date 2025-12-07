@@ -2,7 +2,8 @@ package org.baljaguk.domain.user.entity.enums;
 
 public enum Education {
     HIGH_SCHOOL("고등학교"),
-    UNIVERSITY("대학교");
+    UNIVERSITY("대학교"),
+    MASTER("대학원");
 
     private final String displayName;
 

@@ -58,10 +58,11 @@ public class UserController {
                     로그인한 사용자의 학력 정보를 수정합니다.\n
                     • 대학교명\n
                     • 전공\n
-                    • education (ENUM)\n
-                    • recognizedDegree (ENUM)\n
+                    • education ("HIGH_SCHOOL, UNIVERSITY, MASTER")\n
+                    • recognizedDegree ("ASSOCIATE, BACHELOR")\n
                     
-                    위 네 가지 정보를 한 번에 업데이트합니다.
+                    위 네 가지 정보를 한 번에 업데이트합니다.\n
+                    MASTER의 경우, recognizedDegree를 null로 받습니다.
                     """
     )
     public ResponseEntity<ApiResponse<String>> updateEducation(

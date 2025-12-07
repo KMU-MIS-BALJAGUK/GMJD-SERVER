@@ -20,13 +20,13 @@ public record EducationUpdateRequest(
         String major,
 
         @Schema(
-                description = "HIGH_SCHOOL, UNIVERSITY",
+                description = "HIGH_SCHOOL, UNIVERSITY, MASTER",
                 example = "UNIVERSITY"
         )
         Education education,
 
         @Schema(
-                description = "ASSOCIATE, BACHELOR, MASTER",
+                description = "ASSOCIATE, BACHELOR",
                 example = "ASSOCIATE"
         )
         RecognizedDegree recognizedDegree

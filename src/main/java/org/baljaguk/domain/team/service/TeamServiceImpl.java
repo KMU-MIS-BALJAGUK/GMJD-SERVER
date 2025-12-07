@@ -9,6 +9,7 @@ import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.*;
+import org.baljaguk.domain.team.dto.response.enums.CanApply;
 import org.baljaguk.domain.team.entity.*;
 import org.baljaguk.domain.team.repository.*;
 import org.baljaguk.domain.user.entity.User;
@@ -100,7 +101,7 @@ public class TeamServiceImpl implements TeamService {
         );
 
         // 4. 팀 저장
-        teamRepository.save(team);
+        teamRepository.saveAndFlush(team);
 
         // 본인을 팀멤버에 저장
         TeamMember teamLeaderMember = TeamMember.create(
@@ -122,31 +123,47 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public ContestTeamListResponse getTeamList(Long contestId) {
+    public ContestTeamListResponse getTeamList(Long userId, Long contestId) {
 
         // 1. Contest 존재 여부 검증
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CONTEST));
 
-        // 2. 해당 Contest의 OPEN 상태 팀 목록 조회
+        User user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId)
+                    .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+        }
+
+        final User currentUser = user;
+
+        // 2. OPEN 상태 팀 목록 조회
         List<Team> teams = teamRepository.findByContestAndStatus(contest, TeamStatus.OPEN);
 
-        // 3. 팀별 현재 멤버 수 조회 후 DTO 변환
+        // 3. DTO 변환
         List<ContestTeamListResponse.TeamInfo> teamInfoList = teams.stream()
                 .map(team -> {
                     Long memberCount = teamMemberRepository.countByTeam(team);
+
+                    CanApply canApply = CanApply.OK;
+
+                    if (currentUser != null) {
+                        canApply = canUserApplyTeam(currentUser, team);
+                    } else {
+                        canApply = CanApply.NOT_LOGIN;
+                    }
 
                     return ContestTeamListResponse.TeamInfo.of(
                             team.getId(),
                             team.getTitle(),
                             team.getMaxMember(),
                             memberCount,
-                            team.getStatus().name()
+                            team.getStatus().name(),
+                            canApply
                     );
                 })
                 .toList();
 
-        // 4. 응답 DTO 반환
         return ContestTeamListResponse.of(teamInfoList);
     }
 
@@ -691,5 +708,40 @@ public class TeamServiceImpl implements TeamService {
 
         // 4) 상태 변경: CLOSED → EXPIRED
         team.updateStatus(TeamStatus.EXPIRED);
+    }
+
+    public CanApply canUserApplyTeam(User user, Team team) {
+
+        // 1) 본인이 팀장인 경우
+        if (team.getTeamLeader().getId().equals(user.getId())) {
+            return CanApply.TEAM_LEADER;
+        }
+
+        // 2) 해당 팀에 이미 신청했는지
+        boolean alreadyApplied = teamApplyRepository.existsByUserAndTeamAndStatus(
+                user, team, RegisterStatus.REQUESTED
+        );
+        if (alreadyApplied) {
+            return CanApply.ALREADY_APPLIED;
+        }
+
+        // 3) 동일 공모전에 이미 신청했는지
+        boolean requestedInContest = teamApplyRepository.existsByUserAndTeamContestAndStatus(
+                user, team.getContest(), RegisterStatus.REQUESTED
+        );
+        if (requestedInContest) {
+            return CanApply.APPLIED_IN_OTHER_TEAM;
+        }
+
+        // 4) 동일 공모전에 이미 팀원으로 소속되어 있는지
+        boolean isAlreadyMember = teamMemberRepository.existsByMemberAndTeamContest(
+                user, team.getContest()
+        );
+        if (isAlreadyMember) {
+            return CanApply.ALREADY_MEMBER;
+        }
+
+        // 모두 통과 → 신청 가능
+        return CanApply.OK;
     }
 }

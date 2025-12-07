@@ -1,6 +1,7 @@
 package org.baljaguk.domain.team.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.baljaguk.domain.team.dto.response.enums.CanApply;
 
 import java.util.List;
 
@@ -32,15 +33,19 @@ public record ContestTeamListResponse(
             Long currentMemberCount,
 
             @Schema(description = "팀 상태 (OPEN만 조회됨)", example = "OPEN")
-            String status
+            String status,
+
+            @Schema(description = "신청 가능 여부", implementation = CanApply.class)
+            CanApply canApply
     ) {
         public static TeamInfo of(Long teamId,
                                   String title,
                                   Integer maxMember,
                                   Long currentMemberCount,
-                                  String status) {
+                                  String status,
+                                  CanApply canApply) {
 
-            return new TeamInfo(teamId, title, maxMember, currentMemberCount, status);
+            return new TeamInfo(teamId, title, maxMember, currentMemberCount, status, canApply);
         }
     }
 }

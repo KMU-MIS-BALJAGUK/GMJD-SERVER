@@ -35,7 +35,7 @@ public record ContestTeamListResponse(
             @Schema(description = "팀 상태 (OPEN만 조회됨)", example = "OPEN")
             String status,
 
-            @Schema(description = "신청 가능 여부", example = "true")
+            @Schema(description = "신청 가능 여부", implementation = CanApply.class)
             CanApply canApply
     ) {
         public static TeamInfo of(Long teamId,

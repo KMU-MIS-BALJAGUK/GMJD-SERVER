@@ -149,6 +149,8 @@ public class TeamServiceImpl implements TeamService {
 
                     if (currentUser != null) {
                         canApply = canUserApplyTeam(currentUser, team);
+                    } else {
+                        canApply = CanApply.NOT_LOGIN;
                     }
 
                     return ContestTeamListResponse.TeamInfo.of(

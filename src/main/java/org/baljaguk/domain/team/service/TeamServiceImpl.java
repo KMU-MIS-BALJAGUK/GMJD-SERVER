@@ -100,7 +100,7 @@ public class TeamServiceImpl implements TeamService {
         );
 
         // 4. 팀 저장
-        teamRepository.save(team);
+        teamRepository.saveAndFlush(team);
 
         // 본인을 팀멤버에 저장
         TeamMember teamLeaderMember = TeamMember.create(

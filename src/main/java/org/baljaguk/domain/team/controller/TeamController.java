@@ -58,7 +58,9 @@ public class TeamController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long contestId
     ) {
-        ContestTeamListResponse response = teamService.getTeamList(userDetails.getUserId(), contestId);
+        Long userId = (userDetails != null) ? userDetails.getUserId() : null;
+
+        ContestTeamListResponse response = teamService.getTeamList(userId, contestId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 

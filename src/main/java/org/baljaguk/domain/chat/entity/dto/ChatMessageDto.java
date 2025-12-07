@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.baljaguk.domain.chat.entity.ChatMessage;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -27,13 +25,4 @@ public class ChatMessageDto {
   
     private String profileImageUrl;
 
-    public static ChatMessageDto from(ChatMessage chatMessage) {
-        return ChatMessageDto.builder()
-                .message(chatMessage.getMessage())
-                .roomId(chatMessage.getChatRoom().getId())
-                .createdAt(chatMessage.getCreatedAt())
-                .userId(chatMessage.getUserId())
-                .build();
-    }
-    
 }

@@ -22,10 +22,17 @@ public class ChatController {
     @MessageMapping("/chat.room.{roomId}")
     public void sendMessage(@DestinationVariable("roomId")Long roomId, ChatMessageDto chatMessageDto) {
 
+
+        //roomId 지정
+        ChatMessageDto finalChatMessageDto = chatMessageDto.toBuilder()
+                .roomId(roomId)
+                .build();
+
+
         //DB저장
-        chatService.saveMessage(chatMessageDto);
+        chatService.saveMessage(finalChatMessageDto);
 
         //broadcasting
-        simpMessagingTemplate.convertAndSend("/topic/chat.room/"+roomId, chatMessageDto);
+        simpMessagingTemplate.convertAndSend("/topic/chat.room/"+roomId, finalChatMessageDto);
     }
 }

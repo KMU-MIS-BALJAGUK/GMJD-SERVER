@@ -58,8 +58,8 @@ public class UserController {
                     로그인한 사용자의 학력 정보를 수정합니다.\n
                     • 대학교명\n
                     • 전공\n
-                    • education (ENUM)\n
-                    • recognizedDegree (ENUM)\n
+                    • education ("HIGH_SCHOOL, UNIVERSITY")\n
+                    • recognizedDegree ("ASSOCIATE, BACHELOR, MASTER")\n
                     
                     위 네 가지 정보를 한 번에 업데이트합니다.
                     """

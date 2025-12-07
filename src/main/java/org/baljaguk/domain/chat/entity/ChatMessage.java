@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.baljaguk.global.entity.BaseEntity;
 
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,5 +27,4 @@ public class ChatMessage extends BaseEntity {
     @Column(name="user_id", nullable = false)
     private Long userId;
 
-    
 }

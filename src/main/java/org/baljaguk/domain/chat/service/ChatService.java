@@ -27,7 +27,6 @@ public class ChatService {
 
         ChatMessage chatMessage = ChatMessage.builder().message(chatMessageDto.getMessage())
                 .userId(chatMessageDto.getUserId())
-
                 .chatRoom(chatRoom)
                 .build();
 

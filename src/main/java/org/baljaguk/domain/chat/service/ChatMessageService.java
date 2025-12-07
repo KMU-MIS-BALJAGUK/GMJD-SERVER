@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -72,17 +74,26 @@ public class ChatMessageService {
             nextCursorMessageAt = null;
         }
 
-
-        //ChatMessageResponse 클래스 chatMessages 필드
-        List<ChatMessageDto> chatMessageDtoList = chatMessages.stream()
-                .map(ChatMessageDto::from)
-                .toList();
-
         //ChatMessageResponse 클래스 teamMembers 필드
         List<TeamMemberInfoDto> teamMemberInfoDto = teamMemberRepository.findAllWithUserByTeamId(chatRoom.getTeam().getId())
                 .stream()
                 .map(TeamMemberInfoDto::from)
                 .toList();
+
+        //userProfileUrlMap 생성
+        Map<Long, String> userProfileUrlMap = teamMemberInfoDto.stream()
+                .collect(Collectors.toMap(TeamMemberInfoDto::getUserId,TeamMemberInfoDto::getUserProfileUrl));
+
+        //ChatMessageResponse 클래스 chatMessages 필드
+        List<ChatMessageDto> chatMessageDtoList = chatMessages.stream()
+                .map(chatMessage -> ChatMessageDto.builder()
+                        .message(chatMessage.getMessage())
+                        .userId(chatMessage.getUserId())
+                        .createdAt(chatMessage.getCreatedAt())
+                        .roomId(chatMessage.getChatRoom().getId())
+                        .profileImageUrl(userProfileUrlMap.get(chatMessage.getUserId()))
+                        .build()
+                ).toList();
 
         return ChatMessageResponse.builder()
                 .roomId(roomId)

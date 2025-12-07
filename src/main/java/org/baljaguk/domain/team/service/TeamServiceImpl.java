@@ -128,18 +128,27 @@ public class TeamServiceImpl implements TeamService {
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CONTEST));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+        User user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId)
+                    .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
+        }
 
-        // 2. 해당 Contest의 OPEN 상태 팀 목록 조회
+        final User currentUser = user;
+
+        // 2. OPEN 상태 팀 목록 조회
         List<Team> teams = teamRepository.findByContestAndStatus(contest, TeamStatus.OPEN);
 
-        // 3. 팀별 현재 멤버 수 조회 후 DTO 변환
+        // 3. DTO 변환
         List<ContestTeamListResponse.TeamInfo> teamInfoList = teams.stream()
                 .map(team -> {
                     Long memberCount = teamMemberRepository.countByTeam(team);
 
-                    boolean canApply = canUserApplyTeam(user, team);
+                    boolean canApply = false;
+
+                    if (currentUser != null) {
+                        canApply = canUserApplyTeam(currentUser, team);
+                    }
 
                     return ContestTeamListResponse.TeamInfo.of(
                             team.getId(),
@@ -152,7 +161,6 @@ public class TeamServiceImpl implements TeamService {
                 })
                 .toList();
 
-        // 4. 응답 DTO 반환
         return ContestTeamListResponse.of(teamInfoList);
     }
 
@@ -719,6 +727,14 @@ public class TeamServiceImpl implements TeamService {
                 user, team.getContest(), RegisterStatus.REQUESTED
         );
         if (requestedInContest) {
+            return false;
+        }
+
+        // 4) 동일 공모전에 이미 팀원으로 소속되어 있는지
+        boolean isAlreadyMember = teamMemberRepository.existsByMemberAndTeamContest(
+                user, team.getContest()
+        );
+        if (isAlreadyMember) {
             return false;
         }
 

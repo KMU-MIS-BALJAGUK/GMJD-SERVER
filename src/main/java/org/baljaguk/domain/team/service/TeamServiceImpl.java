@@ -9,6 +9,7 @@ import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
 import org.baljaguk.domain.team.dto.request.TeamApplyRequest;
 import org.baljaguk.domain.team.dto.response.*;
+import org.baljaguk.domain.team.dto.response.enums.CanApply;
 import org.baljaguk.domain.team.entity.*;
 import org.baljaguk.domain.team.repository.*;
 import org.baljaguk.domain.user.entity.User;
@@ -144,7 +145,7 @@ public class TeamServiceImpl implements TeamService {
                 .map(team -> {
                     Long memberCount = teamMemberRepository.countByTeam(team);
 
-                    boolean canApply = false;
+                    CanApply canApply = CanApply.OK;
 
                     if (currentUser != null) {
                         canApply = canUserApplyTeam(currentUser, team);
@@ -707,11 +708,11 @@ public class TeamServiceImpl implements TeamService {
         team.updateStatus(TeamStatus.EXPIRED);
     }
 
-    public boolean canUserApplyTeam(User user, Team team) {
+    public CanApply canUserApplyTeam(User user, Team team) {
 
         // 1) 본인이 팀장인 경우
         if (team.getTeamLeader().getId().equals(user.getId())) {
-            return false;
+            return CanApply.TEAM_LEADER;
         }
 
         // 2) 해당 팀에 이미 신청했는지
@@ -719,7 +720,7 @@ public class TeamServiceImpl implements TeamService {
                 user, team, RegisterStatus.REQUESTED
         );
         if (alreadyApplied) {
-            return false;
+            return CanApply.ALREADY_APPLIED;
         }
 
         // 3) 동일 공모전에 이미 신청했는지
@@ -727,7 +728,7 @@ public class TeamServiceImpl implements TeamService {
                 user, team.getContest(), RegisterStatus.REQUESTED
         );
         if (requestedInContest) {
-            return false;
+            return CanApply.APPLIED_IN_OTHER_TEAM;
         }
 
         // 4) 동일 공모전에 이미 팀원으로 소속되어 있는지
@@ -735,10 +736,10 @@ public class TeamServiceImpl implements TeamService {
                 user, team.getContest()
         );
         if (isAlreadyMember) {
-            return false;
+            return CanApply.ALREADY_MEMBER;
         }
 
-        // 모두 통과하면 신청 가능
-        return true;
+        // 모두 통과 → 신청 가능
+        return CanApply.OK;
     }
 }

@@ -3,6 +3,7 @@ package org.baljaguk.domain.team.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public record CreateTeamRequest(
 
         @Schema(description = "지원자 선별 질문 리스트",
                 example = "[\"본 공모전에 지원하게 된 동기는 무엇인가요?\", \"팀 프로젝트 경험을 알려주세요.\", \"사용 가능한 기술 스택을 적어주세요.\", \"주말 투입 가능 여부를 알려주세요.\", \"협업 시 중요하게 생각하는 점은 무엇인가요?\"]")
-        @NotNull(message = "질문 리스트는 필수입니다.")
-        List<String> questions
+        @Size(min = 1, message = "질문은 최소 1개 이상이어야 합니다.")
+        List<@NotBlank String> questions
 
 ) {}

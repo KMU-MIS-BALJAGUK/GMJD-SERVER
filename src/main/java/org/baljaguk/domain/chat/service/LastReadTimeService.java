@@ -56,7 +56,6 @@ public class LastReadTimeService {
         // lastReadAt 갱신
         lastReadTime.updateLastReadTime();
     }
-
     /**
      * @param userId 사용자 ID
      * @param roomId 채팅방 ID

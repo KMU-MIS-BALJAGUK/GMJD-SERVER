@@ -51,7 +51,13 @@ public class TeamController {
 
     @Operation(
             summary = "공모전별 팀 목록 조회",
-            description = "특정 공모전에 등록된 OPEN 상태의 팀 목록을 조회합니다."
+            description = "특정 공모전에 등록된 OPEN 상태의 팀 목록을 조회합니다.\n" +
+                    " - OK: 신청 가능\n" +
+                    " - TEAM_LEADER: 본인이 팀장\n" +
+                    " - ALREADY_APPLIED: 이미 해당 팀에 신청함\n" +
+                    " - APPLIED_IN_OTHER_TEAM: 동일 공모전 다른 팀에 신청됨\n" +
+                    " - ALREADY_MEMBER: 이미 팀원임\n" +
+                    " - NOT_LOGIN: 로그인하지 않음"
     )
     @GetMapping("/{contestId}")
     public ResponseEntity<ApiResponse<ContestTeamListResponse>> getTeamList(

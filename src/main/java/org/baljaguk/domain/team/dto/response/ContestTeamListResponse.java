@@ -32,15 +32,19 @@ public record ContestTeamListResponse(
             Long currentMemberCount,
 
             @Schema(description = "팀 상태 (OPEN만 조회됨)", example = "OPEN")
-            String status
+            String status,
+
+            @Schema(description = "신청 가능 여부", example = "true")
+            Boolean canApply
     ) {
         public static TeamInfo of(Long teamId,
                                   String title,
                                   Integer maxMember,
                                   Long currentMemberCount,
-                                  String status) {
+                                  String status,
+                                  Boolean canApply) {
 
-            return new TeamInfo(teamId, title, maxMember, currentMemberCount, status);
+            return new TeamInfo(teamId, title, maxMember, currentMemberCount, status, canApply);
         }
     }
 }

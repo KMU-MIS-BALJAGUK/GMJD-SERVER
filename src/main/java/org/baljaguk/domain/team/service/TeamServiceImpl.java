@@ -122,11 +122,14 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public ContestTeamListResponse getTeamList(Long contestId) {
+    public ContestTeamListResponse getTeamList(Long userId, Long contestId) {
 
         // 1. Contest 존재 여부 검증
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CONTEST));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_USER));
 
         // 2. 해당 Contest의 OPEN 상태 팀 목록 조회
         List<Team> teams = teamRepository.findByContestAndStatus(contest, TeamStatus.OPEN);
@@ -136,12 +139,15 @@ public class TeamServiceImpl implements TeamService {
                 .map(team -> {
                     Long memberCount = teamMemberRepository.countByTeam(team);
 
+                    boolean canApply = canUserApplyTeam(user, team);
+
                     return ContestTeamListResponse.TeamInfo.of(
                             team.getId(),
                             team.getTitle(),
                             team.getMaxMember(),
                             memberCount,
-                            team.getStatus().name()
+                            team.getStatus().name(),
+                            canApply
                     );
                 })
                 .toList();
@@ -691,5 +697,32 @@ public class TeamServiceImpl implements TeamService {
 
         // 4) 상태 변경: CLOSED → EXPIRED
         team.updateStatus(TeamStatus.EXPIRED);
+    }
+
+    public boolean canUserApplyTeam(User user, Team team) {
+
+        // 1) 본인이 팀장인 경우
+        if (team.getTeamLeader().getId().equals(user.getId())) {
+            return false;
+        }
+
+        // 2) 해당 팀에 이미 신청했는지
+        boolean alreadyApplied = teamApplyRepository.existsByUserAndTeamAndStatus(
+                user, team, RegisterStatus.REQUESTED
+        );
+        if (alreadyApplied) {
+            return false;
+        }
+
+        // 3) 동일 공모전에 이미 신청했는지
+        boolean requestedInContest = teamApplyRepository.existsByUserAndTeamContestAndStatus(
+                user, team.getContest(), RegisterStatus.REQUESTED
+        );
+        if (requestedInContest) {
+            return false;
+        }
+
+        // 모두 통과하면 신청 가능
+        return true;
     }
 }

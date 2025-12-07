@@ -2,7 +2,6 @@ package org.baljaguk.domain.chat.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.dto.ChatMessageDto;
 import org.baljaguk.domain.chat.service.ChatService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -29,10 +28,10 @@ public class ChatController {
                 .build();
 
         //DB저장
-        ChatMessage savedMessage = chatService.saveMessage(finalChatMessageDto);
+        ChatMessageDto savedMessage = chatService.saveMessage(finalChatMessageDto);
 
         ChatMessageDto messageToSend = ChatMessageDto.builder()
-                .roomId(savedMessage.getChatRoom().getId())
+                .roomId(savedMessage.getRoomId())
                 .userId(savedMessage.getUserId())
                 .message(savedMessage.getMessage())
                 .createdAt(savedMessage.getCreatedAt())

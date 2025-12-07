@@ -2,6 +2,7 @@ package org.baljaguk.domain.chat.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.baljaguk.domain.chat.entity.ChatMessage;
 import org.baljaguk.domain.chat.entity.dto.ChatMessageDto;
 import org.baljaguk.domain.chat.service.ChatService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -22,17 +23,22 @@ public class ChatController {
     @MessageMapping("/chat.room.{roomId}")
     public void sendMessage(@DestinationVariable("roomId")Long roomId, ChatMessageDto chatMessageDto) {
 
-
         //roomId 지정
         ChatMessageDto finalChatMessageDto = chatMessageDto.toBuilder()
                 .roomId(roomId)
                 .build();
 
-
         //DB저장
-        chatService.saveMessage(finalChatMessageDto);
+        ChatMessage savedMessage = chatService.saveMessage(finalChatMessageDto);
+
+        ChatMessageDto messageToSend = ChatMessageDto.builder()
+                .roomId(savedMessage.getChatRoom().getId())
+                .userId(savedMessage.getUserId())
+                .message(savedMessage.getMessage())
+                .createdAt(savedMessage.getCreatedAt())
+                .build();
 
         //broadcasting
-        simpMessagingTemplate.convertAndSend("/topic/chat.room/"+roomId, finalChatMessageDto);
+        simpMessagingTemplate.convertAndSend("/topic/chat.room/"+roomId, messageToSend);
     }
 }

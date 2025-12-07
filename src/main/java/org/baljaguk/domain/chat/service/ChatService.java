@@ -20,7 +20,7 @@ public class ChatService {
      * @param chatMessageDto 채팅 메시지
      */
     @Transactional
-    public void saveMessage(ChatMessageDto chatMessageDto) {
+    public ChatMessage saveMessage(ChatMessageDto chatMessageDto) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다: " + chatMessageDto.getRoomId()));
@@ -30,6 +30,6 @@ public class ChatService {
                 .chatRoom(chatRoom)
                 .build();
 
-        chatMessageRepository.save(chatMessage);
+        return chatMessageRepository.save(chatMessage);
     }
 }

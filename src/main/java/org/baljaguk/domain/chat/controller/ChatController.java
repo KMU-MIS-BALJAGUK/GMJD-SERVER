@@ -33,6 +33,6 @@ public class ChatController {
         chatService.saveMessage(finalChatMessageDto);
 
         //broadcasting
-        simpMessagingTemplate.convertAndSend("/topic/chat.room/"+roomId, chatMessageDto);
+        simpMessagingTemplate.convertAndSend("/topic/chat.room/"+roomId, finalChatMessageDto);
     }
 }

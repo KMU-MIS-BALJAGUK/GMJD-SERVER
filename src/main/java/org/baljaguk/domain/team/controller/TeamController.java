@@ -54,8 +54,11 @@ public class TeamController {
             description = "특정 공모전에 등록된 OPEN 상태의 팀 목록을 조회합니다."
     )
     @GetMapping("/{contestId}")
-    public ResponseEntity<ApiResponse<ContestTeamListResponse>> getTeamList(@PathVariable Long contestId) {
-        ContestTeamListResponse response = teamService.getTeamList(contestId);
+    public ResponseEntity<ApiResponse<ContestTeamListResponse>> getTeamList(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long contestId
+    ) {
+        ContestTeamListResponse response = teamService.getTeamList(userDetails.getUserId(), contestId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 

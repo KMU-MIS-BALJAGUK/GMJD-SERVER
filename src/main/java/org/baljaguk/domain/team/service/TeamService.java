@@ -10,7 +10,7 @@ public interface TeamService {
 
     void createTeam(Long userId, Long contestId, @Valid CreateTeamRequest request);
 
-    ContestTeamListResponse getTeamList(Long contestId);
+    ContestTeamListResponse getTeamList(Long userId, Long contestId);
 
     TeamDetailResponse getTeamDetail(Long teamId);
 

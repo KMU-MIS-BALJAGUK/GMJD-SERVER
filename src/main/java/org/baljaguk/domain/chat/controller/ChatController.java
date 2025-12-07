@@ -22,12 +22,6 @@ public class ChatController {
     @MessageMapping("/chat.room.{roomId}")
     public void sendMessage(@DestinationVariable("roomId")Long roomId, ChatMessageDto chatMessageDto) {
 
-        //roomId 검증
-        if(!roomId.equals(chatMessageDto.getRoomId())) {
-            log.info("Room Id does not match room Id {}", roomId);
-            throw new IllegalArgumentException("Room Id does not match room Id " + roomId);
-        }
-
         //DB저장
         chatService.saveMessage(chatMessageDto);
 

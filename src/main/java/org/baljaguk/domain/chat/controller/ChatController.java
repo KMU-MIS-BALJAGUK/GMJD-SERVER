@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.chat.entity.dto.ChatMessageDto;
 import org.baljaguk.domain.chat.service.ChatService;
-import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
-
-import java.security.Principal;
+import java.util.Map;
 
 
 @Slf4j
@@ -25,12 +23,10 @@ public class ChatController {
     @MessageMapping("/chat.room.{roomId}")
     public void sendMessage(@DestinationVariable("roomId")Long roomId,
                             ChatMessageDto chatMessageDto,
-                            Principal principal) {
+                            @Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+                            ) {
 
-        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) principal;
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-        Long userId = userDetails.getUserId();
+        Long userId=(Long) sessionAttributes.get("userId");
 
         //roomId 지정
         ChatMessageDto finalChatMessageDto = chatMessageDto.toBuilder()

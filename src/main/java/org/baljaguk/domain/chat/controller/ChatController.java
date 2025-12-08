@@ -4,15 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.baljaguk.domain.chat.entity.dto.ChatMessageDto;
 import org.baljaguk.domain.chat.service.ChatService;
-import org.baljaguk.domain.user.dto.CustomUserDetails;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
-
-import java.security.Principal;
 import java.util.Map;
 
 

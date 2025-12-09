@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.baljaguk.domain.chat.entity.ChatRoom;
+import org.baljaguk.domain.chat.repository.ChatRoomRepository;
 import org.baljaguk.domain.contest.entity.Contest;
 import org.baljaguk.domain.contest.repository.ContestRepository;
 import org.baljaguk.domain.team.dto.request.CreateTeamRequest;
@@ -37,6 +39,7 @@ public class TeamServiceImpl implements TeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final TeamApplyRepository teamApplyRepository;
     private final AnswerRepository answerRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     private final GeminiClient geminiClient;
 
@@ -88,6 +91,33 @@ public class TeamServiceImpl implements TeamService {
 
         if (existsOpenTeam) {
             throw new GeneralException(ErrorCode.CONTEST_ALREADY_HAS_OPEN_TEAM);
+        }
+
+        // ---------------------------
+        // [추가 2] 해당 공모전에 신청(REQUESTED)한 팀이 있는 경우
+        // → 팀을 생성할 수 없음
+        // ---------------------------
+        boolean alreadyApplied = teamApplyRepository.existsByUserAndTeamContestAndStatus(
+                user,
+                contest,
+                RegisterStatus.REQUESTED
+        );
+
+        if (alreadyApplied) {
+            throw new GeneralException(ErrorCode.ALREADY_REQUESTED_IN_CONTEST);
+        }
+
+        // ---------------------------
+        // [추가 3] 이미 해당 공모전의 팀원으로 소속되어 있는 경우
+        // → 다른 팀 생성 불가
+        // ---------------------------
+        boolean alreadyMember = teamMemberRepository.existsByMemberAndTeamContest(
+                user,
+                contest
+        );
+
+        if (alreadyMember) {
+            throw new GeneralException(ErrorCode.ALREADY_JOINED_IN_CONTEST);
         }
 
         // 3. 팀 엔티티 생성
@@ -442,6 +472,10 @@ public class TeamServiceImpl implements TeamService {
                 ))
                 .toList();
 
+        // 팀id에 해당하는 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findByTeamId(team.getId())
+                .orElseThrow(() -> new GeneralException(ErrorCode.NOT_FOUND_CHATROOM));
+
         // 최종 응답 DTO 생성
         return MyTeamDetailResponse.of(
                 team.getTitle(),
@@ -451,7 +485,8 @@ public class TeamServiceImpl implements TeamService {
                 myType,
                 team.getMemo(),
                 members,
-                team.getContest().getId()
+                team.getContest().getId(),
+                chatRoom.getId()
         );
     }
 

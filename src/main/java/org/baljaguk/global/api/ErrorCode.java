@@ -76,6 +76,9 @@ public enum ErrorCode {
     APPLY_NOT_FOUND(HttpStatus.NOT_FOUND, 40408, "신청을 찾을 수 없습니다."),
     TEAM_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 40409, "해당 팀원을 찾을 수 없습니다."),
 
+    // 채팅방 관련
+    NOT_FOUND_CHATROOM(HttpStatus.NOT_FOUND, 40410, "채팅방을 찾을 수 없습니다."),
+
     /**
      * 405 METHOD_NOT_ALLOWED
      */

@@ -89,6 +89,7 @@ public enum ErrorCode {
      * 409 Conflict
      */
     ALREADY_APPLIED_TEAM(HttpStatus.CONFLICT, 40900, "이미 신청한 팀입니다."),
+    ALREADY_EXIST_CHATROOM(HttpStatus.CONFLICT, 40901, "이미 해당 팀에 대한 채팅방이 존재합니다."),
 
 
     /**

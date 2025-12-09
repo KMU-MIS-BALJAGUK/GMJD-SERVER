@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     @Query("SELECT cr FROM ChatRoom cr JOIN FETCH cr.team WHERE cr.team.id IN :teamIds")
     List<ChatRoom> findByTeamIdIn(@Param("teamIds") List<Long> teamIds);
 
     boolean existsByTeamId(Long teamId);
+
+    Optional<ChatRoom> findByTeamId(Long teamId);
 }
